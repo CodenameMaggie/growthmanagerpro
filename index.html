@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Growth Manager Pro</title>
+    <title>Growth Manager Pro - Dashboard</title>
     <style>
         * {
             margin: 0;
@@ -13,128 +13,48 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f7fa;
+            line-height: 1.6;
             color: #333;
-        }
-
-        .app-container {
-            display: flex;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
             min-height: 100vh;
         }
 
-        .sidebar {
-            width: 280px;
-            background: white;
-            border-right: 1px solid #e1e5e9;
-            padding: 2rem 0;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
-        .sidebar-header {
-            padding: 0 2rem 2rem 2rem;
-            border-bottom: 1px solid #e1e5e9;
-            margin-bottom: 2rem;
-        }
-
-        .sidebar-header h1 {
-            font-size: 1.5rem;
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-        }
-
-        .sidebar-header p {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-        }
-
-        .nav-section {
-            margin-bottom: 2rem;
-        }
-
-        .nav-section-title {
-            padding: 0 2rem;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #95a5a6;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 1rem;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 0.8rem 2rem;
-            color: #5a6c7d;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .nav-item:hover {
-            background: #f8f9fa;
-            color: #2c3e50;
-        }
-
-        .nav-item.active {
-            background: #3498db;
-            color: white;
-            border-right: 3px solid #2980b9;
-        }
-
-        .nav-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 1rem;
-            font-size: 1.2rem;
-        }
-
-        .nav-text {
-            flex: 1;
-        }
-
-        .nav-subtitle {
-            font-size: 0.8rem;
-            opacity: 0.7;
-            margin-top: 0.2rem;
-        }
-
-        .main-content {
-            flex: 1;
-            margin-left: 280px;
-            padding: 2rem;
-        }
-
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        .page-header {
+        .header {
             background: white;
             padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
+            text-align: center;
         }
 
-        .page-title {
-            font-size: 2rem;
+        .header h1 {
             color: #2c3e50;
+            font-size: 2.5rem;
             margin-bottom: 0.5rem;
         }
 
-        .page-subtitle {
+        .header .subtitle {
             color: #7f8c8d;
             font-size: 1.1rem;
+            margin-bottom: 1rem;
         }
 
-        .stats-grid {
+        .header .goals {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
@@ -145,7 +65,7 @@
             background: white;
             padding: 1.5rem;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
             text-align: center;
         }
 
@@ -162,20 +82,26 @@
             letter-spacing: 1px;
         }
 
-        .content-grid {
+        .finished { color: #27ae60; }
+        .on-track { color: #3498db; }
+        .off-track { color: #e74c3c; }
+        .blocked { color: #f39c12; }
+
+        .main-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 2rem;
+            margin-bottom: 2rem;
         }
 
-        .content-card {
+        .section {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
             overflow: hidden;
         }
 
-        .card-header {
+        .section-header {
             background: #2c3e50;
             color: white;
             padding: 1.5rem;
@@ -184,26 +110,37 @@
             align-items: center;
         }
 
-        .card-content {
+        .section-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .section-content {
             padding: 1.5rem;
+            max-height: 500px;
+            overflow-y: auto;
         }
 
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .table th,
-        .table td {
+        .task-item, .call-item {
             padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e1e5e9;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .table th {
-            background: #f8f9fa;
-            font-weight: 600;
+        .task-item:last-child, .call-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-details h4 {
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
             color: #2c3e50;
+        }
+
+        .task-details p {
+            color: #7f8c8d;
+            font-size: 0.8rem;
         }
 
         .status-badge {
@@ -214,574 +151,547 @@
             text-transform: uppercase;
         }
 
-        .status-podcast { background: #e1f5fe; color: #0277bd; }
-        .status-discovery { background: #f3e5f5; color: #7b1fa2; }
-        .status-sales { background: #fff3e0; color: #f57c00; }
-        .status-closed { background: #e8f5e8; color: #2e7d32; }
+        .status-finished { background: #d5f4e6; color: #27ae60; }
+        .status-on-track { background: #dbeafe; color: #3498db; }
+        .status-off-track { background: #fef2f2; color: #e74c3c; }
+        .status-blocked { background: #fef3cd; color: #f39c12; }
 
-        .btn {
-            background: #3498db;
+        .pipeline-stage {
+            background: #f8f9fa;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .stage-header {
+            background: #34495e;
             color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
+            padding: 0.8rem 1rem;
+            font-weight: bold;
+        }
+
+        .stage-content {
+            padding: 1rem;
+        }
+
+        .prospect {
+            background: white;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
             border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.2s ease;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .btn:hover {
-            background: #2980b9;
+        .prospect:last-child {
+            margin-bottom: 0;
         }
 
-        .btn.success {
-            background: #27ae60;
+        .prospect h5 {
+            margin-bottom: 0.3rem;
+            color: #2c3e50;
         }
 
-        .btn.success:hover {
-            background: #2ecc71;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
+        .prospect p {
+            font-size: 0.8rem;
             color: #7f8c8d;
         }
 
-        .empty-state h3 {
-            margin-bottom: 1rem;
+        .call-analysis {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .call-analysis.good {
+            border-left-color: #27ae60;
+        }
+
+        .call-analysis.average {
+            border-left-color: #f39c12;
+        }
+
+        .rating {
+            display: flex;
+            gap: 2px;
+        }
+
+        .star {
+            color: #ffd700;
+            font-size: 1.2rem;
+        }
+
+        .star.empty {
+            color: #ddd;
+        }
+
+        .advisor-section {
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+
+        .advisor-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .kpi-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .kpi-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+        }
+
+        .progress-bar {
+            background: #ecf0f1;
+            border-radius: 10px;
+            height: 8px;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .weekly-summary {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn.success {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        .btn.warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .last-updated {
+            color: #7f8c8d;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 1rem;
         }
 
         @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .content-grid {
+            .dashboard-grid {
                 grid-template-columns: 1fr;
             }
-
-            .stats-grid {
+            
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .advisor-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .kpi-grid {
                 grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Sidebar Navigation -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h1>Growth Manager Pro</h1>
-                <p>Client Acquisition System</p>
+    <div class="container">
+        <div class="header">
+            <h1>Growth Manager Pro</h1>
+            <p class="subtitle">Home Renovation & Interior Design Firms - Client Acquisition System</p>
+            <div class="goals">
+                <strong>North Star Goal:</strong> $50k/month | 3-Month Target: $25k/month
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <div class="stat-number finished">42</div>
+                <div class="stat-label">Tasks Finished</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number on-track">8</div>
+                <div class="stat-label">On Track</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number off-track">6</div>
+                <div class="stat-label">Off Track</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number blocked">3</div>
+                <div class="stat-label">Blocked</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: #9b59b6;">15</div>
+                <div class="stat-label">Sales Calls</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: #e67e22;">12%</div>
+                <div class="stat-label">Close Rate</div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Current Sprint Tasks</h2>
+                    <span>Week 6 (9/11/25)</span>
+                </div>
+                <div class="section-content">
+                    <div class="task-item">
+                        <div class="task-details">
+                            <h4>8.0 - Update podcast call/discovery call trackers</h4>
+                            <p>Focus: Business Value Creation | Due: 9/11/25</p>
+                        </div>
+                        <div class="status-badge status-on-track">On Track</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-details">
+                            <h4>8.1 - Build a new lead list for campaign</h4>
+                            <p>Focus: Business Value Creation | Due: 9/11/25</p>
+                        </div>
+                        <div class="status-badge status-on-track">On Track</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-details">
+                            <h4>8.2 - Review training on how to scrape leads</h4>
+                            <p>Focus: Business Value Creation | Due: 9/11/25</p>
+                        </div>
+                        <div class="status-badge status-on-track">On Track</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-details">
+                            <h4>8.3 - Review training on how to verify leads</h4>
+                            <p>Focus: Business Value Creation | Due: 9/11/25</p>
+                        </div>
+                        <div class="status-badge status-on-track">On Track</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-details">
+                            <h4>8.4 - Use AI-clients to create new emailing campaigns</h4>
+                            <p>Focus: Business Value Creation | Due: 9/11/25</p>
+                        </div>
+                        <div class="status-badge status-on-track">On Track</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-details">
+                            <h4>7.4 - Complete section 7 - AI client service delivery</h4>
+                            <p>Focus: Business Value Creation | Overdue from 8/28/25</p>
+                        </div>
+                        <div class="status-badge status-off-track">Off Track</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="nav-section">
-                <div class="nav-section-title">Navigation</div>
-                
-                <div class="nav-item active" onclick="showPage('dashboard')">
-                    <div class="nav-icon">📊</div>
-                    <div class="nav-text">
-                        <div>Dashboard</div>
-                        <div class="nav-subtitle">Overview & KPIs</div>
-                    </div>
+            <div class="section">
+                <div class="section-header">
+                    <h2>Sales Pipeline</h2>
+                    <span>Auto-Updated</span>
                 </div>
-
-                <div class="nav-item" onclick="showPage('contacts')">
-                    <div class="nav-icon">👥</div>
-                    <div class="nav-text">
-                        <div>Contacts</div>
-                        <div class="nav-subtitle">Prospect database</div>
+                <div class="section-content">
+                    <div class="pipeline-stage">
+                        <div class="stage-header">Cold Outreach (LinkedIn + Email)</div>
+                        <div class="stage-content">
+                            <div class="prospect">
+                                <h5>Renovation Plus LLC</h5>
+                                <p>Contacted via LinkedIn - 2 days ago</p>
+                            </div>
+                            <div class="prospect">
+                                <h5>Elite Home Designs</h5>
+                                <p>Email sent - 1 day ago</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('podcast-calls')">
-                    <div class="nav-icon">📞</div>
-                    <div class="nav-text">
-                        <div>Podcast Calls</div>
-                        <div class="nav-subtitle">Interview tracking</div>
+                    
+                    <div class="pipeline-stage">
+                        <div class="stage-header">Initial Response/Interest</div>
+                        <div class="stage-content">
+                            <div class="prospect">
+                                <h5>Modern Living Spaces</h5>
+                                <p>Replied to email - booking call</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('discovery-calls')">
-                    <div class="nav-icon">🎯</div>
-                    <div class="nav-text">
-                        <div>Discovery Calls</div>
-                        <div class="nav-subtitle">Qualification calls</div>
+                    
+                    <div class="pipeline-stage">
+                        <div class="stage-header">Discovery Call Booked</div>
+                        <div class="stage-content">
+                            <div class="prospect">
+                                <h5>Coastal Interior Design</h5>
+                                <p>Call scheduled for Sept 21, 2:00 PM</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('sales-calls')">
-                    <div class="nav-icon">📈</div>
-                    <div class="nav-text">
-                        <div>Sales Calls</div>
-                        <div class="nav-subtitle">Closing conversations</div>
-                    </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('pipeline')">
-                    <div class="nav-icon">📋</div>
-                    <div class="nav-text">
-                        <div>Pipeline</div>
-                        <div class="nav-subtitle">Deal management</div>
-                    </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('deals')">
-                    <div class="nav-icon">📄</div>
-                    <div class="nav-text">
-                        <div>Deals</div>
-                        <div class="nav-subtitle">Closed deals</div>
-                    </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('cash-flow')">
-                    <div class="nav-icon">💰</div>
-                    <div class="nav-text">
-                        <div>Cash Flow</div>
-                        <div class="nav-subtitle">Financial tracking</div>
-                    </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('campaigns')">
-                    <div class="nav-icon">⚡</div>
-                    <div class="nav-text">
-                        <div>Campaigns</div>
-                        <div class="nav-subtitle">Outreach tracking</div>
-                    </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('sprints')">
-                    <div class="nav-icon">📅</div>
-                    <div class="nav-text">
-                        <div>Sprints</div>
-                        <div class="nav-subtitle">Task management</div>
-                    </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('expense-tracker')">
-                    <div class="nav-icon">🧮</div>
-                    <div class="nav-text">
-                        <div>Expense Tracker</div>
-                        <div class="nav-subtitle">Manage recurring costs</div>
-                    </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('availability')">
-                    <div class="nav-icon">🕐</div>
-                    <div class="nav-text">
-                        <div>Availability</div>
-                        <div class="nav-subtitle">Schedule settings</div>
-                    </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('user-management')">
-                    <div class="nav-icon">⚙️</div>
-                    <div class="nav-text">
-                        <div>User Management</div>
-                        <div class="nav-subtitle">Manage users & permissions</div>
+                    
+                    <div class="pipeline-stage">
+                        <div class="stage-header">Proposal/Closing</div>
+                        <div class="stage-content">
+                            <div class="prospect">
+                                <h5>Urban Renovation Co.</h5>
+                                <p>Proposal sent - awaiting decision</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Dashboard Page -->
-            <div id="dashboard" class="page active">
-                <div class="page-header">
-                    <h1 class="page-title">Dashboard</h1>
-                    <p class="page-subtitle">Overview of your growth metrics and KPIs</p>
+        <div class="main-grid">
+            <div class="section">
+                <div class="section-header">
+                    <h2>AI Sales Call Analysis</h2>
+                    <span>Recent Calls</span>
                 </div>
-
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number" style="color: #3498db;">6</div>
-                        <div class="stat-label">Podcast Calls</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" style="color: #9b59b6;">3</div>
-                        <div class="stat-label">Discovery Calls</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" style="color: #f39c12;">2</div>
-                        <div class="stat-label">Sales Calls</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" style="color: #27ae60;">1</div>
-                        <div class="stat-label">Closed Deals</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" style="color: #e74c3c;">$9,200</div>
-                        <div class="stat-label">Monthly Revenue</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" style="color: #2ecc71;">8.3%</div>
-                        <div class="stat-label">Close Rate</div>
-                    </div>
-                </div>
-
-                <div class="content-grid">
-                    <div class="content-card">
-                        <div class="card-header">
-                            <h3>Recent Activity</h3>
-                            <span>Last 7 days</span>
+                <div class="section-content">
+                    <div class="call-item call-analysis good">
+                        <div class="task-details">
+                            <h4>Discovery Call - Luxury Home Interiors</h4>
+                            <p>Sept 18, 2025 | 45 min duration</p>
+                            <p><strong>AI Analysis:</strong> Excellent rapport building, clear pain points identified, strong interest shown</p>
                         </div>
-                        <div class="card-content">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Contact</th>
-                                        <th>Activity</th>
-                                        <th>Status</th>
-                                        <th>Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Kami Gray</td>
-                                        <td>Podcast Interview</td>
-                                        <td><span class="status-badge status-podcast">Completed</span></td>
-                                        <td>Sept 25</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Marla Stone</td>
-                                        <td>Sales Call</td>
-                                        <td><span class="status-badge status-closed">Closed</span></td>
-                                        <td>Sept 24</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Tye Shumway</td>
-                                        <td>Discovery Call</td>
-                                        <td><span class="status-badge status-discovery">Scheduled</span></td>
-                                        <td>Sept 22</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="content-card">
-                        <div class="card-header">
-                            <h3>Pipeline Summary</h3>
-                        </div>
-                        <div class="card-content">
-                            <div style="margin-bottom: 1.5rem;">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                                    <span>Total Pipeline Value</span>
-                                    <strong>$88,200</strong>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                                    <span>Active Prospects</span>
-                                    <strong>12</strong>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                                    <span>Avg Deal Size</span>
-                                    <strong>$14,700</strong>
-                                </div>
+                        <div>
+                            <div class="rating">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
                             </div>
-                            
-                            <button class="btn success" style="width: 100%; margin-bottom: 1rem;">Generate Report</button>
-                            <button class="btn" style="width: 100%;">Export Data</button>
+                            <div class="status-badge status-finished">Closed</div>
+                        </div>
+                    </div>
+                    
+                    <div class="call-item call-analysis average">
+                        <div class="task-details">
+                            <h4>Discovery Call - Kitchen Specialists Inc</h4>
+                            <p>Sept 17, 2025 | 32 min duration</p>
+                            <p><strong>AI Analysis:</strong> Good discovery, but needs better objection handling and urgency creation</p>
+                        </div>
+                        <div>
+                            <div class="rating">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star empty">★</span>
+                                <span class="star empty">★</span>
+                            </div>
+                            <div class="status-badge status-on-track">Follow-up</div>
+                        </div>
+                    </div>
+                    
+                    <div class="call-item call-analysis">
+                        <div class="task-details">
+                            <h4>Discovery Call - Bathroom Remodelers Pro</h4>
+                            <p>Sept 16, 2025 | 28 min duration</p>
+                            <p><strong>AI Analysis:</strong> Struggled with qualifying budget, call ended early without clear next steps</p>
+                        </div>
+                        <div>
+                            <div class="rating">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star empty">★</span>
+                                <span class="star empty">★</span>
+                                <span class="star empty">★</span>
+                            </div>
+                            <div class="status-badge status-off-track">Lost</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Contacts Page -->
-            <div id="contacts" class="page">
-                <div class="page-header">
-                    <h1 class="page-title">Contacts</h1>
-                    <p class="page-subtitle">Manage your prospect database</p>
+            <div class="section">
+                <div class="section-header">
+                    <h2>Lead Generation Metrics</h2>
+                    <span>This Week</span>
                 </div>
-
-                <div class="content-card">
-                    <div class="card-header">
-                        <h3>All Contacts</h3>
-                        <button class="btn success">Add Contact</button>
-                    </div>
-                    <div class="card-content">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Company</th>
-                                    <th>Location</th>
-                                    <th>Stage</th>
-                                    <th>Value</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Jonathan</td>
-                                    <td>Brewer Suite Co</td>
-                                    <td>Costa Mesa, CA</td>
-                                    <td><span class="status-badge status-discovery">Discovery</span></td>
-                                    <td>$15,000</td>
-                                    <td><button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">View</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Bella</td>
-                                    <td>Let's Go Design Co</td>
-                                    <td>Salt Lake City, UT</td>
-                                    <td><span class="status-badge status-discovery">Discovery</span></td>
-                                    <td>$8,500</td>
-                                    <td><button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">View</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Tye Shumway</td>
-                                    <td>TWS Construction</td>
-                                    <td>Moab, UT</td>
-                                    <td><span class="status-badge status-sales">Sales</span></td>
-                                    <td>$25,000</td>
-                                    <td><button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">View</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Bobbie Wasserman</td>
-                                    <td>Homeownership Collective</td>
-                                    <td>Los Angeles, CA</td>
-                                    <td><span class="status-badge status-sales">Sales</span></td>
-                                    <td>$12,000</td>
-                                    <td><button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">View</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Marla Stone</td>
-                                    <td>I Deal Lifestyle</td>
-                                    <td>Remote</td>
-                                    <td><span class="status-badge status-closed">Closed</span></td>
-                                    <td>$9,200</td>
-                                    <td><button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">View</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Kami Gray</td>
-                                    <td>Psychology From Design</td>
-                                    <td>Remote</td>
-                                    <td><span class="status-badge status-discovery">Discovery</span></td>
-                                    <td>$18,500</td>
-                                    <td><button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">View</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Podcast Calls Page -->
-            <div id="podcast-calls" class="page">
-                <div class="page-header">
-                    <h1 class="page-title">Podcast Calls</h1>
-                    <p class="page-subtitle">Track your podcast interviews and initial conversations</p>
-                </div>
-
-                <div class="content-grid">
-                    <div class="content-card">
-                        <div class="card-header">
-                            <h3>Recent Podcast Interviews</h3>
-                            <button class="btn success">Schedule Interview</button>
-                        </div>
-                        <div class="card-content">
-                            <div style="border-bottom: 1px solid #e1e5e9; padding-bottom: 1rem; margin-bottom: 1rem;">
-                                <h4>Kami Gray - Psychology From Design</h4>
-                                <p style="color: #7f8c8d; margin: 0.5rem 0;">Sept 25, 2025 • 32 minutes</p>
-                                <p>Design school owner with 178k followers. Discussed scaling education business and empowering women in design.</p>
-                                <div style="margin-top: 1rem;">
-                                    <span class="status-badge status-podcast">Completed</span>
-                                    <button class="btn" style="margin-left: 1rem; padding: 0.4rem 0.8rem; font-size: 0.8rem;">Book Discovery</button>
-                                </div>
-                            </div>
-
-                            <div style="border-bottom: 1px solid #e1e5e9; padding-bottom: 1rem; margin-bottom: 1rem;">
-                                <h4>Marla Stone - I Deal Lifestyle</h4>
-                                <p style="color: #7f8c8d; margin: 0.5rem 0;">Sept 24, 2025 • 28 minutes</p>
-                                <p>Professional organizer and author. Completed interview about clutter remedy book and procrastination strategies.</p>
-                                <div style="margin-top: 1rem;">
-                                    <span class="status-badge status-closed">Deal Closed</span>
-                                </div>
-                            </div>
-
-                            <div style="border-bottom: 1px solid #e1e5e9; padding-bottom: 1rem; margin-bottom: 1rem;">
-                                <h4>Bobbie Wasserman - Homeownership Collective</h4>
-                                <p style="color: #7f8c8d; margin: 0.5rem 0;">Sept 23, 2025 • 19 minutes</p>
-                                <p>LA-based homeowner advocacy business. Discussed post-fire business pivot and growth strategy needs.</p>
-                                <div style="margin-top: 1rem;">
-                                    <span class="status-badge status-sales">Sales Scheduled</span>
-                                </div>
+                <div class="section-content">
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-value">1,247</div>
+                            <div class="kpi-label">Emails Sent</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 65%"></div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="content-card">
-                        <div class="card-header">
-                            <h3>Interview Analytics</h3>
+                        <div class="kpi-card">
+                            <div class="kpi-value">89</div>
+                            <div class="kpi-label">LinkedIn Outreach</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 78%"></div>
+                            </div>
                         </div>
-                        <div class="card-content">
-                            <div style="margin-bottom: 1.5rem;">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                                    <span>Total Interviews</span>
-                                    <strong>6</strong>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                                    <span>Avg Duration</span>
-                                    <strong>29 minutes</strong>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                                    <span>Conversion Rate</span>
-                                    <strong>83%</strong>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                                    <span>Pipeline Value</span>
-                                    <strong>$88,200</strong>
-                                </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">12</div>
+                            <div class="kpi-label">Positive Replies</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">6</div>
+                            <div class="kpi-label">Calls Booked</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">3</div>
+                            <div class="kpi-label">Calls Completed</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">1</div>
+                            <div class="kpi-label">Deals Closed</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 33%"></div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Other pages with placeholder content -->
-            <div id="discovery-calls" class="page">
-                <div class="page-header">
-                    <h1 class="page-title">Discovery Calls</h1>
-                    <p class="page-subtitle">Qualification and needs assessment calls</p>
+        <div class="advisor-section">
+            <h2 style="margin-bottom: 2rem; color: #2c3e50;">Advisor Reporting Dashboard</h2>
+            
+            <div class="advisor-grid">
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Weekly Progress Summary</h3>
+                    <div class="weekly-summary">
+                        <div class="summary-item">
+                            <span>Sprint Tasks Completed:</span>
+                            <strong>5/6 (83%)</strong>
+                        </div>
+                        <div class="summary-item">
+                            <span>Sales Calls This Week:</span>
+                            <strong>3 calls</strong>
+                        </div>
+                        <div class="summary-item">
+                            <span>Average Call Rating:</span>
+                            <strong>3.7/5 stars</strong>
+                        </div>
+                        <div class="summary-item">
+                            <span>Pipeline Movement:</span>
+                            <strong>2 prospects advanced</strong>
+                        </div>
+                        <div class="summary-item">
+                            <span>Revenue This Month:</span>
+                            <strong>$3,500</strong>
+                        </div>
+                    </div>
+                    
+                    <h4 style="margin: 1rem 0 0.5rem;">Key Blockers & Challenges:</h4>
+                    <ul style="color: #7f8c8d; margin-left: 1.5rem;">
+                        <li>Facebook Groups access blocked (tasks 2.8, 2.9)</li>
+                        <li>LinkedIn voicenote review pending (task 3.3)</li>
+                        <li>AI client service delivery training incomplete</li>
+                    </ul>
                 </div>
-                <div class="empty-state">
-                    <h3>Discovery Calls Module</h3>
-                    <p>Track qualification calls and assess prospect fit</p>
-                </div>
-            </div>
 
-            <div id="sales-calls" class="page">
-                <div class="page-header">
-                    <h1 class="page-title">Sales Calls</h1>
-                    <p class="page-subtitle">Closing conversations and proposal discussions</p>
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Terms of Business Progress</h3>
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-value" style="color: #27ae60;">✓</div>
+                            <div class="kpi-label">Payment Compliance</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value" style="color: #27ae60;">100%</div>
+                            <div class="kpi-label">Call Attendance</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value" style="color: #f39c12;">83%</div>
+                            <div class="kpi-label">Task Execution</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value" style="color: #27ae60;">✓</div>
+                            <div class="kpi-label">Communication</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value" style="color: #e74c3c;">1,247</div>
+                            <div class="kpi-label">Emails Sent (25k target)</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value" style="color: #e74c3c;">15</div>
+                            <div class="kpi-label">Sales Calls (40 target)</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="empty-state">
-                    <h3>Sales Calls Module</h3>
-                    <p>Manage your closing conversations and proposals</p>
-                </div>
-            </div>
 
-            <div id="pipeline" class="page">
-                <div class="page-header">
-                    <h1 class="page-title">Pipeline</h1>
-                    <p class="page-subtitle">Visual deal management and progression tracking</p>
-                </div>
-                <div class="empty-state">
-                    <h3>Pipeline Module</h3>
-                    <p>Kanban-style deal progression and management</p>
-                </div>
-            </div>
-
-            <div id="deals" class="page">
-                <div class="page-header">
-                    <h1 class="page-title">Deals</h1>
-                    <p class="page-subtitle">Closed deals and revenue tracking</p>
-                </div>
-                <div class="empty-state">
-                    <h3>Deals Module</h3>
-                    <p>Track closed deals and revenue metrics</p>
-                </div>
-            </div>
-
-            <div id="cash-flow" class="page">
-                <div class="page-header">
-                    <h1 class="page-title">Cash Flow</h1>
-                    <p class="page-subtitle">Financial tracking and revenue forecasting</p>
-                </div>
-                <div class="empty-state">
-                    <h3>Cash Flow Module</h3>
-                    <p>Monitor financial health and revenue projections</p>
-                </div>
-            </div>
-
-            <div id="campaigns" class="page">
-                <div class="page-header">
-                    <h1 class="page-title">Campaigns</h1>
-                    <p class="page-subtitle">Outreach campaign tracking and management</p>
-                </div>
-                <div class="empty-state">
-                    <h3>Campaigns Module</h3>
-                    <p>Track LinkedIn, email, and other outreach campaigns</p>
-                </div>
-            </div>
-
-            <div id="sprints" class="page">
-                <div class="page-header">
-                    <h1 class="page-title">Sprints</h1>
-                    <p class="page-subtitle">Task management and weekly sprint planning</p>
-                </div>
-                <div class="empty-state">
-                    <h3>Sprints Module</h3>
-                    <p>Manage your weekly tasks and action items</p>
-                </div>
-            </div>
-
-            <div id="expense-tracker" class="page">
-                <div class="page-header">
-                    <h1 class="page-title">Expense Tracker</h1>
-                    <p class="page-subtitle">Manage recurring costs and business expenses</p>
-                </div>
-                <div class="empty-state">
-                    <h3>Expense Tracker Module</h3>
-                    <p>Track and manage your recurring business costs</p>
-                </div>
-            </div>
-
-            <div id="availability" class="page">
-                <div class="page-header">
-                    <h1 class="page-title">Availability</h1>
-                    <p class="page-subtitle">Schedule settings and calendar management</p>
-                </div>
-                <div class="empty-state">
-                    <h3>Availability Module</h3>
-                    <p>Configure your schedule and availability settings</p>
-                </div>
-            </div>
-
-            <div id="user-management" class="page">
-                <div class="page-header">
-                    <h1 class="page-title">User Management</h1>
-                    <p class="page-subtitle">Manage users & permissions for your advisor dashboard</p>
-                </div>
-                <div class="empty-state">
-                    <h3>User Management Module</h3>
-                    <p>Manage user access and permissions for your advisory team</p>
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Generate Reports</h3>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <a href="#" class="btn">📊 Weekly Progress Report</a>
+                        <a href="#" class="btn success">📈 Sales Performance Analysis</a>
+                        <a href="#" class="btn warning">🎯 Pipeline & Forecasting</a>
+                        <a href="#" class="btn">📋 Task Completion Summary</a>
+                        <a href="#" class="btn success">🔊 Call Recording Analysis</a>
+                    </div>
+                    
+                    <div class="last-updated">
+                        <strong>Last Updated:</strong> September 19, 2025 - 2:30 PM<br>
+                        <strong>Share URL:</strong> https://codenamemaggiecooper.github.io/growthmanagerpro
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <script>
-        function showPage(pageId) {
-            // Hide all pages
-            const pages = document.querySelectorAll('.page');
-            pages.forEach(page => page.classList.remove('active'));
-
-            // Remove active class from all nav items
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => item.classList.remove('active'));
-
-            // Show selected page
-            document.getElementById(pageId).classList.add('active');
-
-            // Add active class to clicked nav item
-            event.target.closest('.nav-item').classList.add('active');
-        }
-
-        // Initialize dashboard
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Growth Manager Pro System Loaded');
-        });
-    </script>
 </body>
 </html>
