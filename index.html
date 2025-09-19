@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Growth Manager Pro - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .header .goals {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .finished { color: #27ae60; }
+        .on-track { color: #3498db; }
+        .off-track { color: #e74c3c; }
+        .blocked { color: #f39c12; }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #2c3e50;
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .section-content {
+            padding: 1.5rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .task-item, .call-item {
+            padding: 1rem;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-item:last-child, .call-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-details h4 {
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+            color: #2c3e50;
+        }
+
+        .task-details p {
+            color: #7f8c8d;
+            font-size: 0.8rem;
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-finished { background: #d5f4e6; color: #27ae60; }
+        .status-on-track { background: #dbeafe; color: #3498db; }
+        .status-off-track { background: #fef2f2; color: #e74c3c; }
+        .status-blocked { background: #fef3cd; color: #f39c12; }
+
+        .pipeline-stage {
+            background: #f8f9fa;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .stage-header {
+            background: #34495e;
+            color: white;
+            padding: 0.8rem 1rem;
+            font-weight: bold;
+        }
+
+        .stage-content {
+            padding: 1rem;
+        }
+
+        .prospect {
+            background: white;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .prospect:last-child {
+            margin-bottom: 0;
+        }
+
+        .prospect h5 {
+            margin-bottom: 0.3rem;
+            color: #2c3e50;
+        }
+
+        .prospect p {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+
+        .call-analysis {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .call-analysis.good {
+            border-left-color: #27ae60;
+        }
+
+        .call-analysis.average {
+            border-left-color: #f39c12;
+        }
+
+        .rating {
+            display: flex;
+            gap: 2px;
+        }
+
+        .star {
+            color: #ffd700;
+            font-size: 1.2rem;
+        }
+
+        .star.empty {
+            color: #ddd;
+        }
+
+        .advisor-section {
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+
+        .advisor-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .kpi-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .kpi-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+        }
+
+        .progress-bar {
+            background: #ecf0f1;
+            border-radius: 10px;
+            height: 8px;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .weekly-summary {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn.success {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        .btn.warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .last-updated {
+            color: #7f8c8d;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .advisor-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Growth Manager Pro</h1>
+            <p class="subtitle">Home Renovation & Interior Design Firms - Client Acquisition System</p>
+            <div class="goals">
+                <strong>North Star Goal:</strong> $50k/month | 3-Month Target: $25k/month
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <div class="stat-number finished">42</div>
+                <div class="stat-label">Tasks Finished</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number on-track">8</div>
+                <div class="stat-label">On Track</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number off-track">6</div>
+                <div class="stat-label">Off Track</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number blocked">3</div>
+                <div class="stat-label">Blocked</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: #9b59b6;">15</div>
+                <div class="stat-label">Sales Calls</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: #e67e22;">12%</div>
+                <div class="stat-label">Close Rate</div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Current Sprint Tasks</h2>
+                    <span>Week 6 (9/11/25)</span>
+                </div>
+                <div class="section-content">
+                    <div class="task-item">
+                        <div class="task-details">
+                            <h4>8.0 - Update podcast call/discovery call trackers</h4>
+                            <p>Focus: Business Value Creation | Due: 9/11/25</p>
+                        </div>
+                        <div class="status-badge status-on-track">On Track</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-details">
+                            <h4>8.1 - Build a new lead list for campaign</h4>
+                            <p>Focus: Business Value Creation | Due: 9/11/25</p>
+                        </div>
+                        <div class="status-badge status-on-track">On Track</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-details">
+                            <h4>8.2 - Review training on how to scrape leads</h4>
+                            <p>Focus: Business Value Creation | Due: 9/11/25</p>
+                        </div>
+                        <div class="status-badge status-on-track">On Track</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-details">
+                            <h4>8.3 - Review training on how to verify leads</h4>
+                            <p>Focus: Business Value Creation | Due: 9/11/25</p>
+                        </div>
+                        <div class="status-badge status-on-track">On Track</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-details">
+                            <h4>8.4 - Use AI-clients to create new emailing campaigns</h4>
+                            <p>Focus: Business Value Creation | Due: 9/11/25</p>
+                        </div>
+                        <div class="status-badge status-on-track">On Track</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-details">
+                            <h4>7.4 - Complete section 7 - AI client service delivery</h4>
+                            <p>Focus: Business Value Creation | Overdue from 8/28/25</p>
+                        </div>
+                        <div class="status-badge status-off-track">Off Track</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2>Sales Pipeline</h2>
+                    <span>Auto-Updated</span>
+                </div>
+                <div class="section-content">
+                    <div class="pipeline-stage">
+                        <div class="stage-header">Cold Outreach (LinkedIn + Email)</div>
+                        <div class="stage-content">
+                            <div class="prospect">
+                                <h5>Renovation Plus LLC</h5>
+                                <p>Contacted via LinkedIn - 2 days ago</p>
+                            </div>
+                            <div class="prospect">
+                                <h5>Elite Home Designs</h5>
+                                <p>Email sent - 1 day ago</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pipeline-stage">
+                        <div class="stage-header">Initial Response/Interest</div>
+                        <div class="stage-content">
+                            <div class="prospect">
+                                <h5>Modern Living Spaces</h5>
+                                <p>Replied to email - booking call</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pipeline-stage">
+                        <div class="stage-header">Discovery Call Booked</div>
+                        <div class="stage-content">
+                            <div class="prospect">
+                                <h5>Coastal Interior Design</h5>
+                                <p>Call scheduled for Sept 21, 2:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pipeline-stage">
+                        <div class="stage-header">Proposal/Closing</div>
+                        <div class="stage-content">
+                            <div class="prospect">
+                                <h5>Urban Renovation Co.</h5>
+                                <p>Proposal sent - awaiting decision</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="section">
+                <div class="section-header">
+                    <h2>AI Sales Call Analysis</h2>
+                    <span>Recent Calls</span>
+                </div>
+                <div class="section-content">
+                    <div class="call-item call-analysis good">
+                        <div class="task-details">
+                            <h4>Discovery Call - Luxury Home Interiors</h4>
+                            <p>Sept 18, 2025 | 45 min duration</p>
+                            <p><strong>AI Analysis:</strong> Excellent rapport building, clear pain points identified, strong interest shown</p>
+                        </div>
+                        <div>
+                            <div class="rating">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                            </div>
+                            <div class="status-badge status-finished">Closed</div>
+                        </div>
+                    </div>
+                    
+                    <div class="call-item call-analysis average">
+                        <div class="task-details">
+                            <h4>Discovery Call - Kitchen Specialists Inc</h4>
+                            <p>Sept 17, 2025 | 32 min duration</p>
+                            <p><strong>AI Analysis:</strong> Good discovery, but needs better objection handling and urgency creation</p>
+                        </div>
+                        <div>
+                            <div class="rating">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star empty">★</span>
+                                <span class="star empty">★</span>
+                            </div>
+                            <div class="status-badge status-on-track">Follow-up</div>
+                        </div>
+                    </div>
+                    
+                    <div class="call-item call-analysis">
+                        <div class="task-details">
+                            <h4>Discovery Call - Bathroom Remodelers Pro</h4>
+                            <p>Sept 16, 2025 | 28 min duration</p>
+                            <p><strong>AI Analysis:</strong> Struggled with qualifying budget, call ended early without clear next steps</p>
+                        </div>
+                        <div>
+                            <div class="rating">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star empty">★</span>
+                                <span class="star empty">★</span>
+                                <span class="star empty">★</span>
+                            </div>
+                            <div class="status-badge status-off-track">Lost</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2>Lead Generation Metrics</h2>
+                    <span>This Week</span>
+                </div>
+                <div class="section-content">
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-value">1,247</div>
+                            <div class="kpi-label">Emails Sent</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 65%"></div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">89</div>
+                            <div class="kpi-label">LinkedIn Outreach</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 78%"></div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">12</div>
+                            <div class="kpi-label">Positive Replies</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">6</div>
+                            <div class="kpi-label">Calls Booked</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">3</div>
+                            <div class="kpi-label">Calls Completed</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">1</div>
+                            <div class="kpi-label">Deals Closed</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 33%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="advisor-section">
+            <h2 style="margin-bottom: 2rem; color: #2c3e50;">Advisor Reporting Dashboard</h2>
+            
+            <div class="advisor-grid">
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Weekly Progress Summary</h3>
+                    <div class="weekly-summary">
+                        <div class="summary-item">
+                            <span>Sprint Tasks Completed:</span>
+                            <strong>5/6 (83%)</strong>
+                        </div>
+                        <div class="summary-item">
+                            <span>Sales Calls This Week:</span>
+                            <strong>3 calls</strong>
+                        </div>
+                        <div class="summary-item">
+                            <span>Average Call Rating:</span>
+                            <strong>3.7/5 stars</strong>
+                        </div>
+                        <div class="summary-item">
+                            <span>Pipeline Movement:</span>
+                            <strong>2 prospects advanced</strong>
+                        </div>
+                        <div class="summary-item">
+                            <span>Revenue This Month:</span>
+                            <strong>$3,500</strong>
+                        </div>
+                    </div>
+                    
+                    <h4 style="margin: 1rem 0 0.5rem;">Key Blockers & Challenges:</h4>
+                    <ul style="color: #7f8c8d; margin-left: 1.5rem;">
+                        <li>Facebook Groups access blocked (tasks 2.8, 2.9)</li>
+                        <li>LinkedIn voicenote review pending (task 3.3)</li>
+                        <li>AI client service delivery training incomplete</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Terms of Business Progress</h3>
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-value" style="color: #27ae60;">✓</div>
+                            <div class="kpi-label">Payment Compliance</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value" style="color: #27ae60;">100%</div>
+                            <div class="kpi-label">Call Attendance</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value" style="color: #f39c12;">83%</div>
+                            <div class="kpi-label">Task Execution</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value" style="color: #27ae60;">✓</div>
+                            <div class="kpi-label">Communication</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value" style="color: #e74c3c;">1,247</div>
+                            <div class="kpi-label">Emails Sent (25k target)</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value" style="color: #e74c3c;">15</div>
+                            <div class="kpi-label">Sales Calls (40 target)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Generate Reports</h3>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <a href="#" class="btn">📊 Weekly Progress Report</a>
+                        <a href="#" class="btn success">📈 Sales Performance Analysis</a>
+                        <a href="#" class="btn warning">🎯 Pipeline & Forecasting</a>
+                        <a href="#" class="btn">📋 Task Completion Summary</a>
+                        <a href="#" class="btn success">🔊 Call Recording Analysis</a>
+                    </div>
+                    
+                    <div class="last-updated">
+                        <strong>Last Updated:</strong> September 19, 2025 - 2:30 PM<br>
+                        <strong>Share URL:</strong> https://codenamemaggiecooper.github.io/growthmanagerpro
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
