@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Growth Manager Pro - Enhanced Dashboard</title>
+    <title>Growth Manager Pro</title>
     <style>
         * {
             margin: 0;
@@ -134,45 +134,6 @@
             font-size: 1.1rem;
         }
 
-        /* Enhanced features from GitHub version */
-        .nav-tabs {
-            display: flex;
-            background: white;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            overflow: hidden;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-        }
-
-        .nav-tab {
-            flex: 1;
-            padding: 1rem;
-            text-align: center;
-            cursor: pointer;
-            color: #7f8c8d;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            border: none;
-            background: transparent;
-        }
-
-        .nav-tab.active {
-            background: #3498db;
-            color: white;
-        }
-
-        .nav-tab:hover:not(.active) {
-            background: #ecf0f1;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -257,10 +218,6 @@
         .status-discovery { background: #f3e5f5; color: #7b1fa2; }
         .status-sales { background: #fff3e0; color: #f57c00; }
         .status-closed { background: #e8f5e8; color: #2e7d32; }
-        .status-finished { background: #e8f5e8; color: #2e7d32; }
-        .status-on-track { background: #e3f2fd; color: #1976d2; }
-        .status-off-track { background: #fef2f2; color: #e74c3c; }
-        .status-blocked { background: #fef3cd; color: #f39c12; }
 
         .btn {
             background: #3498db;
@@ -285,54 +242,6 @@
             background: #2ecc71;
         }
 
-        .form-section {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group.full-width {
-            grid-column: 1 / -1;
-        }
-
-        label {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-        }
-
-        input, select, textarea {
-            padding: 0.8rem;
-            border: 2px solid #e1e5e9;
-            border-radius: 6px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #3498db;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
         .empty-state {
             text-align: center;
             padding: 3rem;
@@ -343,151 +252,7 @@
             margin-bottom: 1rem;
         }
 
-        .live-data-indicator {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            color: #27ae60;
-        }
-
-        .pulse {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #27ae60;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
-        .section {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-            overflow: hidden;
-        }
-
-        .section-header {
-            background: #2c3e50;
-            color: white;
-            padding: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .section-content {
-            padding: 1.5rem;
-        }
-
-        .task-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            margin-bottom: 0.5rem;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid #3498db;
-        }
-
-        .task-details h4 {
-            color: #2c3e50;
-            margin-bottom: 0.3rem;
-        }
-
-        .task-details p {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-        }
-
-        .main-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2rem;
-        }
-
-        .integration-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-            margin-bottom: 1rem;
-            border-left: 4px solid #3498db;
-        }
-
-        .integration-card.connected {
-            border-left-color: #27ae60;
-        }
-
-        .integration-card.error {
-            border-left-color: #e74c3c;
-        }
-
-        .integration-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .integration-logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #3498db;
-        }
-
-        .status-dot.connected {
-            background: #27ae60;
-        }
-
-        .status-dot.error {
-            background: #e74c3c;
-        }
-
-        .api-form {
-            margin-top: 1rem;
-        }
-
-        .api-test-btn {
-            background: #95a5a6;
-            color: white;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-left: 0.5rem;
-        }
-
-        .connection-status {
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            padding: 0.5rem;
-            border-radius: 4px;
-        }
-
-        .connection-status.success {
-            background: #d5f4e6;
-            color: #27ae60;
-        }
-
-        .connection-status.error {
-            background: #fef2f2;
-            color: #e74c3c;
-        }
+        @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
                 transition: transform 0.3s ease;
@@ -501,24 +266,12 @@
                 margin-left: 0;
             }
 
-            .content-grid, .main-grid {
+            .content-grid {
                 grid-template-columns: 1fr;
             }
 
             .stats-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .nav-tabs {
-                flex-wrap: wrap;
-            }
-
-            .nav-tab {
-                min-width: 120px;
             }
         }
     </style>
@@ -647,281 +400,388 @@
             <div id="dashboard" class="page active">
                 <div class="page-header">
                     <h1 class="page-title">Dashboard</h1>
-                    <p class="page-subtitle">Enhanced Dashboard with Live Data Connections</p>
-                    <div style="margin-top: 1rem; color: #2c3e50;">
-                        <strong>North Star Goal:</strong> $50k/month | 3-Month Target: $25k/month
+                    <p class="page-subtitle">Overview of your growth metrics and KPIs</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #3498db;">6</div>
+                        <div class="stat-label">Podcast Calls</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #9b59b6;">3</div>
+                        <div class="stat-label">Discovery Calls</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #f39c12;">2</div>
+                        <div class="stat-label">Sales Calls</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #27ae60;">1</div>
+                        <div class="stat-label">Closed Deals</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #e74c3c;">$9,200</div>
+                        <div class="stat-label">Monthly Revenue</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #2ecc71;">8.3%</div>
+                        <div class="stat-label">Close Rate</div>
                     </div>
                 </div>
 
-                <!-- Enhanced Tab Navigation -->
-                <div class="nav-tabs">
-                    <button class="nav-tab active" onclick="showTab('overview')">📊 Overview</button>
-                    <button class="nav-tab" onclick="showTab('tasks')">✅ Tasks</button>
-                    <button class="nav-tab" onclick="showTab('calls')">📞 Calls</button>
-                    <button class="nav-tab" onclick="showTab('integrations')">⚙️ Integrations</button>
-                    <button class="nav-tab" onclick="showTab('advisor')">👨‍💼 Advisor</button>
-                </div>
-
-                <!-- OVERVIEW TAB -->
-                <div id="overview" class="tab-content active">
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-number" style="color: #27ae60;">42</div>
-                            <div class="stat-label">Tasks Finished</div>
+                <div class="content-grid">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3>Recent Activity</h3>
+                            <span>Last 7 days</span>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-number" style="color: #3498db;">8</div>
-                            <div class="stat-label">On Track</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" style="color: #e74c3c;">6</div>
-                            <div class="stat-label">Off Track</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" style="color: #f39c12;">3</div>
-                            <div class="stat-label">Blocked</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" style="color: #9b59b6;">15</div>
-                            <div class="stat-label">Sales Calls</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" style="color: #e67e22;">12%</div>
-                            <div class="stat-label">Close Rate</div>
+                        <div class="card-content">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Contact</th>
+                                        <th>Activity</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Kami Gray</td>
+                                        <td>Podcast Interview</td>
+                                        <td><span class="status-badge status-podcast">Completed</span></td>
+                                        <td>Sept 25</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Marla Stone</td>
+                                        <td>Sales Call</td>
+                                        <td><span class="status-badge status-closed">Closed</span></td>
+                                        <td>Sept 24</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tye Shumway</td>
+                                        <td>Discovery Call</td>
+                                        <td><span class="status-badge status-discovery">Scheduled</span></td>
+                                        <td>Sept 22</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                    <div class="main-grid">
-                        <div class="section">
-                            <div class="section-header">
-                                <h2>Recent Activity</h2>
-                                <div class="live-data-indicator">
-                                    <div class="pulse"></div>
-                                    Live Updates
-                                </div>
-                            </div>
-                            <div class="section-content">
-                                <div class="task-item">
-                                    <div class="task-details">
-                                        <h4>📧 New Email Reply - Modern Living Spaces</h4>
-                                        <p>Positive response to email campaign #3 - 5 min ago</p>
-                                    </div>
-                                    <div class="status-badge status-finished">New Lead</div>
-                                </div>
-                                <div class="task-item">
-                                    <div class="task-details">
-                                        <h4>📅 Call Booked - Coastal Interior Design</h4>
-                                        <p>Discovery call scheduled for Sept 21, 2:00 PM - 1 hour ago</p>
-                                    </div>
-                                    <div class="status-badge status-on-track">Scheduled</div>
-                                </div>
-                                <div class="task-item">
-                                    <div class="task-details">
-                                        <h4>✅ Task Completed - Lead list verification</h4>
-                                        <p>Verified 250 leads for new campaign - 2 hours ago</p>
-                                    </div>
-                                    <div class="status-badge status-finished">Completed</div>
-                                </div>
-                            </div>
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3>Pipeline Summary</h3>
                         </div>
-
-                        <div class="section">
-                            <div class="section-header">
-                                <h2>Today's Goals</h2>
-                                <span>Progress</span>
-                            </div>
-                            <div class="section-content">
-                                <div class="task-item">
-                                    <div class="task-details">
-                                        <h4>Send 50 LinkedIn Messages</h4>
-                                        <p>Progress: 32/50 sent</p>
-                                    </div>
-                                    <div class="status-badge status-on-track">64%</div>
+                        <div class="card-content">
+                            <div style="margin-bottom: 1.5rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>Total Pipeline Value</span>
+                                    <strong>$88,200</strong>
                                 </div>
-                                <div class="task-item">
-                                    <div class="task-details">
-                                        <h4>Complete Call Analysis</h4>
-                                        <p>Review yesterday's 3 recorded calls</p>
-                                    </div>
-                                    <div class="status-badge status-finished">Done</div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>Active Prospects</span>
+                                    <strong>12</strong>
                                 </div>
-                                <div class="task-item">
-                                    <div class="task-details">
-                                        <h4>Update Pipeline Tracker</h4>
-                                        <p>Move 2 prospects to next stage</p>
-                                    </div>
-                                    <div class="status-badge status-on-track">In Progress</div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>Avg Deal Size</span>
+                                    <strong>$14,700</strong>
                                 </div>
                             </div>
+                            
+                            <button class="btn success" style="width: 100%; margin-bottom: 1rem;">Generate Report</button>
+                            <button class="btn" style="width: 100%;">Export Data</button>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- TASKS TAB -->
-                <div id="tasks" class="tab-content">
-                    <div class="section">
-                        <div class="section-header">
-                            <h2>Sprint Tasks Management</h2>
-                            <span>Week 6 (9/11/25)</span>
-                        </div>
-                        <div class="section-content">
-                            <div class="task-item">
-                                <div class="task-details">
-                                    <h4>8.0 - Update podcast call/discovery call trackers</h4>
-                                    <p>Focus: Business Value Creation | Due: 9/11/25</p>
-                                </div>
-                                <div class="status-badge status-finished">Finished</div>
-                            </div>
-                            <div class="task-item">
-                                <div class="task-details">
-                                    <h4>8.1 - Build a new lead list for campaign</h4>
-                                    <p>Focus: Business Value Creation | Due: 9/11/25</p>
-                                </div>
-                                <div class="status-badge status-on-track">On Track</div>
-                            </div>
-                            <div class="task-item">
-                                <div class="task-details">
-                                    <h4>8.2 - Review training on how to scrape leads</h4>
-                                    <p>Focus: Business Value Creation | Due: 9/11/25</p>
-                                </div>
-                                <div class="status-badge status-on-track">On Track</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">Update Task Status</h2>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="task-select">Select Task</label>
-                                <select id="task-select">
-                                    <option>8.0 - Update podcast call/discovery call trackers</option>
-                                    <option>8.1 - Build a new lead list for campaign</option>
-                                    <option>8.2 - Review training on how to scrape leads</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="status-update">New Status</label>
-                                <select id="status-update">
-                                    <option>On Track</option>
-                                    <option>Finished</option>
-                                    <option>Blocked</option>
-                                    <option>Off Track</option>
-                                </select>
-                            </div>
-                            <div class="form-group full-width">
-                                <label for="progress-notes">Progress Notes</label>
-                                <textarea id="progress-notes" placeholder="Add notes about your progress..."></textarea>
-                            </div>
-                        </div>
-                        <button class="btn success" onclick="updateTask()">Update Task Status</button>
-                    </div>
+            <!-- Contacts Page -->
+            <div id="contacts" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Contacts</h1>
+                    <p class="page-subtitle">Manage your prospect database</p>
                 </div>
 
-                <!-- CALLS TAB -->
-                <div id="calls" class="tab-content">
-                    <div class="section">
-                        <div class="section-header">
-                            <h2>Call Analysis Dashboard</h2>
-                            <div class="live-data-indicator">
-                                <div class="pulse"></div>
-                                Zoom Connected
-                            </div>
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3>All Contacts</h3>
+                        <button class="btn success">Add Contact</button>
+                    </div>
+                    <div class="card-content">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Company</th>
+                                    <th>Location</th>
+                                    <th>Stage</th>
+                                    <th>Value</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Jonathan</td>
+                                    <td>Brewer Suite Co</td>
+                                    <td>Costa Mesa, CA</td>
+                                    <td><span class="status-badge status-discovery">Discovery</span></td>
+                                    <td>$15,000</td>
+                                    <td><button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Bella</td>
+                                    <td>Let's Go Design Co</td>
+                                    <td>Salt Lake City, UT</td>
+                                    <td><span class="status-badge status-discovery">Discovery</span></td>
+                                    <td>$8,500</td>
+                                    <td><button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Tye Shumway</td>
+                                    <td>TWS Construction</td>
+                                    <td>Moab, UT</td>
+                                    <td><span class="status-badge status-sales">Sales</span></td>
+                                    <td>$25,000</td>
+                                    <td><button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Bobbie Wasserman</td>
+                                    <td>Homeownership Collective</td>
+                                    <td>Los Angeles, CA</td>
+                                    <td><span class="status-badge status-sales">Sales</span></td>
+                                    <td>$12,000</td>
+                                    <td><button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Marla Stone</td>
+                                    <td>I Deal Lifestyle</td>
+                                    <td>Remote</td>
+                                    <td><span class="status-badge status-closed">Closed</span></td>
+                                    <td>$9,200</td>
+                                    <td><button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Kami Gray</td>
+                                    <td>Psychology From Design</td>
+                                    <td>Remote</td>
+                                    <td><span class="status-badge status-discovery">Discovery</span></td>
+                                    <td>$18,500</td>
+                                    <td><button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">View</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Podcast Calls Page -->
+            <div id="podcast-calls" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Podcast Calls</h1>
+                    <p class="page-subtitle">Track your podcast interviews and initial conversations</p>
+                </div>
+
+                <div class="content-grid">
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3>Recent Podcast Interviews</h3>
+                            <button class="btn success">Schedule Interview</button>
                         </div>
-                        <div class="section-content">
-                            <div class="task-item">
-                                <div class="task-details">
-                                    <h4>Discovery Call - Luxury Home Interiors</h4>
-                                    <p>Sept 18, 2025 | 45 min | Zoom ID: 123-456-789</p>
-                                    <p><strong>AI Analysis:</strong> Excellent rapport building, clear pain points identified</p>
+                        <div class="card-content">
+                            <div style="border-bottom: 1px solid #e1e5e9; padding-bottom: 1rem; margin-bottom: 1rem;">
+                                <h4>Kami Gray - Psychology From Design</h4>
+                                <p style="color: #7f8c8d; margin: 0.5rem 0;">Sept 25, 2025 • 32 minutes</p>
+                                <p>Design school owner with 178k followers. Discussed scaling education business and empowering women in design.</p>
+                                <div style="margin-top: 1rem;">
+                                    <span class="status-badge status-podcast">Completed</span>
+                                    <button class="btn" style="margin-left: 1rem; padding: 0.4rem 0.8rem; font-size: 0.8rem;">Book Discovery</button>
                                 </div>
-                                <div class="status-badge status-finished">Closed</div>
+                            </div>
+
+                            <div style="border-bottom: 1px solid #e1e5e9; padding-bottom: 1rem; margin-bottom: 1rem;">
+                                <h4>Marla Stone - I Deal Lifestyle</h4>
+                                <p style="color: #7f8c8d; margin: 0.5rem 0;">Sept 24, 2025 • 28 minutes</p>
+                                <p>Professional organizer and author. Completed interview about clutter remedy book and procrastination strategies.</p>
+                                <div style="margin-top: 1rem;">
+                                    <span class="status-badge status-closed">Deal Closed</span>
+                                </div>
+                            </div>
+
+                            <div style="border-bottom: 1px solid #e1e5e9; padding-bottom: 1rem; margin-bottom: 1rem;">
+                                <h4>Bobbie Wasserman - Homeownership Collective</h4>
+                                <p style="color: #7f8c8d; margin: 0.5rem 0;">Sept 23, 2025 • 19 minutes</p>
+                                <p>LA-based homeowner advocacy business. Discussed post-fire business pivot and growth strategy needs.</p>
+                                <div style="margin-top: 1rem;">
+                                    <span class="status-badge status-sales">Sales Scheduled</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-section">
-                        <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">Log Manual Call</h2>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="prospect-name">Prospect Name</label>
-                                <input type="text" id="prospect-name" placeholder="Company/Contact name">
-                            </div>
-                            <div class="form-group">
-                                <label for="call-date">Call Date</label>
-                                <input type="datetime-local" id="call-date">
-                            </div>
-                            <div class="form-group">
-                                <label for="call-duration">Duration (minutes)</label>
-                                <input type="number" id="call-duration" placeholder="30">
-                            </div>
-                            <div class="form-group">
-                                <label for="call-outcome">Outcome</label>
-                                <select id="call-outcome">
-                                    <option>Proposal Requested</option>
-                                    <option>Follow-up Scheduled</option>
-                                    <option>Not Interested</option>
-                                    <option>Budget Issues</option>
-                                    <option>Closed Won</option>
-                                </select>
-                            </div>
-                            <div class="form-group full-width">
-                                <label for="call-notes">Call Notes</label>
-                                <textarea id="call-notes" placeholder="Key points discussed, pain points, next steps..."></textarea>
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3>Interview Analytics</h3>
+                        </div>
+                        <div class="card-content">
+                            <div style="margin-bottom: 1.5rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>Total Interviews</span>
+                                    <strong>6</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>Avg Duration</span>
+                                    <strong>29 minutes</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>Conversion Rate</span>
+                                    <strong>83%</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>Pipeline Value</span>
+                                    <strong>$88,200</strong>
+                                </div>
                             </div>
                         </div>
-                        <button class="btn success" onclick="logCall()">Log Call</button>
                     </div>
                 </div>
+            </div>
 
-                <!-- INTEGRATIONS TAB -->
-                <div id="integrations" class="tab-content">
-                    <div class="empty-state">
-                        <h3>API Integrations</h3>
-                        <p>Connect your tools for automated data sync</p>
-                    </div>
+            <!-- Other pages with placeholder content -->
+            <div id="discovery-calls" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Discovery Calls</h1>
+                    <p class="page-subtitle">Qualification and needs assessment calls</p>
                 </div>
+                <div class="empty-state">
+                    <h3>Discovery Calls Module</h3>
+                    <p>Track qualification calls and assess prospect fit</p>
+                </div>
+            </div>
 
-                <!-- ADVISOR TAB -->
-                <div id="advisor" class="tab-content">
-                    <div class="form-section">
-                        <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">👨‍💼 Advisor Controls</h2>
-                        <p style="margin-bottom: 2rem; color: #7f8c8d;">Add tasks, set priorities, and monitor progress</p>
-                        
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="advisor-task-title">Task Title</label>
-                                <input type="text" id="advisor-task-title" placeholder="e.g., Complete LinkedIn outreach training">
-                            </div>
-                            <div class="form-group">
-                                <label for="advisor-priority">Priority</label>
-                                <select id="advisor-priority">
-                                    <option>High Priority</option>
-                                    <option>Medium Priority</option>
-                                    <option>Low Priority</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="advisor-focus">Focus Area</label>
-                                <select id="advisor-focus">
-                                    <option>Business Value Creation</option>
-                                    <option>Setup Infrastructure</option>
-                                    <option>Book Podcast Calls</option>
-                                    <option>Lead Generation</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="advisor-due-date">Due Date</label>
-                                <input type="date" id="advisor-due-date">
-                            </div>
-                            <div class="form-group full-width">
-                                <label for="advisor-description">Description & Resources</label>
-                                <textarea id="advisor-description" placeholder="Detailed task description and any resource links..."></textarea>
-                            </div>
-                        </div>
-                        <button class="btn success" onclick="addAdvisorTask()">Add Task</button>
-                    </div>
+            <div id="sales-calls" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Sales Calls</h1>
+                    <p class="page-subtitle">Closing conversations and proposal discussions</p>
+                </div>
+                <div class="empty-state">
+                    <h3>Sales Calls Module</h3>
+                    <p>Manage your closing conversations and proposals</p>
+                </div>
+            </div>
 
-                    <div class="section">
-                        <div class="section-header">
-                            <h2>Progress Reports
+            <div id="pipeline" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Pipeline</h1>
+                    <p class="page-subtitle">Visual deal management and progression tracking</p>
+                </div>
+                <div class="empty-state">
+                    <h3>Pipeline Module</h3>
+                    <p>Kanban-style deal progression and management</p>
+                </div>
+            </div>
+
+            <div id="deals" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Deals</h1>
+                    <p class="page-subtitle">Closed deals and revenue tracking</p>
+                </div>
+                <div class="empty-state">
+                    <h3>Deals Module</h3>
+                    <p>Track closed deals and revenue metrics</p>
+                </div>
+            </div>
+
+            <div id="cash-flow" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Cash Flow</h1>
+                    <p class="page-subtitle">Financial tracking and revenue forecasting</p>
+                </div>
+                <div class="empty-state">
+                    <h3>Cash Flow Module</h3>
+                    <p>Monitor financial health and revenue projections</p>
+                </div>
+            </div>
+
+            <div id="campaigns" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Campaigns</h1>
+                    <p class="page-subtitle">Outreach campaign tracking and management</p>
+                </div>
+                <div class="empty-state">
+                    <h3>Campaigns Module</h3>
+                    <p>Track LinkedIn, email, and other outreach campaigns</p>
+                </div>
+            </div>
+
+            <div id="sprints" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Sprints</h1>
+                    <p class="page-subtitle">Task management and weekly sprint planning</p>
+                </div>
+                <div class="empty-state">
+                    <h3>Sprints Module</h3>
+                    <p>Manage your weekly tasks and action items</p>
+                </div>
+            </div>
+
+            <div id="expense-tracker" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Expense Tracker</h1>
+                    <p class="page-subtitle">Manage recurring costs and business expenses</p>
+                </div>
+                <div class="empty-state">
+                    <h3>Expense Tracker Module</h3>
+                    <p>Track and manage your recurring business costs</p>
+                </div>
+            </div>
+
+            <div id="availability" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Availability</h1>
+                    <p class="page-subtitle">Schedule settings and calendar management</p>
+                </div>
+                <div class="empty-state">
+                    <h3>Availability Module</h3>
+                    <p>Configure your schedule and availability settings</p>
+                </div>
+            </div>
+
+            <div id="user-management" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">User Management</h1>
+                    <p class="page-subtitle">Manage users & permissions for your advisor dashboard</p>
+                </div>
+                <div class="empty-state">
+                    <h3>User Management Module</h3>
+                    <p>Manage user access and permissions for your advisory team</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+
+            // Remove active class from all nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+
+            // Add active class to clicked nav item
+            event.target.closest('.nav-item').classList.add('active');
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Growth Manager Pro System Loaded');
+        });
+    </script>
+</body>
+</html>
