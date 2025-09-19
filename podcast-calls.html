@@ -1,1 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Podcast Calls - Growth Manager Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-icon {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+        }
+
+        .header-text h1 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-text p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2ecc71;
+        }
+
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+            border: 1px solid #bdc3c7;
+        }
+
+        .btn-secondary:hover {
+            background: #d5dbdb;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .completed { color: #27ae60; }
+        .scheduled { color: #3498db; }
+        .converted { color: #f39c12; }
+        .no-shows { color: #e74c3c; }
+
+        .calls-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .call-item {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .call-item:last-child {
+            border-bottom: none;
+        }
+
+        .call-avatar {
+            width: 50px;
+            height: 50px;
+            background: #27ae60;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .call-info {
+            flex: 1;
+        }
+
+        .call-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.3rem;
+        }
+
+        .call-details {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .call-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-completed {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+
+        .status-scheduled {
+            background: #dbeafe;
+            color: #3498db;
+        }
+
+        .status-processing {
+            background: #fef3cd;
+            color: #f39c12;
+        }
+
+        .call-score {
+            text-align: center;
+            margin: 0 1rem;
+        }
+
+        .score-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .score-stars {
+            display: flex;
+            gap: 2px;
+            margin-top: 0.3rem;
+        }
+
+        .star {
+            color: #ffd700;
+            font-size: 1rem;
+        }
+
+        .star.empty {
+            color: #ddd;
+        }
+
+        .call-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .analysis-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
+        .analysis-section {
+            margin-bottom: 2rem;
+        }
+
+        .analysis-category {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-score {
+            font-weight: bold;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .feedback-text {
+            font-size: 0.9rem;
+            color: #5a6c7d;
+            line-height: 1.5;
+        }
+
+        .automation-status {
+            background: #e8f5e8;
+            border: 1px solid #27ae60;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .automation-icon {
+            color: #27ae60;
+            font-size: 1.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .call-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .call-actions {
+                align-self: stretch;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-left">
+                <div class="header-icon">📞</div>
+                <div class="header-text">
+                    <h1>Podcast Calls</h1>
+                    <p>Track and analyze your podcast interviews</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="uploadRecording()">
+                    📁 Upload Recording
+                </button>
+                <button class="btn btn-primary" onclick="addPodcastCall()">
+                    ➕ Add Podcast Call
+                </button>
+            </div>
+        </div>
+
+        <!-- Automation Status -->
+        <div class="automation-status">
+            <div class="automation-icon">🤖</div>
+            <div>
+                <strong>Zoom Integration Active</strong> - Recordings are automatically uploaded and analyzed when calls end. 
+                AI analysis provides instant feedback and pipeline recommendations.
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number completed">5</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number scheduled">1</div>
+                <div class="stat-label">Scheduled</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number converted">2</div>
+                <div class="stat-label">Converted to Discovery</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number no-shows">0</div>
+                <div class="stat-label">No Shows</div>
+            </div>
+        </div>
+
+        <!-- Active Podcast Calls -->
+        <div class="calls-section">
+            <div class="section-header">
+                <h2 class="section-title">Active Podcast Calls</h2>
+                <div style="font-size: 0.9rem; color: #7f8c8d;">
+                    Auto-synced from Zoom
+                </div>
+            </div>
+
+            <!-- Call Item 1 -->
+            <div class="call-item">
+                <div class="call-avatar">M</div>
+                <div class="call-info">
+                    <div class="call-name">Marla Stone</div>
+                    <div class="call-details">I Deal Lifestyle • Sep 18, 2025 • 32 min</div>
+                </div>
+                <div class="call-score">
+                    <div class="score-number">30/50</div>
+                    <div class="score-stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                    </div>
+                </div>
+                <div class="call-status status-completed">✓ Completed</div>
+                <div class="call-actions">
+                    <button class="btn btn-secondary btn-small" onclick="showAnalysis('marla')">
+                        📊 View Analysis
+                    </button>
+                    <button class="btn btn-secondary btn-small" onclick="reAnalyze('marla')">
+                        🔄 Re-analyze
+                    </button>
+                    <button class="btn btn-secondary btn-small" disabled style="opacity: 0.5;">
+                        ❌ Not Qualified
+                    </button>
+                </div>
+            </div>
+
+            <!-- Call Item 2 -->
+            <div class="call-item">
+                <div class="call-avatar">J</div>
+                <div class="call-info">
+                    <div class="call-name">Jonathan</div>
+                    <div class="call-details">Brewer Suite Co • Sep 17, 2025 • 28 min</div>
+                </div>
+                <div class="call-score">
+                    <div class="score-number">38/50</div>
+                    <div class="score-stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                    </div>
+                </div>
+                <div class="call-status status-completed">✓ Completed</div>
+                <div class="call-actions">
+                    <button class="btn btn-secondary btn-small" onclick="showAnalysis('jonathan')">
+                        📊 View Analysis
+                    </button>
+                    <button class="btn btn-secondary btn-small" onclick="reAnalyze('jonathan')">
+                        🔄 Re-analyze
+                    </button>
+                    <button class="btn btn-primary btn-small" onclick="moveToDiscovery('jonathan')">
+                        🎯 Move to Discovery
+                    </button>
+                </div>
+            </div>
+
+            <!-- Call Item 3 - Processing -->
+            <div class="call-item">
+                <div class="call-avatar">K</div>
+                <div class="call-info">
+                    <div class="call-name">Kami Gray</div>
+                    <div class="call-details">Psychology From Design • Sep 16, 2025 • Processing...</div>
+                </div>
+                <div class="call-score">
+                    <div class="score-number">--</div>
+                    <div style="font-size: 0.8rem; color: #f39c12;">Analyzing...</div>
+                </div>
+                <div class="call-status status-processing">⏳ Processing</div>
+                <div class="call-actions">
+                    <button class="btn btn-secondary btn-small" disabled>
+                        📊 View Analysis
+                    </button>
+                    <button class="btn btn-secondary btn-small" onclick="uploadRecording()">
+                        📁 Upload Recording
+                    </button>
+                </div>
+            </div>
+
+            <!-- Call Item 4 - Scheduled -->
+            <div class="call-item">
+                <div class="call-avatar">B</div>
+                <div class="call-info">
+                    <div class="call-name">Bella Rodriguez</div>
+                    <div class="call-details">Let's Go Design Co • Scheduled: Sep 20, 2025 at 2:00 PM</div>
+                </div>
+                <div class="call-score">
+                    <div class="score-number">--</div>
+                    <div style="font-size: 0.8rem; color: #7f8c8d;">Pending</div>
+                </div>
+                <div class="call-status status-scheduled">📅 Scheduled</div>
+                <div class="call-actions">
+                    <button class="btn btn-secondary btn-small" onclick="editCall('bella')">
+                        ✏️ Edit
+                    </button>
+                    <button class="btn btn-secondary btn-small" onclick="sendReminder('bella')">
+                        📧 Send Reminder
+                    </button>
+                </div>
+            </div>
+
+            <!-- Call Item 5 - Completed -->
+            <div class="call-item">
+                <div class="call-avatar">T</div>
+                <div class="call-info">
+                    <div class="call-name">Tye Shumway</div>
+                    <div class="call-details">TWS Construction • Sep 15, 2025 • 23 min</div>
+                </div>
+                <div class="call-score">
+                    <div class="score-number">35/50</div>
+                    <div class="score-stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                    </div>
+                </div>
+                <div class="call-status status-completed">✓ Completed</div>
+                <div class="call-actions">
+                    <button class="btn btn-secondary btn-small" onclick="showAnalysis('tye')">
+                        📊 View Analysis
+                    </button>
+                    <button class="btn btn-secondary btn-small" onclick="reAnalyze('tye')">
+                        🔄 Re-analyze
+                    </button>
+                    <button class="btn btn-primary btn-small" onclick="moveToDiscovery('tye')">
+                        🎯 Move to Discovery
+                    </button>
+                </div>
+            </div>
+
+            <!-- Call Item 6 - Completed -->
+            <div class="call-item">
+                <div class="call-avatar">B</div>
+                <div class="call-info">
+                    <div class="call-name">Bobbie Wasserman</div>
+                    <div class="call-details">Homeownership Collective • Sep 14, 2025 • 19 min</div>
+                </div>
+                <div class="call-score">
+                    <div class="score-number">28/50</div>
+                    <div class="score-stars">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star empty">★</span>
+                        <span class="star empty">★</span>
+                    </div>
+                </div>
+                <div class="call-status status-completed">✓ Completed</div>
+                <div class="call-actions">
+                    <button class="btn btn-secondary btn-small" onclick="showAnalysis('bobbie')">
+                        📊 View Analysis
+                    </button>
+                    <button class="btn btn-secondary btn-small" onclick="reAnalyze('bobbie')">
+                        🔄 Re-analyze
+                    </button>
+                    <button class="btn btn-secondary btn-small" disabled style="opacity: 0.5;">
+                        ❌ Not Qualified
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analysis Modal -->
+    <div id="analysisModal" class="analysis-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>AI Analysis - Marla Stone</h2>
+                <button class="close-modal" onclick="closeAnalysis()">&times;</button>
+            </div>
+
+            <div class="analysis-section">
+                <h3>Business Qualification Score: 30/50 (Not Qualified for Discovery)</h3>
+                
+                <div class="analysis-category">
+                    <div class="category-header">
+                        <strong>Business Maturity (6/15)</strong>
+                        <span class="category-score" style="background: #fef3cd; color: #f39c12;">Below Threshold</span>
+                    </div>
+                    <div class="feedback-text">
+                        <strong>Assessment:</strong> Solo practitioner with book/speaking focus. Limited scalable business model. Revenue appears primarily service-based rather than business growth-oriented.
+                        <br><br>
+                        <strong>Indicators:</strong> Former therapist turned organizer, writing books, individual clients. Not showing systems, team building, or scaling challenges that would benefit from growth consulting.
+                    </div>
+                </div>
+
+                <div class="analysis-category">
+                    <div class="category-header">
+                        <strong>Growth Potential (8/15)</strong>
+                        <span class="category-score" style="background: #e8f5e8; color: #27ae60;">Moderate</span>
+                    </div>
+                    <div class="feedback-text">
+                        <strong>Strengths:</strong> Clear expertise, established brand (I Deal Lifestyle), authored book, potential speaking circuit.
+                        <br><br>
+                        <strong>Limitations:</strong> Not expressing desire to scale beyond personal practice. More focused on content creation than business expansion.
+                    </div>
+                </div>
+
+                <div class="analysis-category">
+                    <div class="category-header">
+                        <strong>Financial Capacity (7/10)</strong>
+                        <span class="category-score" style="background: #e8f5e8; color: #27ae60;">Adequate</span>
+                    </div>
+                    <div class="feedback-text">
+                        <strong>Assessment:</strong> Established business with book revenue, likely has consulting budget for the right opportunity.
+                        <br><br>
+                        <strong>Note:</strong> Did not explicitly discuss revenue goals or growth investments during conversation.
+                    </div>
+                </div>
+
+                <div class="analysis-category">
+                    <div class="category-header">
+                        <strong>Urgency & Pain Points (9/10)</strong>
+                        <span class="category-score" style="background: #d5f4e6; color: #27ae60;">Strong</span>
+                    </div>
+                    <div class="feedback-text">
+                        <strong>Pain Points Identified:</strong> Clearly articulated challenges with procrastination, goal-setting, client psychology. Shows self-awareness of business development needs.
+                        <br><br>
+                        <strong>Urgency Level:</strong> Working on new book projects, actively developing methodology - indicates current growth phase.
+                    </div>
+                </div>
+
+                <div style="background: #fef2f2; padding: 1rem; border-radius: 8px; margin-top: 1rem; border-left: 4px solid #e74c3c;">
+                    <strong>❌ AI Recommendation:</strong> DO NOT MOVE TO DISCOVERY CALL - Score 30/50 (Threshold: 35+). Marla operates a successful solo practice but doesn't demonstrate the business scaling challenges or growth ambitions that align with your growth consulting services.
+                    <br><br>
+                    <strong>Alternative Action:</strong> File as networking contact. Potential referral source for entrepreneurs struggling with productivity/organization issues.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showAnalysis(guest) {
+            document.getElementById('analysisModal').style.display = 'block';
+        }
+
+        function closeAnalysis() {
+            document.getElementById('analysisModal').style.display = 'none';
+        }
+
+        function moveToDiscovery(guest) {
+            if (confirm(`Move ${guest} to Discovery Calls pipeline?`)) {
+                alert(`${guest} has been moved to Discovery Calls. Automated email sequence initiated.`);
+                // In real implementation, this would trigger:
+                // 1. Update pipeline status
+                // 2. Send automated email
+                // 3. Update advisor dashboard
+                // 4. Create discovery call booking link
+            }
+        }
+
+        function reAnalyze(guest) {
+            alert(`Re-analyzing ${guest}'s call with updated AI criteria...`);
+            // In real implementation: trigger AI re-analysis
+        }
+
+        function uploadRecording() {
+            alert('Upload Recording: Connect to Zoom, or manually upload MP3/MP4 files for AI analysis');
+            // In real implementation: file upload interface
+        }
+
+        function addPodcastCall() {
+            alert('Add Podcast Call: Schedule new call or manually log completed interview');
+            // In real implementation: form to add new call
+        }
+
+        function editCall(guest) {
+            alert(`Edit call details for ${guest}`);
+        }
+
+        function sendReminder(guest) {
+            alert(`Sending automated reminder email to ${guest}`);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('analysisModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Simulate real-time updates
+        setInterval(() => {
+            // In real implementation, this would check for:
+            // - New Zoom recordings
+            // - Completed AI analysis
+            // - Pipeline updates
+            console.log('Checking for new recordings and analysis updates...');
+        }, 30000);
+    </script>
+</body>
+</html>
