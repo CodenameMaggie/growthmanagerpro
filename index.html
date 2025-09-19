@@ -407,6 +407,30 @@
                         <div class="nav-subtitle">Task management</div>
                     </div>
                 </div>
+
+                <div class="nav-item" onclick="showPage('expense-tracker')">
+                    <div class="nav-icon">🧮</div>
+                    <div class="nav-text">
+                        <div>Expense Tracker</div>
+                        <div class="nav-subtitle">Manage recurring costs</div>
+                    </div>
+                </div>
+
+                <div class="nav-item" onclick="showPage('availability')">
+                    <div class="nav-icon">🕐</div>
+                    <div class="nav-text">
+                        <div>Availability</div>
+                        <div class="nav-subtitle">Schedule settings</div>
+                    </div>
+                </div>
+
+                <div class="nav-item" onclick="showPage('user-management')">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-text">
+                        <div>User Management</div>
+                        <div class="nav-subtitle">Manage users & permissions</div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -739,6 +763,42 @@
                 <div class="empty-state">
                     <h3>Sprints Module</h3>
                     <p>Manage your weekly tasks and action items</p>
+                </div>
+            </div>
+
+            <!-- Expense Tracker Page -->
+            <div id="expense-tracker" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Expense Tracker</h1>
+                    <p class="page-subtitle">Manage recurring costs and business expenses</p>
+                </div>
+                <div class="empty-state">
+                    <h3>Expense Tracker Module</h3>
+                    <p>Track and manage your recurring business costs</p>
+                </div>
+            </div>
+
+            <!-- Availability Page -->
+            <div id="availability" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Availability</h1>
+                    <p class="page-subtitle">Schedule settings and calendar management</p>
+                </div>
+                <div class="empty-state">
+                    <h3>Availability Module</h3>
+                    <p>Configure your schedule and availability settings</p>
+                </div>
+            </div>
+
+            <!-- User Management Page -->
+            <div id="user-management" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">User Management</h1>
+                    <p class="page-subtitle">Manage users & permissions for your advisor dashboard</p>
+                </div>
+                <div class="empty-state">
+                    <h3>User Management Module</h3>
+                    <p>Manage user access and permissions for your advisory team</p>
                 </div>
             </div>
         </div>
