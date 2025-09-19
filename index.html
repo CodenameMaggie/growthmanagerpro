@@ -1,140 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
++608
+-372
+Lines changed: 608 additions & 372 deletions
+Original file line number	Diff line number	Diff line change
+@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Growth Manager Pro - Dashboard</title>
     <title>Growth Manager Pro - Enhanced Dashboard</title>
     <style>
         * {
             margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+@@ -54,6 +54,44 @@
+            display: inline-block;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f7fa;
-            color: #333;
-        }
-
-        .app-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: 280px;
-            background: white;
-            border-right: 1px solid #e1e5e9;
-            padding: 2rem 0;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-        }
-
-        .sidebar-header {
-            padding: 0 2rem 2rem 2rem;
-            border-bottom: 1px solid #e1e5e9;
-            margin-bottom: 2rem;
-        }
-
-        .sidebar-header h1 {
-            font-size: 1.5rem;
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-        }
-
-        .sidebar-header p {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-        }
-
-        .nav-section {
-            margin-bottom: 2rem;
-        }
-
-        .nav-section-title {
-            padding: 0 2rem;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #95a5a6;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 1rem;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 0.8rem 2rem;
-            color: #5a6c7d;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .nav-item:hover {
-            background: #f8f9fa;
-            color: #2c3e50;
-        }
-
-        .nav-item.active {
-            background: #3498db;
-            color: white;
-            border-right: 3px solid #2980b9;
-        }
-
-        .nav-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 1rem;
-            font-size: 1.2rem;
-        }
-
-        .nav-text {
-            flex: 1;
-        }
-
-        .nav-subtitle {
-            font-size: 0.8rem;
-            opacity: 0.7;
-            margin-top: 0.2rem;
-        }
-
-        .main-content {
-            flex: 1;
-            margin-left: 280px;
-            padding: 2rem;
-        }
-
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        .page-header {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
-
-        .page-title {
-            font-size: 2rem;
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-        }
-
-        .page-subtitle {
-            color: #7f8c8d;
-            font-size: 1.1rem;
-        }
-
-        /* Enhanced features from GitHub version */
         .nav-tabs {
             display: flex;
             background: white;
@@ -143,7 +23,6 @@
             overflow: hidden;
             box-shadow: 0 4px 16px rgba(0,0,0,0.1);
         }
-
         .nav-tab {
             flex: 1;
             padding: 1rem;
@@ -155,136 +34,31 @@
             border: none;
             background: transparent;
         }
-
         .nav-tab.active {
             background: #3498db;
             color: white;
         }
-
         .nav-tab:hover:not(.active) {
             background: #ecf0f1;
         }
-
         .tab-content {
             display: none;
         }
-
         .tab-content.active {
             display: block;
         }
-
-        .stats-grid {
+        .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .content-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2rem;
-        }
-
-        .content-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .card-header {
-            background: #2c3e50;
-            color: white;
-            padding: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-content {
-            padding: 1.5rem;
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .table th,
-        .table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e1e5e9;
-        }
-
-        .table th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .status-badge {
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .status-podcast { background: #e1f5fe; color: #0277bd; }
-        .status-discovery { background: #f3e5f5; color: #7b1fa2; }
-        .status-sales { background: #fff3e0; color: #f57c00; }
-        .status-closed { background: #e8f5e8; color: #2e7d32; }
-        .status-finished { background: #e8f5e8; color: #2e7d32; }
-        .status-on-track { background: #e3f2fd; color: #1976d2; }
+@@ -156,195 +194,210 @@
         .status-off-track { background: #fef2f2; color: #e74c3c; }
         .status-blocked { background: #fef3cd; color: #f39c12; }
 
-        .btn {
-            background: #3498db;
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.2s ease;
-        }
-
-        .btn:hover {
-            background: #2980b9;
-        }
-
-        .btn.success {
-            background: #27ae60;
-        }
-
-        .btn.success:hover {
-            background: #2ecc71;
-        }
-
+        .pipeline-stage {
+            background: #f8f9fa;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            overflow: hidden;
         .form-section {
             background: white;
             border-radius: 12px;
@@ -293,143 +67,146 @@
             margin-bottom: 2rem;
         }
 
+        .stage-header {
+            background: #34495e;
+            color: white;
+            padding: 0.8rem 1rem;
+            font-weight: bold;
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
+        .stage-content {
+            padding: 1rem;
         .form-group {
             display: flex;
             flex-direction: column;
         }
 
+        .prospect {
+            background: white;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         .form-group.full-width {
             grid-column: 1 / -1;
         }
 
+        .prospect:last-child {
+            margin-bottom: 0;
         label {
-            font-weight: 600;
+            font-weight: bold;
             color: #2c3e50;
             margin-bottom: 0.5rem;
         }
 
+        .prospect h5 {
+            margin-bottom: 0.3rem;
+            color: #2c3e50;
         input, select, textarea {
             padding: 0.8rem;
-            border: 2px solid #e1e5e9;
+            border: 2px solid #ecf0f1;
             border-radius: 6px;
             font-size: 1rem;
             transition: border-color 0.3s ease;
         }
 
+        .prospect p {
+            font-size: 0.8rem;
+            color: #7f8c8d;
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #3498db;
         }
 
+        .call-analysis {
+            border-left: 4px solid #e74c3c;
         textarea {
             resize: vertical;
             min-height: 100px;
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #7f8c8d;
-        }
-
-        .empty-state h3 {
-            margin-bottom: 1rem;
-        }
-
-        .live-data-indicator {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            color: #27ae60;
-        }
-
-        .pulse {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #27ae60;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
-        .section {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-            overflow: hidden;
-        }
-
-        .section-header {
-            background: #2c3e50;
+        .call-analysis.good {
+            border-left-color: #27ae60;
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
-            padding: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .section-content {
-            padding: 1.5rem;
-        }
-
-        .task-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            margin-bottom: 0.5rem;
-            background: #f8f9fa;
+            border: none;
+            padding: 1rem 2rem;
             border-radius: 8px;
-            border-left: 4px solid #3498db;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
         }
 
-        .task-details h4 {
-            color: #2c3e50;
-            margin-bottom: 0.3rem;
+        .call-analysis.average {
+            border-left-color: #f39c12;
+        .btn:hover {
+            transform: translateY(-2px);
         }
 
-        .task-details p {
-            color: #7f8c8d;
-            font-size: 0.9rem;
+        .rating {
+            display: flex;
+            gap: 2px;
+        .btn.success {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
         }
 
-        .main-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2rem;
+        .star {
+            color: #ffd700;
+            font-size: 1.2rem;
+        .btn.warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
         }
 
+        .star.empty {
+            color: #ddd;
+        .btn.danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .advisor-section {
+            grid-column: 1 / -1;
         .integration-card {
             background: white;
             padding: 1.5rem;
             border-radius: 12px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            padding: 2rem;
             margin-bottom: 1rem;
             border-left: 4px solid #3498db;
         }
 
+        .advisor-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
         .integration-card.connected {
             border-left-color: #27ae60;
         }
 
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
         .integration-card.error {
             border-left-color: #e74c3c;
         }
 
+        .kpi-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
         .integration-header {
             display: flex;
             justify-content: space-between;
@@ -437,12 +214,18 @@
             margin-bottom: 1rem;
         }
 
+        .kpi-value {
+            font-size: 1.8rem;
         .integration-logo {
             font-size: 1.5rem;
             font-weight: bold;
             color: #2c3e50;
         }
 
+        .kpi-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
         .status-dot {
             width: 12px;
             height: 12px;
@@ -450,18 +233,38 @@
             background: #3498db;
         }
 
+        .progress-bar {
+            background: #ecf0f1;
+            border-radius: 10px;
+            height: 8px;
+            margin: 0.5rem 0;
+            overflow: hidden;
         .status-dot.connected {
             background: #27ae60;
         }
 
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            border-radius: 10px;
+            transition: width 0.3s ease;
         .status-dot.error {
             background: #e74c3c;
         }
 
+        .weekly-summary {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
         .api-form {
             margin-top: 1rem;
         }
 
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
         .api-test-btn {
             background: #95a5a6;
             color: white;
@@ -472,6 +275,8 @@
             margin-left: 0.5rem;
         }
 
+        .summary-item:last-child {
+            margin-bottom: 0;
         .connection-status {
             font-size: 0.9rem;
             margin-top: 0.5rem;
@@ -479,449 +284,840 @@
             border-radius: 4px;
         }
 
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            width: 100%;
         .connection-status.success {
             background: #d5f4e6;
             color: #27ae60;
         }
 
+        .btn:hover {
+            transform: translateY(-2px);
         .connection-status.error {
             background: #fef2f2;
             color: #e74c3c;
         }
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
 
-            .sidebar.open {
-                transform: translateX(0);
-            }
+        .btn.success {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        .rating {
+            display: flex;
+            gap: 2px;
+        }
 
-            .main-content {
-                margin-left: 0;
-            }
+        .btn.warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        .star {
+            color: #ffd700;
+            font-size: 1.2rem;
+        }
 
-            .content-grid, .main-grid {
+        .last-updated {
+            color: #7f8c8d;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 1rem;
+        .star.empty {
+            color: #ddd;
+        }
+        .live-data-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #27ae60;
+        }
+        .pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #27ae60;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+            .main-grid {
                 grid-template-columns: 1fr;
             }
 
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
+            .main-grid {
             .form-grid {
                 grid-template-columns: 1fr;
             }
 
+            .advisor-grid {
+                grid-template-columns: 1fr;
             .nav-tabs {
                 flex-wrap: wrap;
             }
 
+            .kpi-grid {
+                grid-template-columns: 1fr;
             .nav-tab {
                 min-width: 120px;
             }
         }
     </style>
-</head>
-<body>
-    <div class="app-container">
-        <!-- Sidebar Navigation -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h1>Growth Manager Pro</h1>
-                <p>Client Acquisition System</p>
+@@ -353,43 +406,121 @@
+    <div class="container">
+        <div class="header">
+            <h1>Growth Manager Pro</h1>
+            <p class="subtitle">Home Renovation & Interior Design Firms - Client Acquisition System</p>
+            <p class="subtitle">Enhanced Dashboard with Live Data Connections</p>
+            <div class="goals">
+                <strong>North Star Goal:</strong> $50k/month | 3-Month Target: $25k/month
             </div>
+        </div>
 
-            <div class="nav-section">
-                <div class="nav-section-title">Navigation</div>
-                
-                <div class="nav-item active" onclick="showPage('dashboard')">
-                    <div class="nav-icon">📊</div>
-                    <div class="nav-text">
-                        <div>Dashboard</div>
-                        <div class="nav-subtitle">Overview & KPIs</div>
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <div class="stat-number finished">42</div>
+                <div class="stat-label">Tasks Finished</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number on-track">8</div>
+                <div class="stat-label">On Track</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number off-track">6</div>
+                <div class="stat-label">Off Track</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number blocked">3</div>
+                <div class="stat-label">Blocked</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: #9b59b6;">15</div>
+                <div class="stat-label">Sales Calls</div>
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('dashboard')">📊 Dashboard</button>
+            <button class="nav-tab" onclick="showTab('tasks')">✅ Tasks</button>
+            <button class="nav-tab" onclick="showTab('calls')">📞 Calls</button>
+            <button class="nav-tab" onclick="showTab('pipeline')">🔄 Pipeline</button>
+            <button class="nav-tab" onclick="showTab('integrations')">⚙️ Integrations</button>
+            <button class="nav-tab" onclick="showTab('advisor')">👨‍💼 Advisor</button>
+        </div>
+        <!-- DASHBOARD TAB -->
+        <div id="dashboard" class="tab-content active">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-number finished">42</div>
+                    <div class="stat-label">Tasks Finished</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number on-track">8</div>
+                    <div class="stat-label">On Track</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number off-track">6</div>
+                    <div class="stat-label">Off Track</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number blocked">3</div>
+                    <div class="stat-label">Blocked</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #9b59b6;">15</div>
+                    <div class="stat-label">Sales Calls</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #e67e22;">12%</div>
+                    <div class="stat-label">Close Rate</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: #e67e22;">12%</div>
+                <div class="stat-label">Close Rate</div>
+            <div class="main-grid">
+                <div class="section">
+                    <div class="section-header">
+                        <h2>Recent Activity</h2>
+                        <div class="live-data-indicator">
+                            <div class="pulse"></div>
+                            Live Updates
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="task-item">
+                            <div class="task-details">
+                                <h4>📧 New Email Reply - Modern Living Spaces</h4>
+                                <p>Positive response to email campaign #3 - 5 min ago</p>
+                            </div>
+                            <div class="status-badge status-finished">New Lead</div>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-details">
+                                <h4>📅 Call Booked - Coastal Interior Design</h4>
+                                <p>Discovery call scheduled for Sept 21, 2:00 PM - 1 hour ago</p>
+                            </div>
+                            <div class="status-badge status-on-track">Scheduled</div>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-details">
+                                <h4>✅ Task Completed - Lead list verification</h4>
+                                <p>Verified 250 leads for new campaign - 2 hours ago</p>
+                            </div>
+                            <div class="status-badge status-finished">Completed</div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="nav-item" onclick="showPage('contacts')">
-                    <div class="nav-icon">👥</div>
-                    <div class="nav-text">
-                        <div>Contacts</div>
-                        <div class="nav-subtitle">Prospect database</div>
+                <div class="section">
+                    <div class="section-header">
+                        <h2>Today's Goals</h2>
+                        <span>Progress</span>
                     </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('podcast-calls')">
-                    <div class="nav-icon">📞</div>
-                    <div class="nav-text">
-                        <div>Podcast Calls</div>
-                        <div class="nav-subtitle">Interview tracking</div>
-                    </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('discovery-calls')">
-                    <div class="nav-icon">🎯</div>
-                    <div class="nav-text">
-                        <div>Discovery Calls</div>
-                        <div class="nav-subtitle">Qualification calls</div>
-                    </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('sales-calls')">
-                    <div class="nav-icon">📈</div>
-                    <div class="nav-text">
-                        <div>Sales Calls</div>
-                        <div class="nav-subtitle">Closing conversations</div>
-                    </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('pipeline')">
-                    <div class="nav-icon">📋</div>
-                    <div class="nav-text">
-                        <div>Pipeline</div>
-                        <div class="nav-subtitle">Deal management</div>
-                    </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('deals')">
-                    <div class="nav-icon">📄</div>
-                    <div class="nav-text">
-                        <div>Deals</div>
-                        <div class="nav-subtitle">Closed deals</div>
-                    </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('cash-flow')">
-                    <div class="nav-icon">💰</div>
-                    <div class="nav-text">
-                        <div>Cash Flow</div>
-                        <div class="nav-subtitle">Financial tracking</div>
-                    </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('campaigns')">
-                    <div class="nav-icon">⚡</div>
-                    <div class="nav-text">
-                        <div>Campaigns</div>
-                        <div class="nav-subtitle">Outreach tracking</div>
-                    </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('sprints')">
-                    <div class="nav-icon">📅</div>
-                    <div class="nav-text">
-                        <div>Sprints</div>
-                        <div class="nav-subtitle">Task management</div>
-                    </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('expense-tracker')">
-                    <div class="nav-icon">🧮</div>
-                    <div class="nav-text">
-                        <div>Expense Tracker</div>
-                        <div class="nav-subtitle">Manage recurring costs</div>
-                    </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('availability')">
-                    <div class="nav-icon">🕐</div>
-                    <div class="nav-text">
-                        <div>Availability</div>
-                        <div class="nav-subtitle">Schedule settings</div>
-                    </div>
-                </div>
-
-                <div class="nav-item" onclick="showPage('user-management')">
-                    <div class="nav-icon">⚙️</div>
-                    <div class="nav-text">
-                        <div>User Management</div>
-                        <div class="nav-subtitle">Manage users & permissions</div>
+                    <div class="section-content">
+                        <div class="task-item">
+                            <div class="task-details">
+                                <h4>Send 50 LinkedIn Messages</h4>
+                                <p>Progress: 32/50 sent</p>
+                            </div>
+                            <div class="status-badge status-on-track">64%</div>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-details">
+                                <h4>Complete Call Analysis</h4>
+                                <p>Review yesterday's 3 recorded calls</p>
+                            </div>
+                            <div class="status-badge status-finished">Done</div>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-details">
+                                <h4>Update Pipeline Tracker</h4>
+                                <p>Move 2 prospects to next stage</p>
+                            </div>
+                            <div class="status-badge status-on-track">In Progress</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Dashboard Page -->
-            <div id="dashboard" class="page active">
-                <div class="page-header">
-                    <h1 class="page-title">Dashboard</h1>
-                    <p class="page-subtitle">Enhanced Dashboard with Live Data Connections</p>
-                    <div style="margin-top: 1rem; color: #2c3e50;">
-                        <strong>North Star Goal:</strong> $50k/month | 3-Month Target: $25k/month
+        <div class="main-grid">
+        <!-- TASKS TAB -->
+        <div id="tasks" class="tab-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Current Sprint Tasks</h2>
+                    <h2>Sprint Tasks Management</h2>
+                    <span>Week 6 (9/11/25)</span>
+                </div>
+                <div class="section-content">
+@@ -414,95 +545,54 @@ <h4>8.2 - Review training on how to scrape leads</h4>
+                        </div>
+                        <div class="status-badge status-on-track">On Track</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-details">
+                            <h4>8.3 - Review training on how to verify leads</h4>
+                            <p>Focus: Business Value Creation | Due: 9/11/25</p>
+                        </div>
+                        <div class="status-badge status-on-track">On Track</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-details">
+                            <h4>8.4 - Use AI-clients to create new emailing campaigns</h4>
+                            <p>Focus: Business Value Creation | Due: 9/11/25</p>
+                        </div>
+                        <div class="status-badge status-on-track">On Track</div>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-details">
+                            <h4>7.4 - Complete section 7 - AI client service delivery</h4>
+                            <p>Focus: Business Value Creation | Overdue from 8/28/25</p>
+                        </div>
+                        <div class="status-badge status-off-track">Off Track</div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Enhanced Tab Navigation -->
-                <div class="nav-tabs">
-                    <button class="nav-tab active" onclick="showTab('overview')">📊 Overview</button>
-                    <button class="nav-tab" onclick="showTab('tasks')">✅ Tasks</button>
-                    <button class="nav-tab" onclick="showTab('calls')">📞 Calls</button>
-                    <button class="nav-tab" onclick="showTab('integrations')">⚙️ Integrations</button>
-                    <button class="nav-tab" onclick="showTab('advisor')">👨‍💼 Advisor</button>
+            <div class="section">
+                <div class="section-header">
+                    <h2>Sales Pipeline</h2>
+                    <span>Auto-Updated</span>
                 </div>
-
-                <!-- OVERVIEW TAB -->
-                <div id="overview" class="tab-content active">
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-number" style="color: #27ae60;">42</div>
-                            <div class="stat-label">Tasks Finished</div>
+                <div class="section-content">
+                    <div class="pipeline-stage">
+                        <div class="stage-header">Cold Outreach (LinkedIn + Email)</div>
+                        <div class="stage-content">
+                            <div class="prospect">
+                                <h5>Renovation Plus LLC</h5>
+                                <p>Contacted via LinkedIn - 2 days ago</p>
+                            </div>
+                            <div class="prospect">
+                                <h5>Elite Home Designs</h5>
+                                <p>Email sent - 1 day ago</p>
+                            </div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-number" style="color: #3498db;">8</div>
-                            <div class="stat-label">On Track</div>
+            <div class="form-section">
+                <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">Update Task Status</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="task-select">Select Task</label>
+                        <select id="task-select">
+                            <option>8.0 - Update podcast call/discovery call trackers</option>
+                            <option>8.1 - Build a new lead list for campaign</option>
+                            <option>8.2 - Review training on how to scrape leads</option>
+                        </select>
+                    </div>
+                    
+                    <div class="pipeline-stage">
+                        <div class="stage-header">Initial Response/Interest</div>
+                        <div class="stage-content">
+                            <div class="prospect">
+                                <h5>Modern Living Spaces</h5>
+                                <p>Replied to email - booking call</p>
+                            </div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-number" style="color: #e74c3c;">6</div>
-                            <div class="stat-label">Off Track</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" style="color: #f39c12;">3</div>
-                            <div class="stat-label">Blocked</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" style="color: #9b59b6;">15</div>
-                            <div class="stat-label">Sales Calls</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" style="color: #e67e22;">12%</div>
-                            <div class="stat-label">Close Rate</div>
+                    <div class="form-group">
+                        <label for="status-update">New Status</label>
+                        <select id="status-update">
+                            <option>On Track</option>
+                            <option>Finished</option>
+                            <option>Blocked</option>
+                            <option>Off Track</option>
+                        </select>
+                    </div>
+                    
+                    <div class="pipeline-stage">
+                        <div class="stage-header">Discovery Call Booked</div>
+                        <div class="stage-content">
+                            <div class="prospect">
+                                <h5>Coastal Interior Design</h5>
+                                <p>Call scheduled for Sept 21, 2:00 PM</p>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="main-grid">
-                        <div class="section">
-                            <div class="section-header">
-                                <h2>Recent Activity</h2>
-                                <div class="live-data-indicator">
-                                    <div class="pulse"></div>
-                                    Live Updates
-                                </div>
-                            </div>
-                            <div class="section-content">
-                                <div class="task-item">
-                                    <div class="task-details">
-                                        <h4>📧 New Email Reply - Modern Living Spaces</h4>
-                                        <p>Positive response to email campaign #3 - 5 min ago</p>
-                                    </div>
-                                    <div class="status-badge status-finished">New Lead</div>
-                                </div>
-                                <div class="task-item">
-                                    <div class="task-details">
-                                        <h4>📅 Call Booked - Coastal Interior Design</h4>
-                                        <p>Discovery call scheduled for Sept 21, 2:00 PM - 1 hour ago</p>
-                                    </div>
-                                    <div class="status-badge status-on-track">Scheduled</div>
-                                </div>
-                                <div class="task-item">
-                                    <div class="task-details">
-                                        <h4>✅ Task Completed - Lead list verification</h4>
-                                        <p>Verified 250 leads for new campaign - 2 hours ago</p>
-                                    </div>
-                                    <div class="status-badge status-finished">Completed</div>
-                                </div>
+                    
+                    <div class="pipeline-stage">
+                        <div class="stage-header">Proposal/Closing</div>
+                        <div class="stage-content">
+                            <div class="prospect">
+                                <h5>Urban Renovation Co.</h5>
+                                <p>Proposal sent - awaiting decision</p>
                             </div>
                         </div>
-
-                        <div class="section">
-                            <div class="section-header">
-                                <h2>Today's Goals</h2>
-                                <span>Progress</span>
-                            </div>
-                            <div class="section-content">
-                                <div class="task-item">
-                                    <div class="task-details">
-                                        <h4>Send 50 LinkedIn Messages</h4>
-                                        <p>Progress: 32/50 sent</p>
-                                    </div>
-                                    <div class="status-badge status-on-track">64%</div>
-                                </div>
-                                <div class="task-item">
-                                    <div class="task-details">
-                                        <h4>Complete Call Analysis</h4>
-                                        <p>Review yesterday's 3 recorded calls</p>
-                                    </div>
-                                    <div class="status-badge status-finished">Done</div>
-                                </div>
-                                <div class="task-item">
-                                    <div class="task-details">
-                                        <h4>Update Pipeline Tracker</h4>
-                                        <p>Move 2 prospects to next stage</p>
-                                    </div>
-                                    <div class="status-badge status-on-track">In Progress</div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="form-group full-width">
+                        <label for="progress-notes">Progress Notes</label>
+                        <textarea id="progress-notes" placeholder="Add notes about your progress..."></textarea>
                     </div>
                 </div>
+                <button class="btn success" onclick="updateTask()">Update Task Status</button>
+            </div>
+        </div>
 
-                <!-- TASKS TAB -->
-                <div id="tasks" class="tab-content">
-                    <div class="section">
-                        <div class="section-header">
-                            <h2>Sprint Tasks Management</h2>
-                            <span>Week 6 (9/11/25)</span>
-                        </div>
-                        <div class="section-content">
-                            <div class="task-item">
-                                <div class="task-details">
-                                    <h4>8.0 - Update podcast call/discovery call trackers</h4>
-                                    <p>Focus: Business Value Creation | Due: 9/11/25</p>
-                                </div>
-                                <div class="status-badge status-finished">Finished</div>
-                            </div>
-                            <div class="task-item">
-                                <div class="task-details">
-                                    <h4>8.1 - Build a new lead list for campaign</h4>
-                                    <p>Focus: Business Value Creation | Due: 9/11/25</p>
-                                </div>
-                                <div class="status-badge status-on-track">On Track</div>
-                            </div>
-                            <div class="task-item">
-                                <div class="task-details">
-                                    <h4>8.2 - Review training on how to scrape leads</h4>
-                                    <p>Focus: Business Value Creation | Due: 9/11/25</p>
-                                </div>
-                                <div class="status-badge status-on-track">On Track</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">Update Task Status</h2>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="task-select">Select Task</label>
-                                <select id="task-select">
-                                    <option>8.0 - Update podcast call/discovery call trackers</option>
-                                    <option>8.1 - Build a new lead list for campaign</option>
-                                    <option>8.2 - Review training on how to scrape leads</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="status-update">New Status</label>
-                                <select id="status-update">
-                                    <option>On Track</option>
-                                    <option>Finished</option>
-                                    <option>Blocked</option>
-                                    <option>Off Track</option>
-                                </select>
-                            </div>
-                            <div class="form-group full-width">
-                                <label for="progress-notes">Progress Notes</label>
-                                <textarea id="progress-notes" placeholder="Add notes about your progress..."></textarea>
-                            </div>
-                        </div>
-                        <button class="btn success" onclick="updateTask()">Update Task Status</button>
+        <div class="main-grid">
+        <!-- CALLS TAB -->
+        <div id="calls" class="tab-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2>AI Sales Call Analysis</h2>
+                    <span>Recent Calls</span>
+                    <h2>Call Analysis Dashboard</h2>
+                    <div class="live-data-indicator">
+                        <div class="pulse"></div>
+                        Zoom Connected
                     </div>
                 </div>
-
-                <!-- CALLS TAB -->
-                <div id="calls" class="tab-content">
-                    <div class="section">
-                        <div class="section-header">
-                            <h2>Call Analysis Dashboard</h2>
-                            <div class="live-data-indicator">
-                                <div class="pulse"></div>
-                                Zoom Connected
-                            </div>
+                <div class="section-content">
+                    <div class="call-item call-analysis good">
+                    <div class="call-item">
+                        <div class="task-details">
+                            <h4>Discovery Call - Luxury Home Interiors</h4>
+                            <p>Sept 18, 2025 | 45 min duration</p>
+                            <p><strong>AI Analysis:</strong> Excellent rapport building, clear pain points identified, strong interest shown</p>
+                            <p>Sept 18, 2025 | 45 min | Zoom ID: 123-456-789</p>
+                            <p><strong>AI Analysis:</strong> Excellent rapport building, clear pain points identified</p>
                         </div>
-                        <div class="section-content">
-                            <div class="task-item">
-                                <div class="task-details">
-                                    <h4>Discovery Call - Luxury Home Interiors</h4>
-                                    <p>Sept 18, 2025 | 45 min | Zoom ID: 123-456-789</p>
-                                    <p><strong>AI Analysis:</strong> Excellent rapport building, clear pain points identified</p>
-                                </div>
-                                <div class="status-badge status-finished">Closed</div>
-                            </div>
+                        <div>
+                            <div class="rating">
+@@ -515,183 +605,329 @@ <h4>Discovery Call - Luxury Home Interiors</h4>
+                            <div class="status-badge status-finished">Closed</div>
                         </div>
                     </div>
-
-                    <div class="form-section">
-                        <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">Log Manual Call</h2>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="prospect-name">Prospect Name</label>
-                                <input type="text" id="prospect-name" placeholder="Company/Contact name">
-                            </div>
-                            <div class="form-group">
-                                <label for="call-date">Call Date</label>
-                                <input type="datetime-local" id="call-date">
-                            </div>
-                            <div class="form-group">
-                                <label for="call-duration">Duration (minutes)</label>
-                                <input type="number" id="call-duration" placeholder="30">
-                            </div>
-                            <div class="form-group">
-                                <label for="call-outcome">Outcome</label>
-                                <select id="call-outcome">
-                                    <option>Proposal Requested</option>
-                                    <option>Follow-up Scheduled</option>
-                                    <option>Not Interested</option>
-                                    <option>Budget Issues</option>
-                                    <option>Closed Won</option>
-                                </select>
-                            </div>
-                            <div class="form-group full-width">
-                                <label for="call-notes">Call Notes</label>
-                                <textarea id="call-notes" placeholder="Key points discussed, pain points, next steps..."></textarea>
-                            </div>
+                    
+                    <div class="call-item call-analysis average">
+                        <div class="task-details">
+                            <h4>Discovery Call - Kitchen Specialists Inc</h4>
+                            <p>Sept 17, 2025 | 32 min duration</p>
+                            <p><strong>AI Analysis:</strong> Good discovery, but needs better objection handling and urgency creation</p>
                         </div>
-                        <button class="btn success" onclick="logCall()">Log Call</button>
+                        <div>
+                            <div class="rating">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star empty">★</span>
+                                <span class="star empty">★</span>
+                            </div>
+                            <div class="status-badge status-on-track">Follow-up</div>
+                        </div>
+                </div>
+            </div>
+            <div class="form-section">
+                <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">Log Manual Call</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="prospect-name">Prospect Name</label>
+                        <input type="text" id="prospect-name" placeholder="Company/Contact name">
+                    </div>
+                    
+                    <div class="call-item call-analysis">
+                        <div class="task-details">
+                            <h4>Discovery Call - Bathroom Remodelers Pro</h4>
+                            <p>Sept 16, 2025 | 28 min duration</p>
+                            <p><strong>AI Analysis:</strong> Struggled with qualifying budget, call ended early without clear next steps</p>
+                        </div>
+                        <div>
+                            <div class="rating">
+                                <span class="star">★</span>
+                                <span class="star">★</span>
+                                <span class="star empty">★</span>
+                                <span class="star empty">★</span>
+                                <span class="star empty">★</span>
+                            </div>
+                            <div class="status-badge status-off-track">Lost</div>
+                        </div>
+                    <div class="form-group">
+                        <label for="call-date">Call Date</label>
+                        <input type="datetime-local" id="call-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="call-duration">Duration (minutes)</label>
+                        <input type="number" id="call-duration" placeholder="30">
+                    </div>
+                    <div class="form-group">
+                        <label for="call-outcome">Outcome</label>
+                        <select id="call-outcome">
+                            <option>Proposal Requested</option>
+                            <option>Follow-up Scheduled</option>
+                            <option>Not Interested</option>
+                            <option>Budget Issues</option>
+                            <option>Closed Won</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="call-notes">Call Notes</label>
+                        <textarea id="call-notes" placeholder="Key points discussed, pain points, next steps..."></textarea>
                     </div>
                 </div>
+                <button class="btn success" onclick="logCall()">Log Call</button>
+            </div>
+        </div>
 
-                <!-- INTEGRATIONS TAB -->
-                <div id="integrations" class="tab-content">
-                    <div class="empty-state">
-                        <h3>API Integrations</h3>
-                        <p>Connect your tools for automated data sync</p>
+        <!-- PIPELINE TAB -->
+        <div id="pipeline" class="tab-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Lead Generation Metrics</h2>
+                    <span>This Week</span>
+                    <h2>Sales Pipeline</h2>
+                    <div class="live-data-indicator">
+                        <div class="pulse"></div>
+                        Calendly + Instantly Connected
                     </div>
                 </div>
-
-                <!-- ADVISOR TAB -->
-                <div id="advisor" class="tab-content">
-                    <div class="form-section">
-                        <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">👨‍💼 Advisor Controls</h2>
-                        <p style="margin-bottom: 2rem; color: #7f8c8d;">Add tasks, set priorities, and monitor progress</p>
-                        
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="advisor-task-title">Task Title</label>
-                                <input type="text" id="advisor-task-title" placeholder="e.g., Complete LinkedIn outreach training">
-                            </div>
-                            <div class="form-group">
-                                <label for="advisor-priority">Priority</label>
-                                <select id="advisor-priority">
-                                    <option>High Priority</option>
-                                    <option>Medium Priority</option>
-                                    <option>Low Priority</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="advisor-focus">Focus Area</label>
-                                <select id="advisor-focus">
-                                    <option>Business Value Creation</option>
-                                    <option>Setup Infrastructure</option>
-                                    <option>Book Podcast Calls</option>
-                                    <option>Lead Generation</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="advisor-due-date">Due Date</label>
-                                <input type="date" id="advisor-due-date">
-                            </div>
-                            <div class="form-group full-width">
-                                <label for="advisor-description">Description & Resources</label>
-                                <textarea id="advisor-description" placeholder="Detailed task description and any resource links..."></textarea>
+                <div class="section-content">
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-value">1,247</div>
+                            <div class="kpi-label">Emails Sent</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 65%"></div>
                             </div>
                         </div>
-                        <button class="btn success" onclick="addAdvisorTask()">Add Task</button>
+                        <div class="kpi-card">
+                            <div class="kpi-value">89</div>
+                            <div class="kpi-label">LinkedIn Outreach</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 78%"></div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">12</div>
+                            <div class="kpi-label">Positive Replies</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">6</div>
+                            <div class="kpi-label">Calls Booked</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">3</div>
+                            <div class="kpi-label">Calls Completed</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">1</div>
+                            <div class="kpi-label">Deals Closed</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 33%"></div>
+                            </div>
+                        </div>
+                    <!-- Pipeline stages will be populated here -->
+                    <div style="text-align: center; padding: 2rem;">
+                        <h3>Pipeline visualization will appear here when integrations are connected</h3>
+                        <p>Connect your Instantly and Calendly accounts to see live pipeline data</p>
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <div class="section">
-                        <div class="section-header">
-                            <h2>Progress Reports
+        <div class="advisor-section">
+            <h2 style="margin-bottom: 2rem; color: #2c3e50;">Advisor Reporting Dashboard</h2>
+        <!-- INTEGRATIONS TAB -->
+        <div id="integrations" class="tab-content">
+            <h2 style="margin-bottom: 2rem; color: #2c3e50;">API Integrations</h2>
+
+            <div class="advisor-grid">
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Weekly Progress Summary</h3>
+                    <div class="weekly-summary">
+                        <div class="summary-item">
+                            <span>Sprint Tasks Completed:</span>
+                            <strong>5/6 (83%)</strong>
+                        </div>
+                        <div class="summary-item">
+                            <span>Sales Calls This Week:</span>
+                            <strong>3 calls</strong>
+                        </div>
+                        <div class="summary-item">
+                            <span>Average Call Rating:</span>
+                            <strong>3.7/5 stars</strong>
+                        </div>
+                        <div class="summary-item">
+                            <span>Pipeline Movement:</span>
+                            <strong>2 prospects advanced</strong>
+                        </div>
+                        <div class="summary-item">
+                            <span>Revenue This Month:</span>
+                            <strong>$3,500</strong>
+                        </div>
+                    </div>
+            <div class="integration-card">
+                <div class="integration-header">
+                    <div class="integration-logo">📧 Instantly</div>
+                    <div class="status-dot" id="instantly-status"></div>
+                </div>
+                <p><strong>Status:</strong> <span id="instantly-status-text">Not Connected</span></p>
+                <p>Sync email campaigns, replies, and booking data</p>
+                
+                <div class="api-form">
+                    <input type="password" id="instantly-api" placeholder="Enter Instantly API Key" style="width: 300px;">
+                    <button class="api-test-btn" onclick="testInstantly()">Test Connection</button>
+                </div>
+                <div id="instantly-result" class="connection-status" style="display: none;"></div>
+            </div>
+            <div class="integration-card">
+                <div class="integration-header">
+                    <div class="integration-logo">📅 Calendly</div>
+                    <div class="status-dot" id="calendly-status"></div>
+                </div>
+                <p><strong>Status:</strong> <span id="calendly-status-text">Not Connected</span></p>
+                <p>Sync scheduled calls and booking sources</p>
+                
+                <div class="api-form">
+                    <input type="password" id="calendly-token" placeholder="Enter Calendly Personal Access Token" style="width: 300px;">
+                    <button class="api-test-btn" onclick="testCalendly()">Test Connection</button>
+                </div>
+                <div id="calendly-result" class="connection-status" style="display: none;"></div>
+            </div>
+            <div class="integration-card">
+                <div class="integration-header">
+                    <div class="integration-logo">🎥 Zoom</div>
+                    <div class="status-dot" id="zoom-status"></div>
+                </div>
+                <p><strong>Status:</strong> <span id="zoom-status-text">Not Connected</span></p>
+                <p>Sync call recordings and generate AI analysis</p>
+                
+                <div class="api-form">
+                    <input type="password" id="zoom-api" placeholder="Enter Zoom API Key" style="width: 200px;">
+                    <input type="password" id="zoom-secret" placeholder="Enter Zoom Secret" style="width: 200px;">
+                    <button class="api-test-btn" onclick="testZoom()">Test Connection</button>
+                </div>
+                <div id="zoom-result" class="connection-status" style="display: none;"></div>
+            </div>
+            <div class="form-section">
+                <h3>Integration Instructions</h3>
+                <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                    <h4>📧 Instantly API Key:</h4>
+                    <p>1. Log into Instantly.ai → Settings → API → Generate API Key</p>
+                    
+                    <h4 style="margin-top: 1rem;">📅 Calendly Token:</h4>
+                    <p>1. Log into Calendly → Integrations → API & Webhooks → Generate Personal Access Token</p>
+
+                    <h4 style="margin: 1rem 0 0.5rem;">Key Blockers & Challenges:</h4>
+                    <ul style="color: #7f8c8d; margin-left: 1.5rem;">
+                        <li>Facebook Groups access blocked (tasks 2.8, 2.9)</li>
+                        <li>LinkedIn voicenote review pending (task 3.3)</li>
+                        <li>AI client service delivery training incomplete</li>
+                    </ul>
+                    <h4 style="margin-top: 1rem;">🎥 Zoom API:</h4>
+                    <p>1. Go to Zoom Marketplace → Develop → Build App → Create JWT App</p>
+                    <p>2. Copy API Key and Secret from your app</p>
+                </div>
+            </div>
+        </div>
+
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Terms of Business Progress</h3>
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-value" style="color: #27ae60;">✓</div>
+                            <div class="kpi-label">Payment Compliance</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value" style="color: #27ae60;">100%</div>
+                            <div class="kpi-label">Call Attendance</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value" style="color: #f39c12;">83%</div>
+                            <div class="kpi-label">Task Execution</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value" style="color: #27ae60;">✓</div>
+                            <div class="kpi-label">Communication</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value" style="color: #e74c3c;">1,247</div>
+                            <div class="kpi-label">Emails Sent (25k target)</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value" style="color: #e74c3c;">15</div>
+                            <div class="kpi-label">Sales Calls (40 target)</div>
+                        </div>
+        <!-- ADVISOR TAB -->
+        <div id="advisor" class="tab-content">
+            <div class="form-section">
+                <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">👨‍💼 Advisor Controls</h2>
+                <p style="margin-bottom: 2rem; color: #7f8c8d;">Add tasks, set priorities, and monitor progress</p>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="advisor-task-title">Task Title</label>
+                        <input type="text" id="advisor-task-title" placeholder="e.g., Complete LinkedIn outreach training">
+                    </div>
+                    <div class="form-group">
+                        <label for="advisor-priority">Priority</label>
+                        <select id="advisor-priority">
+                            <option>High Priority</option>
+                            <option>Medium Priority</option>
+                            <option>Low Priority</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="advisor-focus">Focus Area</label>
+                        <select id="advisor-focus">
+                            <option>Business Value Creation</option>
+                            <option>Setup Infrastructure</option>
+                            <option>Book Podcast Calls</option>
+                            <option>Lead Generation</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="advisor-due-date">Due Date</label>
+                        <input type="date" id="advisor-due-date">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="advisor-description">Description & Resources</label>
+                        <textarea id="advisor-description" placeholder="Detailed task description and any resource links..."></textarea>
+                    </div>
+                </div>
+                <button class="btn success" onclick="addAdvisorTask()">Add Task</button>
+            </div>
+
+                <div>
+                    <h3 style="margin-bottom: 1rem;">Generate Reports</h3>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <a href="#" class="btn">📊 Weekly Progress Report</a>
+                        <a href="#" class="btn success">📈 Sales Performance Analysis</a>
+                        <a href="#" class="btn warning">🎯 Pipeline & Forecasting</a>
+                        <a href="#" class="btn">📋 Task Completion Summary</a>
+                        <a href="#" class="btn success">🔊 Call Recording Analysis</a>
+                    </div>
+                    
+                    <div class="last-updated">
+                        <strong>Last Updated:</strong> September 19, 2025 - 2:30 PM<br>
+                        <strong>Share URL:</strong> https://codenamemaggiecooper.github.io/growthmanagerpro
+            <div class="section">
+                <div class="section-header">
+                    <h2>Progress Reports</h2>
+                    <span>For Advisor Review</span>
+                </div>
+                <div class="section-content">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <button class="btn">📊 Weekly Summary</button>
+                        <button class="btn success">📈 Sales Performance</button>
+                        <button class="btn warning">🎯 Goal Progress</button>
+                        <button class="btn">📋 Task Completion</button>
+                        <button class="btn success">🔊 Call Analysis</button>
+                        <button class="btn warning">💰 Revenue Tracking</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+    <script>
+        // Tab switching functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+        // Task management functions
+        function updateTask() {
+            const taskSelect = document.getElementById('task-select').value;
+            const statusUpdate = document.getElementById('status-update').value;
+            const progressNotes = document.getElementById('progress-notes').value;
+            
+            alert(`Task "${taskSelect}" updated to "${statusUpdate}"\nNotes: ${progressNotes}`);
+            
+            // In a real implementation, this would send data to your backend
+            console.log('Task Update:', { taskSelect, statusUpdate, progressNotes });
+        }
+        function logCall() {
+            const prospectName = document.getElementById('prospect-name').value;
+            const callDate = document.getElementById('call-date').value;
+            const duration = document.getElementById('call-duration').value;
+            const outcome = document.getElementById('call-outcome').value;
+            const notes = document.getElementById('call-notes').value;
+            
+            alert(`Call logged for ${prospectName}\nOutcome: ${outcome}`);
+            
+            console.log('Call Log:', { prospectName, callDate, duration, outcome, notes });
+        }
+        function addAdvisorTask() {
+            const title = document.getElementById('advisor-task-title').value;
+            const priority = document.getElementById('advisor-priority').value;
+            const focus = document.getElementById('advisor-focus').value;
+            const dueDate = document.getElementById('advisor-due-date').value;
+            const description = document.getElementById('advisor-description').value;
+            
+            if (!title || !dueDate) {
+                alert('Please fill in at least the task title and due date');
+                return;
+            }
+            
+            alert(`New task added: "${title}"\nPriority: ${priority}\nDue: ${dueDate}`);
+            
+            console.log('New Task:', { title, priority, focus, dueDate, description });
+            
+            // Clear form
+            document.getElementById('advisor-task-title').value = '';
+            document.getElementById('advisor-description').value = '';
+        }
+        // API Integration functions
+        function testInstantly() {
+            const apiKey = document.getElementById('instantly-api').value;
+            const resultDiv = document.getElementById('instantly-result');
+            const statusDot = document.getElementById('instantly-status');
+            const statusText = document.getElementById('instantly-status-text');
+            
+            if (!apiKey) {
+                alert('Please enter your Instantly API key');
+                return;
+            }
+            
+            // Simulate API test (replace with real API call)
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'connection-status success';
+            resultDiv.textContent = 'Connection successful! Email campaigns synced.';
+            
+            statusDot.className = 'status-dot connected';
+            statusText.textContent = 'Connected';
+            
+            // In real implementation, make actual API call here
+            console.log('Testing Instantly API with key:', apiKey);
+        }
+        function testCalendly() {
+            const token = document.getElementById('calendly-token').value;
+            const resultDiv = document.getElementById('calendly-result');
+            const statusDot = document.getElementById('calendly-status');
+            const statusText = document.getElementById('calendly-status-text');
+            
+            if (!token) {
+                alert('Please enter your Calendly token');
+                return;
+            }
+            
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'connection-status success';
+            resultDiv.textContent = 'Connection successful! Scheduled events synced.';
+            
+            statusDot.className = 'status-dot connected';
+            statusText.textContent = 'Connected';
+            
+            console.log('Testing Calendly API with token:', token);
+        }
+        function testZoom() {
+            const apiKey = document.getElementById('zoom-api').value;
+            const secret = document.getElementById('zoom-secret').value;
+            const resultDiv = document.getElementById('zoom-result');
+            const statusDot = document.getElementById('zoom-status');
+            const statusText = document.getElementById('zoom-status-text');
+            
+            if (!apiKey || !secret) {
+                alert('Please enter both Zoom API key and secret');
+                return;
+            }
+            
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'connection-status success';
+            resultDiv.textContent = 'Connection successful! Meeting recordings accessible.';
+            
+            statusDot.className = 'status-dot connected';
+            statusText.textContent = 'Connected';
+            
+            console.log('Testing Zoom API with credentials:', { apiKey, secret });
+        }
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Growth Manager Pro Dashboard Loaded');
+            
+            // Set default date for advisor task form
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('advisor-due-date').value = today;
+            
+            // Set default call date to now
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('call-date').value = now.toISOString().slice(0, 16);
+        });
+    </script>
