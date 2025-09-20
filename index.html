@@ -299,32 +299,6 @@
             color: #7f8c8d;
         }
 
-        .call-analysis {
-            border-left: 4px solid #e74c3c;
-        }
-
-        .call-analysis.good {
-            border-left-color: #27ae60;
-        }
-
-        .call-analysis.average {
-            border-left-color: #f39c12;
-        }
-
-        .rating {
-            display: flex;
-            gap: 2px;
-        }
-
-        .star {
-            color: #ffd700;
-            font-size: 1.2rem;
-        }
-
-        .star.empty {
-            color: #ddd;
-        }
-
         .advisor-section {
             grid-column: 1 / -1;
             background: white;
@@ -363,21 +337,6 @@
             font-size: 0.8rem;
             color: #7f8c8d;
             text-transform: uppercase;
-        }
-
-        .progress-bar {
-            background: #ecf0f1;
-            border-radius: 10px;
-            height: 8px;
-            margin: 0.5rem 0;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #27ae60, #2ecc71);
-            border-radius: 10px;
-            transition: width 0.3s ease;
         }
 
         .weekly-summary {
@@ -432,7 +391,6 @@
             margin-top: 1rem;
         }
 
-        /* Simple page styles for other sections */
         .simple-page {
             background: white;
             padding: 2rem;
@@ -517,22 +475,21 @@
                     </div>
                 </div>
 
-               <a href="podcast-calls.html" class="nav-item">
-    <div class="nav-icon">📞</div>
-    <div class="nav-text">
-        <div>Podcast Calls</div>
-        <div class="nav-subtitle">Interview tracking</div>
-    </div>
-</a>
+                <a href="podcast-calls.html" class="nav-item">
+                    <div class="nav-icon">📞</div>
+                    <div class="nav-text">
+                        <div>Podcast Calls</div>
+                        <div class="nav-subtitle">Interview tracking</div>
+                    </div>
+                </a>
 
-<a href="discovery-calls.html" class="nav-item">
-    <div class="nav-icon">🎯</div>
-    <div class="nav-text">
-        <div>Discovery Calls</div>
-        <div class="nav-subtitle">Qualification calls</div>
-    </div>
-</a>
-                </div>
+                <a href="discovery-calls.html" class="nav-item">
+                    <div class="nav-icon">🎯</div>
+                    <div class="nav-text">
+                        <div>Discovery Calls</div>
+                        <div class="nav-subtitle">Qualification calls</div>
+                    </div>
+                </a>
 
                 <div class="nav-item" onclick="showPage('sales-calls')">
                     <div class="nav-icon">📈</div>
@@ -728,8 +685,12 @@
                                     <div class="stage-header">Discovery Call Booked</div>
                                     <div class="stage-content">
                                         <div class="prospect">
-                                            <h5>Coastal Interior Design</h5>
-                                            <p>Call scheduled for Sept 21, 2:00 PM</p>
+                                            <h5>Jonathan - Brewer Suite Co</h5>
+                                            <p>Call scheduled for Sept 23, 2:00 PM</p>
+                                        </div>
+                                        <div class="prospect">
+                                            <h5>Tye Shumway - TWS Construction</h5>
+                                            <p>Call scheduled for Sept 24, 10:00 AM</p>
                                         </div>
                                     </div>
                                 </div>
@@ -738,8 +699,8 @@
                                     <div class="stage-header">Proposal/Closing</div>
                                     <div class="stage-content">
                                         <div class="prospect">
-                                            <h5>Urban Renovation Co.</h5>
-                                            <p>Proposal sent - awaiting decision</p>
+                                            <h5>Coming Soon</h5>
+                                            <p>Qualified prospects will advance here</p>
                                         </div>
                                     </div>
                                 </div>
@@ -846,17 +807,38 @@
                 </div>
             </div>
 
-            <div id="podcast-calls" class="page">
+            <div id="sales-calls" class="page">
                 <div class="simple-page">
-                    <h1>Podcast Calls</h1>
-                    <p>Track your podcast interviews and initial conversations</p>
+                    <h1>Sales Calls</h1>
+                    <p>Closing conversations and proposal discussions</p>
                     <div class="empty-state">
-                        <h3>Podcast Calls Module</h3>
-                        <p>Build out your podcast call tracking system here</p>
+                        <h3>Sales Calls Module</h3>
+                        <p>Build out your sales call tracking here</p>
                     </div>
                 </div>
             </div>
 
-            <div id="discovery-calls" class="page">
+            <div id="pipeline" class="page">
                 <div class="simple-page">
-                    <h1>Discovery Calls
+                    <h1>Pipeline</h1>
+                    <p>Visual deal management and progression tracking</p>
+                    <div class="empty-state">
+                        <h3>Pipeline Module</h3>
+                        <p>Build out your visual pipeline management here</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="deals" class="page">
+                <div class="simple-page">
+                    <h1>Deals</h1>
+                    <p>Closed deals and revenue tracking</p>
+                    <div class="empty-state">
+                        <h3>Deals Module</h3>
+                        <p>Build out your deals tracking system here</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="cash-flow" class="page">
+                <div class="simple-
