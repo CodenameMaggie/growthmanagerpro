@@ -22,42 +22,36 @@
             min-height: 100vh;
         }
 
-<div class="sidebar">
-    <div class="sidebar-header">
-        <h1>Growth Manager Pro</h1>
-        <p>Client Acquisition System</p>
-    </div>
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e1e5e9;
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            display: block;
+        }
 
-    <div class="nav-section">
-        <div class="nav-section-title">Navigation</div>
-        
-        <a href="index.html" class="nav-item">
-            <div class="nav-icon">📊</div>
-            <div class="nav-text">
-                <div>Dashboard</div>
-                <div class="nav-subtitle">Overview & KPIs</div>
-            </div>
-        </a>
+        .sidebar-header {
+            padding: 0 2rem 2rem 2rem;
+            border-bottom: 1px solid #e1e5e9;
+            margin-bottom: 2rem;
+        }
 
-        <div class="nav-item" onclick="showPage('contacts')">
-            <div class="nav-icon">👥</div>
-            <div class="nav-text">
-                <div>Contacts</div>
-                <div class="nav-subtitle">Prospect database</div>
-            </div>
-        </div>
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
 
-        <a href="podcast-calls.html" class="nav-item active">
-            <div class="nav-icon">📞</div>
-            <div class="nav-text">
-                <div>Podcast Calls</div>
-                <div class="nav-subtitle">Interview tracking</div>
-            </div>
-        </a>
-
-        <!-- ... rest of navigation items ... -->
-    </div>
-</div>
+        .sidebar-header p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
 
         .nav-section {
             margin-bottom: 2rem;
@@ -847,21 +841,6 @@
             </div>
 
             <div id="cash-flow" class="page">
-                <div class="simple-
-<script>
-function showPage(pageId) {
-    // Hide all pages
-    const pages = document.querySelectorAll('.page');
-    pages.forEach(page => page.classList.remove('active'));
-
-    // Remove active class from all nav items
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(item => item.classList.remove('active'));
-
-    // Show selected page
-    document.getElementById(pageId).classList.add('active');
-
-    // Add active class to clicked nav item
-    event.target.closest('.nav-item').classList.add('active');
-}
-</script>
+                <div class="simple-page">
+                    <h1>Cash Flow</h1>
+                    <p>Financial tracking
