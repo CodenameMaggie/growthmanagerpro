@@ -18,6 +18,31 @@
             line-height: 1.6;
         }
 
+        .nav-bar {
+            background: #2c3e50;
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-bar a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .nav-bar a:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-bar a.active {
+            background: #3498db;
+        }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -246,75 +271,6 @@
             font-size: 0.8rem;
         }
 
-        .analysis-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: white;
-            margin: 2rem auto;
-            padding: 2rem;
-            border-radius: 12px;
-            max-width: 800px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #ecf0f1;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #7f8c8d;
-        }
-
-        .analysis-section {
-            margin-bottom: 2rem;
-        }
-
-        .analysis-category {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-        }
-
-        .category-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .category-score {
-            font-weight: bold;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            background: white;
-        }
-
-        .feedback-text {
-            font-size: 0.9rem;
-            color: #5a6c7d;
-            line-height: 1.5;
-        }
-
         .automation-status {
             background: #e8f5e8;
             border: 1px solid #27ae60;
@@ -331,19 +287,7 @@
             font-size: 1.5rem;
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #7f8c8d;
-        }
-
         @media (max-width: 768px) {
-            .page-header {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
             }
@@ -362,73 +306,12 @@
     </style>
 </head>
 <body>
-    .app-container {
-    display: flex;
-    min-height: 100vh;
-}
+    <div class="nav-bar">
+        <a href="index.html">📊 Dashboard</a>
+        <a href="podcast-calls.html" class="active">📞 Podcast Calls</a>
+        <a href="discovery-calls.html">🎯 Discovery Calls</a>
+    </div>
 
-.sidebar {
-    width: 280px;
-    background: white;
-    border-right: 1px solid #e1e5e9;
-    padding: 2rem 0;
-    position: fixed;
-    height: 100vh;
-    overflow-y: auto;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    display: block;
-}
-
-.sidebar-header {
-    padding: 0 2rem 2rem 2rem;
-    border-bottom: 1px solid #e1e5e9;
-    margin-bottom: 2rem;
-}
-
-.nav-section {
-    margin-bottom: 2rem;
-}
-
-.nav-item {
-    display: flex;
-    align-items: center;
-    padding: 0.8rem 2rem;
-    color: #5a6c7d;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
-
-.nav-item:hover {
-    background: #f8f9fa;
-    color: #2c3e50;
-}
-
-.nav-item.active {
-    background: #3498db;
-    color: white;
-    border-right: 3px solid #2980b9;
-}
-
-.nav-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 1rem;
-    font-size: 1.2rem;
-}
-
-.nav-text {
-    flex: 1;
-}
-
-.nav-subtitle {
-    font-size: 0.8rem;
-    opacity: 0.7;
-    margin-top: 0.2rem;
-}
-</div>
     <div class="container">
         <!-- Page Header -->
         <div class="page-header">
@@ -506,10 +389,10 @@
                 </div>
                 <div class="call-status status-completed">✓ Completed</div>
                 <div class="call-actions">
-                    <button class="btn btn-secondary btn-small" onclick="showAnalysis('marla')">
+                    <button class="btn btn-secondary btn-small">
                         📊 View Analysis
                     </button>
-                    <button class="btn btn-secondary btn-small" onclick="reAnalyze('marla')">
+                    <button class="btn btn-secondary btn-small">
                         🔄 Re-analyze
                     </button>
                     <button class="btn btn-secondary btn-small" disabled style="opacity: 0.5;">
@@ -537,13 +420,13 @@
                 </div>
                 <div class="call-status status-completed">✓ Completed</div>
                 <div class="call-actions">
-                    <button class="btn btn-secondary btn-small" onclick="showAnalysis('jonathan')">
+                    <button class="btn btn-secondary btn-small">
                         📊 View Analysis
                     </button>
-                    <button class="btn btn-secondary btn-small" onclick="reAnalyze('jonathan')">
+                    <button class="btn btn-secondary btn-small">
                         🔄 Re-analyze
                     </button>
-                    <button class="btn btn-primary btn-small" onclick="moveToDiscovery('jonathan')">
+                    <button class="btn btn-primary btn-small">
                         🎯 Move to Discovery
                     </button>
                 </div>
@@ -565,7 +448,7 @@
                     <button class="btn btn-secondary btn-small" disabled>
                         📊 View Analysis
                     </button>
-                    <button class="btn btn-secondary btn-small" onclick="uploadRecording()">
+                    <button class="btn btn-secondary btn-small">
                         📁 Upload Recording
                     </button>
                 </div>
@@ -584,10 +467,10 @@
                 </div>
                 <div class="call-status status-scheduled">📅 Scheduled</div>
                 <div class="call-actions">
-                    <button class="btn btn-secondary btn-small" onclick="editCall('bella')">
+                    <button class="btn btn-secondary btn-small">
                         ✏️ Edit
                     </button>
-                    <button class="btn btn-secondary btn-small" onclick="sendReminder('bella')">
+                    <button class="btn btn-secondary btn-small">
                         📧 Send Reminder
                     </button>
                 </div>
@@ -612,13 +495,13 @@
                 </div>
                 <div class="call-status status-completed">✓ Completed</div>
                 <div class="call-actions">
-                    <button class="btn btn-secondary btn-small" onclick="showAnalysis('tye')">
+                    <button class="btn btn-secondary btn-small">
                         📊 View Analysis
                     </button>
-                    <button class="btn btn-secondary btn-small" onclick="reAnalyze('tye')">
+                    <button class="btn btn-secondary btn-small">
                         🔄 Re-analyze
                     </button>
-                    <button class="btn btn-primary btn-small" onclick="moveToDiscovery('tye')">
+                    <button class="btn btn-primary btn-small">
                         🎯 Move to Discovery
                     </button>
                 </div>
@@ -643,10 +526,10 @@
                 </div>
                 <div class="call-status status-completed">✓ Completed</div>
                 <div class="call-actions">
-                    <button class="btn btn-secondary btn-small" onclick="showAnalysis('bobbie')">
+                    <button class="btn btn-secondary btn-small">
                         📊 View Analysis
                     </button>
-                    <button class="btn btn-secondary btn-small" onclick="reAnalyze('bobbie')">
+                    <button class="btn btn-secondary btn-small">
                         🔄 Re-analyze
                     </button>
                     <button class="btn btn-secondary btn-small" disabled style="opacity: 0.5;">
@@ -657,133 +540,14 @@
         </div>
     </div>
 
-    <!-- Analysis Modal -->
-    <div id="analysisModal" class="analysis-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Business Qualification Analysis - Marla Stone</h2>
-                <button class="close-modal" onclick="closeAnalysis()">&times;</button>
-            </div>
-
-            <div class="analysis-section">
-                <h3>Business Qualification Score: 30/50 (Not Qualified for Discovery)</h3>
-                
-                <div class="analysis-category">
-                    <div class="category-header">
-                        <strong>Business Maturity (6/15)</strong>
-                        <span class="category-score" style="background: #fef3cd; color: #f39c12;">Below Threshold</span>
-                    </div>
-                    <div class="feedback-text">
-                        <strong>Assessment:</strong> Solo practitioner with book/speaking focus. Limited scalable business model. Revenue appears primarily service-based rather than business growth-oriented.
-                        <br><br>
-                        <strong>Indicators:</strong> Former therapist turned organizer, writing books, individual clients. Not showing systems, team building, or scaling challenges that would benefit from growth consulting.
-                    </div>
-                </div>
-
-                <div class="analysis-category">
-                    <div class="category-header">
-                        <strong>Growth Potential (8/15)</strong>
-                        <span class="category-score" style="background: #e8f5e8; color: #27ae60;">Moderate</span>
-                    </div>
-                    <div class="feedback-text">
-                        <strong>Strengths:</strong> Clear expertise, established brand (I Deal Lifestyle), authored book, potential speaking circuit.
-                        <br><br>
-                        <strong>Limitations:</strong> Not expressing desire to scale beyond personal practice. More focused on content creation than business expansion.
-                    </div>
-                </div>
-
-                <div class="analysis-category">
-                    <div class="category-header">
-                        <strong>Financial Capacity (7/10)</strong>
-                        <span class="category-score" style="background: #e8f5e8; color: #27ae60;">Adequate</span>
-                    </div>
-                    <div class="feedback-text">
-                        <strong>Assessment:</strong> Established business with book revenue, likely has consulting budget for the right opportunity.
-                        <br><br>
-                        <strong>Note:</strong> Did not explicitly discuss revenue goals or growth investments during conversation.
-                    </div>
-                </div>
-
-                <div class="analysis-category">
-                    <div class="category-header">
-                        <strong>Urgency & Pain Points (9/10)</strong>
-                        <span class="category-score" style="background: #d5f4e6; color: #27ae60;">Strong</span>
-                    </div>
-                    <div class="feedback-text">
-                        <strong>Pain Points Identified:</strong> Clearly articulated challenges with procrastination, goal-setting, client psychology. Shows self-awareness of business development needs.
-                        <br><br>
-                        <strong>Urgency Level:</strong> Working on new book projects, actively developing methodology - indicates current growth phase.
-                    </div>
-                </div>
-
-                <div style="background: #fef2f2; padding: 1rem; border-radius: 8px; margin-top: 1rem; border-left: 4px solid #e74c3c;">
-                    <strong>❌ AI Recommendation:</strong> DO NOT MOVE TO DISCOVERY CALL - Score 30/50 (Threshold: 35+). Marla operates a successful solo practice but doesn't demonstrate the business scaling challenges or growth ambitions that align with your growth consulting services.
-                    <br><br>
-                    <strong>Alternative Action:</strong> File as networking contact. Potential referral source for entrepreneurs struggling with productivity/organization issues.
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        function showAnalysis(guest) {
-            document.getElementById('analysisModal').style.display = 'block';
-        }
-
-        function closeAnalysis() {
-            document.getElementById('analysisModal').style.display = 'none';
-        }
-
-        function moveToDiscovery(guest) {
-            if (confirm(`Move ${guest} to Discovery Calls pipeline?`)) {
-                alert(`${guest} has been moved to Discovery Calls. Automated email sequence initiated.`);
-                // In real implementation, this would trigger:
-                // 1. Update pipeline status
-                // 2. Send automated email
-                // 3. Update advisor dashboard
-                // 4. Create discovery call booking link
-            }
-        }
-
-        function reAnalyze(guest) {
-            alert(`Re-analyzing ${guest}'s call with updated AI criteria...`);
-            // In real implementation: trigger AI re-analysis
-        }
-
         function uploadRecording() {
             alert('Upload Recording: Connect to Zoom, or manually upload MP3/MP4 files for AI analysis');
-            // In real implementation: file upload interface
         }
 
         function addPodcastCall() {
             alert('Add Podcast Call: Schedule new call or manually log completed interview');
-            // In real implementation: form to add new call
         }
-
-        function editCall(guest) {
-            alert(`Edit call details for ${guest}`);
-        }
-
-        function sendReminder(guest) {
-            alert(`Sending automated reminder email to ${guest}`);
-        }
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('analysisModal');
-            if (event.target == modal) {
-                modal.style.display = 'none';
-            }
-        }
-
-        // Simulate real-time updates
-        setInterval(() => {
-            // In real implementation, this would check for:
-            // - New Zoom recordings
-            // - Completed AI analysis
-            // - Pipeline updates
-            console.log('Checking for new recordings and analysis updates...');
-        }, 30000);
     </script>
 </body>
 </html>
