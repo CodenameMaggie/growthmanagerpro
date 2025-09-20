@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Growth Manager Pro</title>
+    <title>Growth Manager Pro - Dashboard</title>
     <style>
         * {
             margin: 0;
@@ -33,7 +33,7 @@
             z-index: 1000;
             left: 0;
             top: 0;
-            display: block;
+            transition: transform 0.3s ease;
         }
 
         .sidebar-header {
@@ -111,14 +111,6 @@
             background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
             min-height: 100vh;
             padding: 0;
-        }
-
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
         }
 
         .container {
@@ -309,34 +301,37 @@
 
         .advisor-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 2rem;
             align-items: start;
         }
 
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
         }
 
         .kpi-card {
             background: #f8f9fa;
-            padding: 1rem;
+            padding: 1.2rem;
             border-radius: 8px;
             text-align: center;
+            border: 1px solid #e9ecef;
         }
 
         .kpi-value {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: bold;
             color: #2c3e50;
+            margin-bottom: 0.3rem;
         }
 
         .kpi-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #7f8c8d;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .weekly-summary {
@@ -391,34 +386,24 @@
             margin-top: 1rem;
         }
 
-        .simple-page {
-            background: white;
-            padding: 2rem;
-            margin: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-        }
-
-        .simple-page h1 {
-            color: #2c3e50;
-            margin-bottom: 1rem;
-        }
-
-        .simple-page p {
-            color: #7f8c8d;
-            margin-bottom: 2rem;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #7f8c8d;
+        /* Mobile hamburger menu */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
         }
 
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
-                transition: transform 0.3s ease;
             }
 
             .sidebar.open {
@@ -427,6 +412,10 @@
 
             .main-content {
                 margin-left: 0;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
             }
 
             .dashboard-grid {
@@ -444,13 +433,23 @@
             .kpi-grid {
                 grid-template-columns: 1fr;
             }
+
+            .container {
+                padding: 1rem;
+                padding-top: 4rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+            ☰
+        </button>
+
         <!-- Sidebar Navigation -->
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h1>Growth Manager Pro</h1>
                 <p>Client Acquisition System</p>
@@ -459,21 +458,21 @@
             <div class="nav-section">
                 <div class="nav-section-title">Navigation</div>
                 
-                <div class="nav-item active" onclick="showPage('dashboard')">
+                <a href="index.html" class="nav-item active">
                     <div class="nav-icon">📊</div>
                     <div class="nav-text">
                         <div>Dashboard</div>
                         <div class="nav-subtitle">Overview & KPIs</div>
                     </div>
-                </div>
+                </a>
 
-                <div class="nav-item" onclick="showPage('contacts')">
+                <a href="contacts.html" class="nav-item">
                     <div class="nav-icon">👥</div>
                     <div class="nav-text">
                         <div>Contacts</div>
                         <div class="nav-subtitle">Prospect database</div>
                     </div>
-                </div>
+                </a>
 
                 <a href="podcast-calls.html" class="nav-item">
                     <div class="nav-icon">📞</div>
@@ -491,356 +490,328 @@
                     </div>
                 </a>
 
-                <div class="nav-item" onclick="showPage('sales-calls')">
+                <a href="sales-calls.html" class="nav-item">
                     <div class="nav-icon">📈</div>
                     <div class="nav-text">
                         <div>Sales Calls</div>
                         <div class="nav-subtitle">Closing conversations</div>
                     </div>
-                </div>
+                </a>
 
-                <div class="nav-item" onclick="showPage('pipeline')">
+                <a href="pipeline.html" class="nav-item">
                     <div class="nav-icon">📋</div>
                     <div class="nav-text">
                         <div>Pipeline</div>
                         <div class="nav-subtitle">Deal management</div>
                     </div>
-                </div>
+                </a>
 
-                <div class="nav-item" onclick="showPage('deals')">
+                <a href="deals.html" class="nav-item">
                     <div class="nav-icon">📄</div>
                     <div class="nav-text">
                         <div>Deals</div>
                         <div class="nav-subtitle">Closed deals</div>
                     </div>
-                </div>
+                </a>
 
-                <div class="nav-item" onclick="showPage('cash-flow')">
+                <a href="cash-flow.html" class="nav-item">
                     <div class="nav-icon">💰</div>
                     <div class="nav-text">
                         <div>Cash Flow</div>
                         <div class="nav-subtitle">Financial tracking</div>
                     </div>
-                </div>
+                </a>
 
-                <div class="nav-item" onclick="showPage('campaigns')">
+                <a href="campaigns.html" class="nav-item">
                     <div class="nav-icon">⚡</div>
                     <div class="nav-text">
                         <div>Campaigns</div>
                         <div class="nav-subtitle">Outreach tracking</div>
                     </div>
-                </div>
+                </a>
 
-                <div class="nav-item" onclick="showPage('sprints')">
+                <a href="sprints.html" class="nav-item">
                     <div class="nav-icon">📅</div>
                     <div class="nav-text">
                         <div>Sprints</div>
                         <div class="nav-subtitle">Task management</div>
                     </div>
-                </div>
+                </a>
 
-                <div class="nav-item" onclick="showPage('expense-tracker')">
+                <a href="expense-tracker.html" class="nav-item">
                     <div class="nav-icon">🧮</div>
                     <div class="nav-text">
                         <div>Expense Tracker</div>
                         <div class="nav-subtitle">Manage recurring costs</div>
                     </div>
-                </div>
+                </a>
 
-                <div class="nav-item" onclick="showPage('availability')">
+                <a href="availability.html" class="nav-item">
                     <div class="nav-icon">🕐</div>
                     <div class="nav-text">
                         <div>Availability</div>
                         <div class="nav-subtitle">Schedule settings</div>
                     </div>
-                </div>
+                </a>
 
-                <div class="nav-item" onclick="showPage('user-management')">
+                <a href="user-management.html" class="nav-item">
                     <div class="nav-icon">⚙️</div>
                     <div class="nav-text">
                         <div>User Management</div>
                         <div class="nav-subtitle">Manage users & permissions</div>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
-            <!-- Rich Dashboard Page -->
-            <div id="dashboard" class="page active">
-                <div class="container">
-                    <div class="header">
-                        <h1>Growth Manager Pro</h1>
-                        <p class="subtitle">Business Development Dashboard - Client Acquisition System</p>
-                        <div class="goals">
-                            <strong>North Star Goal:</strong> $50k/month | 3-Month Target: $25k/month
-                        </div>
+            <div class="container">
+                <div class="header">
+                    <h1>Growth Manager Pro</h1>
+                    <p class="subtitle">Business Development Dashboard - Client Acquisition System</p>
+                    <div class="goals">
+                        <strong>North Star Goal:</strong> $50k/month | 3-Month Target: $25k/month
                     </div>
+                </div>
 
-                    <div class="dashboard-grid">
-                        <div class="stat-card">
-                            <div class="stat-number finished">42</div>
-                            <div class="stat-label">Tasks Finished</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number on-track">8</div>
-                            <div class="stat-label">On Track</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number off-track">6</div>
-                            <div class="stat-label">Off Track</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number blocked">3</div>
-                            <div class="stat-label">Blocked</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" style="color: #9b59b6;">6</div>
-                            <div class="stat-label">Podcast Calls</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" style="color: #e67e22;">2</div>
-                            <div class="stat-label">Qualified for Discovery</div>
-                        </div>
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-number finished">42</div>
+                        <div class="stat-label">Tasks Finished</div>
                     </div>
+                    <div class="stat-card">
+                        <div class="stat-number on-track">8</div>
+                        <div class="stat-label">On Track</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number off-track">6</div>
+                        <div class="stat-label">Off Track</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number blocked">3</div>
+                        <div class="stat-label">Blocked</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #9b59b6;">6</div>
+                        <div class="stat-label">Podcast Calls</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: #e67e22;">2</div>
+                        <div class="stat-label">Qualified for Discovery</div>
+                    </div>
+                </div>
 
-                    <div class="main-grid">
-                        <div class="section">
-                            <div class="section-header">
-                                <h2>Current Sprint Tasks</h2>
-                                <span>Week 6 (9/11/25)</span>
-                            </div>
-                            <div class="section-content">
-                                <div class="task-item">
-                                    <div class="task-details">
-                                        <h4>8.0 - Update podcast call/discovery call trackers</h4>
-                                        <p>Focus: Business Value Creation | Due: 9/11/25</p>
-                                    </div>
-                                    <div class="status-badge status-on-track">On Track</div>
-                                </div>
-                                <div class="task-item">
-                                    <div class="task-details">
-                                        <h4>8.1 - Build a new lead list for campaign</h4>
-                                        <p>Focus: Business Value Creation | Due: 9/11/25</p>
-                                    </div>
-                                    <div class="status-badge status-on-track">On Track</div>
-                                </div>
-                                <div class="task-item">
-                                    <div class="task-details">
-                                        <h4>8.2 - Review training on how to scrape leads</h4>
-                                        <p>Focus: Business Value Creation | Due: 9/11/25</p>
-                                    </div>
-                                    <div class="status-badge status-on-track">On Track</div>
-                                </div>
-                                <div class="task-item">
-                                    <div class="task-details">
-                                        <h4>8.3 - Review training on how to verify leads</h4>
-                                        <p>Focus: Business Value Creation | Due: 9/11/25</p>
-                                    </div>
-                                    <div class="status-badge status-on-track">On Track</div>
-                                </div>
-                                <div class="task-item">
-                                    <div class="task-details">
-                                        <h4>8.4 - Use AI-clients to create new emailing campaigns</h4>
-                                        <p>Focus: Business Value Creation | Due: 9/11/25</p>
-                                    </div>
-                                    <div class="status-badge status-on-track">On Track</div>
-                                </div>
-                                <div class="task-item">
-                                    <div class="task-details">
-                                        <h4>7.4 - Complete section 7 - AI client service delivery</h4>
-                                        <p>Focus: Business Value Creation | Overdue from 8/28/25</p>
-                                    </div>
-                                    <div class="status-badge status-off-track">Off Track</div>
-                                </div>
-                            </div>
+                <div class="main-grid">
+                    <div class="section">
+                        <div class="section-header">
+                            <h2>Current Sprint Tasks</h2>
+                            <span>Week 6 (9/11/25)</span>
                         </div>
-
-                        <div class="section">
-                            <div class="section-header">
-                                <h2>Podcast Funnel Pipeline</h2>
-                                <span>Auto-Updated</span>
+                        <div class="section-content">
+                            <div class="task-item">
+                                <div class="task-details">
+                                    <h4>8.0 - Update podcast call/discovery call trackers</h4>
+                                    <p>Focus: Business Value Creation | Due: 9/11/25</p>
+                                </div>
+                                <div class="status-badge status-on-track">On Track</div>
                             </div>
-                            <div class="section-content">
-                                <div class="pipeline-stage">
-                                    <div class="stage-header">Podcast Calls (6 active)</div>
-                                    <div class="stage-content">
-                                        <div class="prospect">
-                                            <h5>Jonathan - Brewer Suite Co</h5>
-                                            <p>Qualified (38/50) - Ready for discovery</p>
-                                        </div>
-                                        <div class="prospect">
-                                            <h5>Tye Shumway - TWS Construction</h5>
-                                            <p>Qualified (35/50) - Ready for discovery</p>
-                                        </div>
-                                        <div class="prospect">
-                                            <h5>Kami Gray - Psychology From Design</h5>
-                                            <p>Processing - Analysis pending</p>
-                                        </div>
-                                    </div>
+                            <div class="task-item">
+                                <div class="task-details">
+                                    <h4>8.1 - Build a new lead list for campaign</h4>
+                                    <p>Focus: Business Value Creation | Due: 9/11/25</p>
                                 </div>
-                                
-                                <div class="pipeline-stage">
-                                    <div class="stage-header">Discovery Call Booked</div>
-                                    <div class="stage-content">
-                                        <div class="prospect">
-                                            <h5>Jonathan - Brewer Suite Co</h5>
-                                            <p>Call scheduled for Sept 23, 2:00 PM</p>
-                                        </div>
-                                        <div class="prospect">
-                                            <h5>Tye Shumway - TWS Construction</h5>
-                                            <p>Call scheduled for Sept 24, 10:00 AM</p>
-                                        </div>
-                                    </div>
+                                <div class="status-badge status-on-track">On Track</div>
+                            </div>
+                            <div class="task-item">
+                                <div class="task-details">
+                                    <h4>8.2 - Review training on how to scrape leads</h4>
+                                    <p>Focus: Business Value Creation | Due: 9/11/25</p>
                                 </div>
-                                
-                                <div class="pipeline-stage">
-                                    <div class="stage-header">Proposal/Closing</div>
-                                    <div class="stage-content">
-                                        <div class="prospect">
-                                            <h5>Coming Soon</h5>
-                                            <p>Qualified prospects will advance here</p>
-                                        </div>
-                                    </div>
+                                <div class="status-badge status-on-track">On Track</div>
+                            </div>
+                            <div class="task-item">
+                                <div class="task-details">
+                                    <h4>8.3 - Review training on how to verify leads</h4>
+                                    <p>Focus: Business Value Creation | Due: 9/11/25</p>
                                 </div>
+                                <div class="status-badge status-on-track">On Track</div>
+                            </div>
+                            <div class="task-item">
+                                <div class="task-details">
+                                    <h4>8.4 - Use AI-clients to create new emailing campaigns</h4>
+                                    <p>Focus: Business Value Creation | Due: 9/11/25</p>
+                                </div>
+                                <div class="status-badge status-on-track">On Track</div>
+                            </div>
+                            <div class="task-item">
+                                <div class="task-details">
+                                    <h4>7.4 - Complete section 7 - AI client service delivery</h4>
+                                    <p>Focus: Business Value Creation | Overdue from 8/28/25</p>
+                                </div>
+                                <div class="status-badge status-off-track">Off Track</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="advisor-section">
-                        <h2 style="margin-bottom: 2rem; color: #2c3e50;">Advisor Reporting Dashboard</h2>
-                        
-                        <div class="advisor-grid">
-                            <div>
-                                <h3 style="margin-bottom: 1rem;">Weekly Progress Summary</h3>
-                                <div class="weekly-summary">
-                                    <div class="summary-item">
-                                        <span>Sprint Tasks Completed:</span>
-                                        <strong>5/6 (83%)</strong>
+                    <div class="section">
+                        <div class="section-header">
+                            <h2>Podcast Funnel Pipeline</h2>
+                            <span>Auto-Updated</span>
+                        </div>
+                        <div class="section-content">
+                            <div class="pipeline-stage">
+                                <div class="stage-header">Podcast Calls (6 active)</div>
+                                <div class="stage-content">
+                                    <div class="prospect">
+                                        <h5>Jonathan - Brewer Suite Co</h5>
+                                        <p>Qualified (38/50) - Ready for discovery</p>
                                     </div>
-                                    <div class="summary-item">
-                                        <span>Podcast Calls This Week:</span>
-                                        <strong>3 calls</strong>
+                                    <div class="prospect">
+                                        <h5>Tye Shumway - TWS Construction</h5>
+                                        <p>Qualified (35/50) - Ready for discovery</p>
                                     </div>
-                                    <div class="summary-item">
-                                        <span>Qualified for Discovery:</span>
-                                        <strong>2 prospects</strong>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span>Pipeline Movement:</span>
-                                        <strong>2 prospects advanced</strong>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span>Revenue This Month:</span>
-                                        <strong>$3,500</strong>
-                                    </div>
-                                </div>
-                                
-                                <h4 style="margin: 1rem 0 0.5rem;">Key Blockers & Challenges:</h4>
-                                <ul style="color: #7f8c8d; margin-left: 1.5rem;">
-                                    <li>Discovery call booking automation needs setup</li>
-                                    <li>AI analysis processing speed optimization</li>
-                                    <li>Integration with email sequences pending</li>
-                                </ul>
-                            </div>
-
-                            <div>
-                                <h3 style="margin-bottom: 1rem;">Podcast Funnel Metrics</h3>
-                                <div class="kpi-grid">
-                                    <div class="kpi-card">
-                                        <div class="kpi-value" style="color: #27ae60;">6</div>
-                                        <div class="kpi-label">Total Calls</div>
-                                    </div>
-                                    <div class="kpi-card">
-                                        <div class="kpi-value" style="color: #27ae60;">33%</div>
-                                        <div class="kpi-label">Qualification Rate</div>
-                                    </div>
-                                    <div class="kpi-card">
-                                        <div class="kpi-value" style="color: #f39c12;">36</div>
-                                        <div class="kpi-label">Avg Score</div>
-                                    </div>
-                                    <div class="kpi-card">
-                                        <div class="kpi-value" style="color: #27ae60;">✓</div>
-                                        <div class="kpi-label">AI Analysis</div>
-                                    </div>
-                                    <div class="kpi-card">
-                                        <div class="kpi-value" style="color: #3498db;">2</div>
-                                        <div class="kpi-label">Ready for Discovery</div>
-                                    </div>
-                                    <div class="kpi-card">
-                                        <div class="kpi-value" style="color: #e74c3c;">1</div>
-                                        <div class="kpi-label">Processing</div>
+                                    <div class="prospect">
+                                        <h5>Kami Gray - Psychology From Design</h5>
+                                        <p>Processing - Analysis pending</p>
                                     </div>
                                 </div>
                             </div>
-
-                            <div>
-                                <h3 style="margin-bottom: 1rem;">Generate Reports</h3>
-                                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                                    <a href="#" class="btn">📊 Weekly Progress Report</a>
-                                    <a href="#" class="btn success">📈 Podcast Funnel Analysis</a>
-                                    <a href="#" class="btn warning">🎯 Pipeline & Forecasting</a>
-                                    <a href="#" class="btn">📋 Task Completion Summary</a>
-                                    <a href="#" class="btn success">🔊 Call Recording Analysis</a>
+                            
+                            <div class="pipeline-stage">
+                                <div class="stage-header">Discovery Call Booked</div>
+                                <div class="stage-content">
+                                    <div class="prospect">
+                                        <h5>Jonathan - Brewer Suite Co</h5>
+                                        <p>Call scheduled for Sept 23, 2:00 PM</p>
+                                    </div>
+                                    <div class="prospect">
+                                        <h5>Tye Shumway - TWS Construction</h5>
+                                        <p>Call scheduled for Sept 24, 10:00 AM</p>
+                                    </div>
                                 </div>
-                                
-                                <div class="last-updated">
-                                    <strong>Last Updated:</strong> September 19, 2025 - 2:30 PM<br>
-                                    <strong>Share URL:</strong> https://codenamemaggiecooper.github.io/growthmanagerpro
+                            </div>
+                            
+                            <div class="pipeline-stage">
+                                <div class="stage-header">Proposal/Closing</div>
+                                <div class="stage-content">
+                                    <div class="prospect">
+                                        <h5>Coming Soon</h5>
+                                        <p>Qualified prospects will advance here</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Other Pages -->
-            <div id="contacts" class="page">
-                <div class="simple-page">
-                    <h1>Contacts</h1>
-                    <p>Manage your prospect database</p>
-                    <div class="empty-state">
-                        <h3>Contacts Module</h3>
-                        <p>Build out your contact management system here</p>
+                <div class="advisor-section">
+                    <h2 style="margin-bottom: 2rem; color: #2c3e50;">Advisor Reporting Dashboard</h2>
+                    
+                    <div class="advisor-grid">
+                        <div>
+                            <h3 style="margin-bottom: 1rem;">Weekly Progress Summary</h3>
+                            <div class="weekly-summary">
+                                <div class="summary-item">
+                                    <span>Sprint Tasks Completed:</span>
+                                    <strong>5/6 (83%)</strong>
+                                </div>
+                                <div class="summary-item">
+                                    <span>Podcast Calls This Week:</span>
+                                    <strong>3 calls</strong>
+                                </div>
+                                <div class="summary-item">
+                                    <span>Qualified for Discovery:</span>
+                                    <strong>2 prospects</strong>
+                                </div>
+                                <div class="summary-item">
+                                    <span>Pipeline Movement:</span>
+                                    <strong>2 prospects advanced</strong>
+                                </div>
+                                <div class="summary-item">
+                                    <span>Revenue This Month:</span>
+                                    <strong>$3,500</strong>
+                                </div>
+                            </div>
+                            
+                            <h4 style="margin: 1rem 0 0.5rem;">Key Blockers & Challenges:</h4>
+                            <ul style="color: #7f8c8d; margin-left: 1.5rem;">
+                                <li>Discovery call booking automation needs setup</li>
+                                <li>AI analysis processing speed optimization</li>
+                                <li>Integration with email sequences pending</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 style="margin-bottom: 1rem;">Podcast Funnel Metrics</h3>
+                            <div class="kpi-grid">
+                                <div class="kpi-card">
+                                    <div class="kpi-value" style="color: #27ae60;">6</div>
+                                    <div class="kpi-label">Total Calls</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-value" style="color: #27ae60;">33%</div>
+                                    <div class="kpi-label">Qualification Rate</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-value" style="color: #f39c12;">36</div>
+                                    <div class="kpi-label">Avg Score</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-value" style="color: #27ae60;">✓</div>
+                                    <div class="kpi-label">AI Analysis</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-value" style="color: #3498db;">2</div>
+                                    <div class="kpi-label">Ready for Discovery</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-value" style="color: #e74c3c;">1</div>
+                                    <div class="kpi-label">Processing</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 style="margin-bottom: 1rem;">Generate Reports</h3>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <a href="#" class="btn">📊 Weekly Progress Report</a>
+                                <a href="#" class="btn success">📈 Podcast Funnel Analysis</a>
+                                <a href="#" class="btn warning">🎯 Pipeline & Forecasting</a>
+                                <a href="#" class="btn">📋 Task Completion Summary</a>
+                                <a href="#" class="btn success">🔊 Call Recording Analysis</a>
+                            </div>
+                            
+                            <div class="last-updated">
+                                <strong>Last Updated:</strong> September 19, 2025 - 2:30 PM<br>
+                                <strong>Share URL:</strong> https://codenamemaggiecooper.github.io/growthmanagerpro
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div id="sales-calls" class="page">
-                <div class="simple-page">
-                    <h1>Sales Calls</h1>
-                    <p>Closing conversations and proposal discussions</p>
-                    <div class="empty-state">
-                        <h3>Sales Calls Module</h3>
-                        <p>Build out your sales call tracking here</p>
-                    </div>
-                </div>
-            </div>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
 
-            <div id="pipeline" class="page">
-                <div class="simple-page">
-                    <h1>Pipeline</h1>
-                    <p>Visual deal management and progression tracking</p>
-                    <div class="empty-state">
-                        <h3>Pipeline Module</h3>
-                        <p>Build out your visual pipeline management here</p>
-                    </div>
-                </div>
-            </div>
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
 
-            <div id="deals" class="page">
-                <div class="simple-page">
-                    <h1>Deals</h1>
-                    <p>Closed deals and revenue tracking</p>
-                    <div class="empty-state">
-                        <h3>Deals Module</h3>
-                        <p>Build out your deals tracking system here</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="cash-flow" class="page">
-                <div class="simple-page">
-                    <h1>Cash Flow</h1>
-                    <p>Financial tracking
+        console.log('Dashboard loaded with unified navigation');
+    </script>
+</body>
+</html>
