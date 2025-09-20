@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discovery Calls - Growth Manager Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-icon {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+        }
+
+        .header-text h1 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-text p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2ecc71;
+        }
+
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+            border: 1px solid #bdc3c7;
+        }
+
+        .btn-secondary:hover {
+            background: #d5dbdb;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .scheduled { color: #3498db; }
+        .completed { color: #27ae60; }
+        .no-show { color: #e74c3c; }
+        .qualified { color: #f39c12; }
+
+        .source-indicator {
+            background: #e8f5e8;
+            border: 1px solid #27ae60;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .source-icon {
+            color: #27ae60;
+            font-size: 1.5rem;
+        }
+
+        .calls-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .call-item {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+        }
+
+        .call-item:last-child {
+            border-bottom: none;
+        }
+
+        .call-avatar {
+            width: 50px;
+            height: 50px;
+            background: #3498db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .call-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .call-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+            gap: 1rem;
+        }
+
+        .call-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.3rem;
+        }
+
+        .call-details {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 0.8rem;
+        }
+
+        .pain-points {
+            background: #fff3cd;
+            padding: 0.8rem;
+            border-radius: 6px;
+            margin-bottom: 0.8rem;
+            border-left: 3px solid #ffc107;
+        }
+
+        .pain-points h4 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 0.3rem;
+        }
+
+        .pain-points p {
+            font-size: 0.85rem;
+            color: #664d03;
+            line-height: 1.4;
+        }
+
+        .call-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .status-scheduled {
+            background: #dbeafe;
+            color: #3498db;
+        }
+
+        .status-completed {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+
+        .status-no-show {
+            background: #fef2f2;
+            color: #e74c3c;
+        }
+
+        .status-in-progress {
+            background: #fef3cd;
+            color: #f39c12;
+        }
+
+        .call-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+        }
+
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .source-tag {
+            background: #e8f5e8;
+            color: #27ae60;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .goals-section {
+            background: #f0f9f0;
+            padding: 0.8rem;
+            border-radius: 6px;
+            margin-top: 0.8rem;
+            border-left: 3px solid #27ae60;
+        }
+
+        .goals-section h4 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #155724;
+            margin-bottom: 0.3rem;
+        }
+
+        .goals-section p {
+            font-size: 0.85rem;
+            color: #155724;
+            line-height: 1.4;
+        }
+
+        .meeting-info {
+            background: #f8f9fa;
+            padding: 0.6rem;
+            border-radius: 6px;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #495057;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+        }
+
+        .form-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .call-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .call-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-left">
+                <div class="header-icon">🎯</div>
+                <div class="header-text">
+                    <h1>Discovery Calls</h1>
+                    <p>Deep-dive qualification conversations with podcast prospects</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="bulkActions()">
+                    📊 Bulk Actions
+                </button>
+                <button class="btn btn-primary" onclick="scheduleDiscovery()">
+                    ➕ Schedule Discovery Call
+                </button>
+            </div>
+        </div>
+
+        <!-- Source Indicator -->
+        <div class="source-indicator">
+            <div class="source-icon">📞</div>
+            <div>
+                <strong>Podcast Call Pipeline Integration</strong> - Prospects automatically advance here when scoring 35+ points. 
+                AI pre-analysis provides conversation starting points and qualification insights.
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number scheduled">2</div>
+                <div class="stat-label">Scheduled</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number completed">0</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number qualified">0</div>
+                <div class="stat-label">Qualified for Sales</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number no-show">0</div>
+                <div class="stat-label">No Shows</div>
+            </div>
+        </div>
+
+        <!-- Discovery Calls List -->
+        <div class="calls-section">
+            <div class="section-header">
+                <h2 class="section-title">Active Discovery Calls</h2>
+                <div style="font-size: 0.9rem; color: #7f8c8d;">
+                    Auto-populated from qualified podcast calls (35+ score)
+                </div>
+            </div>
+
+            <!-- Call Item 1 - Jonathan (From Podcast) -->
+            <div class="call-item">
+                <div class="call-avatar">J</div>
+                <div class="call-info">
+                    <div class="call-header">
+                        <div>
+                            <div class="call-name">Jonathan</div>
+                            <div class="call-details">
+                                Brewer Suite Co • Moved from Podcast (38/50) • Sep 23, 2025 at 2:00 PM
+                                <span class="source-tag">From Podcast</span>
+                            </div>
+                        </div>
+                        <div class="call-status status-scheduled">Scheduled</div>
+                    </div>
+                    
+                    <div class="pain-points">
+                        <h4>AI-Identified Pain Points from Podcast:</h4>
+                        <p>Scaling team management challenges - growing from individual work to delegating. Need for better systems to support 15+ projects/year. Project management complexities with coastal construction regulations. Partnership coordination with other design firms.</p>
+                    </div>
+
+                    <div class="goals-section">
+                        <h4>Identified Business Goals:</h4>
+                        <p>Build solid foundation systems for continued scaling. Improve delegation frameworks and team management. Streamline project management for complex coastal builds. Sustainable growth strategy for interior design firm.</p>
+                    </div>
+
+                    <div class="meeting-info">
+                        Zoom Meeting ID: 123-456-789 | Duration: 60 min | Calendar sync: Active
+                    </div>
+
+                    <div class="call-actions">
+                        <button class="btn btn-primary btn-small" onclick="joinMeeting('jonathan')">
+                            Join Meeting
+                        </button>
+                        <button class="btn btn-secondary btn-small" onclick="editCall('jonathan')">
+                            Edit Details
+                        </button>
+                        <button class="btn btn-secondary btn-small" onclick="viewPodcastContext('jonathan')">
+                            View Podcast Context
+                        </button>
+                        <button class="btn btn-secondary btn-small" onclick="sendReminder('jonathan')">
+                            Send Reminder
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call Item 2 - Tye (From Podcast) -->
+            <div class="call-item">
+                <div class="call-avatar">T</div>
+                <div class="call-info">
+                    <div class="call-header">
+                        <div>
+                            <div class="call-name">Tye Shumway</div>
+                            <div class="call-details">
+                                TWS Construction • Moved from Podcast (35/50) • Sep 24, 2025 at 10:00 AM
+                                <span class="source-tag">From Podcast</span>
+                            </div>
+                        </div>
+                        <div class="call-status status-scheduled">Scheduled</div>
+                    </div>
+                    
+                    <div class="pain-points">
+                        <h4>AI-Identified Pain Points from Podcast:</h4>
+                        <p>CFO/financial management role challenges - not his expertise area. Construction cashflow management complexities. Has gone through 5 bookkeepers - needs systems integration. Scaling from $750K to $10M revenue goal requires structure.</p>
+                    </div>
+
+                    <div class="goals-section">
+                        <h4>Identified Business Goals:</h4>
+                        <p>Implement sustainable financial systems for construction business. Develop team to reduce owner dependency ("fire myself as CEO"). Optimize multiple revenue streams (construction + real estate). Create employee ownership/growth pathways.</p>
+                    </div>
+
+                    <div class="meeting-info">
+                        Zoom Meeting ID: 987-654-321 | Duration: 60 min | Calendar sync: Active
+                    </div>
+
+                    <div class="call-actions">
+                        <button class="btn btn-primary btn-small" onclick="joinMeeting('tye')">
+                            Join Meeting
+                        </button>
+                        <button class="btn btn-secondary btn-small" onclick="editCall('tye')">
+                            Edit Details
+                        </button>
+                        <button class="btn btn-secondary btn-small" onclick="viewPodcastContext('tye')">
+                            View Podcast Context
+                        </button>
+                        <button class="btn btn-secondary btn-small" onclick="sendReminder('tye')">
+                            Send Reminder
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State for Kami (Still Processing) -->
+            <div class="call-item" style="opacity: 0.6;">
+                <div class="call-avatar" style="background: #f39c12;">K</div>
+                <div class="call-info">
+                    <div class="call-header">
+                        <div>
+                            <div class="call-name">Kami Gray</div>
+                            <div class="call-details">
+                                Psychology From Design • Podcast analysis still processing
+                                <span class="source-tag">Pending Analysis</span>
+                            </div>
+                        </div>
+                        <div class="call-status status-in-progress">Processing</div>
+                    </div>
+                    
+                    <div class="pain-points">
+                        <h4>Preliminary Assessment:</h4>
+                        <p>Design school owner (58 years old), looking to scale and potentially sell within 5 years. Has 15-year interior design firm alongside education business. Strong business acumen evident from transcript.</p>
+                    </div>
+
+                    <div class="call-actions">
+                        <button class="btn btn-secondary btn-small" disabled>
+                            Awaiting AI Analysis
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Form Modal -->
+    <div id="scheduleModal" class="form-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Schedule Discovery Call</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+
+            <form onsubmit="saveDiscoveryCall(event)">
+                <div class="form-group">
+                    <label for="contact">Contact *</label>
+                    <select id="contact" required>
+                        <option value="">Select qualified prospect...</option>
+                        <option value="kami">Kami Gray - Psychology From Design (Processing)</option>
+                        <option value="new">Add New Contact</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="datetime">Date & Time *</label>
+                    <input type="datetime-local" id="datetime" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="pain_points">Expected Pain Points</label>
+                    <textarea id="pain_points" placeholder="What challenges do you expect to uncover based on preliminary research?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="goals">Initial Goals Assessment</label>
+                    <textarea id="goals" placeholder="What business goals might they have based on initial conversations?"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Schedule Discovery Call</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function scheduleDiscovery() {
+            document.getElementById('scheduleModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('scheduleModal').style.display = 'none';
+        }
+
+        function joinMeeting(prospect) {
+            alert(`Opening Zoom meeting for ${prospect}. In real implementation, this would open the Zoom join URL.`);
+        }
+
+        function editCall(prospect) {
+            alert(`Editing discovery call details for ${prospect}`);
+        }
+
+        function viewPodcastContext(prospect) {
+            alert(`Viewing original podcast call context and AI analysis for ${prospect}`);
+        }
+
+        function moveToSales(prospect) {
+            if (confirm(`Move ${prospect} to Sales Calls pipeline?`)) {
+                alert(`${prospect} has been moved to Sales Calls. Proposal template and pricing guide prepared.`);
+            }
+        }
+
+        function reschedule(prospect) {
+            alert(`Attempting to reschedule with ${prospect}. Automated sequence triggered.`);
+        }
+
+        function sendFollowUp(prospect) {
+            alert(`Sending personalized follow-up email to ${prospect}`);
+        }
+
+        function moveToNurture(prospect) {
+            if (confirm(`Move ${prospect} to nurture sequence?`)) {
+                alert(`${prospect} added to 90-day nurture campaign.`);
+            }
+        }
+
+        function sendReminder(prospect) {
+            alert(`Sending automated reminder email to ${prospect}`);
+        }
+
+        function viewRecording(prospect) {
+            alert(`Opening call recording for ${prospect}`);
+        }
+
+        function bulkActions() {
+            alert('Bulk action menu: Export data, Send batch reminders, Update statuses');
+        }
+
+        function saveDiscoveryCall(event) {
+            event.preventDefault();
+            alert('Discovery call scheduled! Zoom meeting created and calendar invites sent.');
+            closeModal();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('scheduleModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Simulate real-time updates
+        setInterval(() => {
+            // In real implementation, this would check for:
+            // - New qualified prospects from podcast calls
+            // - Meeting updates from calendar integration
+            // - Status changes and follow-up triggers
+            console.log('Checking for pipeline updates and meeting status changes...');
+        }, 30000);
+    </script>
+</body>
+</html>
