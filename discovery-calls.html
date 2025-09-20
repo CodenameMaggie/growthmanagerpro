@@ -147,8 +147,8 @@
 
         .scheduled { color: #3498db; }
         .completed { color: #27ae60; }
-        .no-show { color: #e74c3c; }
         .qualified { color: #f39c12; }
+        .not-qualified { color: #e74c3c; }
 
         .source-indicator {
             background: #e8f5e8;
@@ -279,14 +279,41 @@
             color: #27ae60;
         }
 
-        .status-no-show {
+        .status-qualified {
+            background: #fff3cd;
+            color: #f39c12;
+        }
+
+        .status-not-qualified {
             background: #fef2f2;
             color: #e74c3c;
         }
 
-        .status-in-progress {
-            background: #fef3cd;
-            color: #f39c12;
+        .call-score {
+            text-align: center;
+            margin: 0.8rem 0;
+        }
+
+        .score-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .score-stars {
+            display: flex;
+            gap: 2px;
+            margin-top: 0.3rem;
+            justify-content: center;
+        }
+
+        .star {
+            color: #ffd700;
+            font-size: 1rem;
+        }
+
+        .star.empty {
+            color: #ddd;
         }
 
         .call-actions {
@@ -340,6 +367,31 @@
             color: #495057;
         }
 
+        .qualification-result {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border-left: 4px solid #3498db;
+        }
+
+        .qualification-result h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .qualification-result.qualified {
+            border-left-color: #27ae60;
+            background: #f0f9f0;
+        }
+
+        .qualification-result.not-qualified {
+            border-left-color: #e74c3c;
+            background: #fef2f2;
+        }
+
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
@@ -360,9 +412,10 @@
 </head>
 <body>
     <div class="nav-bar">
-        <a href="index.html">📊 Dashboard</a>
-        <a href="podcast-calls.html">📞 Podcast Calls</a>
-        <a href="discovery-calls.html" class="active">🎯 Discovery Calls</a>
+        <a href="index.html">Dashboard</a>
+        <a href="podcast-calls.html">Podcast Calls</a>
+        <a href="discovery-calls.html" class="active">Discovery Calls</a>
+        <a href="sales-calls.html">Sales Calls</a>
     </div>
 
     <div class="container">
@@ -372,15 +425,15 @@
                 <div class="header-icon">🎯</div>
                 <div class="header-text">
                     <h1>Discovery Calls</h1>
-                    <p>Deep-dive qualification conversations with podcast prospects</p>
+                    <p>Business qualification and needs assessment calls</p>
                 </div>
             </div>
             <div class="header-actions">
                 <button class="btn btn-secondary">
-                    📊 Bulk Actions
+                    Export Analysis
                 </button>
                 <button class="btn btn-primary">
-                    ➕ Schedule Discovery Call
+                    Schedule Discovery Call
                 </button>
             </div>
         </div>
@@ -390,27 +443,27 @@
             <div class="source-icon">📞</div>
             <div>
                 <strong>Podcast Call Pipeline Integration</strong> - Prospects automatically advance here when scoring 35+ points. 
-                AI analysis provides conversation starting points and qualification insights.
+                Discovery calls focus on deeper business qualification and needs assessment.
             </div>
         </div>
 
         <!-- Stats Cards -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number scheduled">2</div>
+                <div class="stat-number scheduled">1</div>
                 <div class="stat-label">Scheduled</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number completed">0</div>
+                <div class="stat-number completed">3</div>
                 <div class="stat-label">Completed</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number qualified">0</div>
+                <div class="stat-number qualified">2</div>
                 <div class="stat-label">Qualified for Sales</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number no-show">0</div>
-                <div class="stat-label">No Shows</div>
+                <div class="stat-number not-qualified">1</div>
+                <div class="stat-label">Not Qualified</div>
             </div>
         </div>
 
@@ -419,11 +472,11 @@
             <div class="section-header">
                 <h2 class="section-title">Active Discovery Calls</h2>
                 <div style="font-size: 0.9rem; color: #7f8c8d;">
-                    Auto-populated from qualified podcast calls (35+ score)
+                    Business qualification and needs assessment
                 </div>
             </div>
 
-            <!-- Call Item 1 - Jonathan (From Podcast) -->
+            <!-- Call Item 1 - Jonathan (Scheduled) -->
             <div class="call-item">
                 <div class="call-avatar">J</div>
                 <div class="call-info">
@@ -439,13 +492,13 @@
                     </div>
                     
                     <div class="pain-points">
-                        <h4>AI-Identified Pain Points from Podcast:</h4>
-                        <p>Scaling team management challenges - growing from individual work to delegating. Need for better systems to support 15+ projects/year. Project management complexities with coastal construction regulations. Partnership coordination with other design firms.</p>
+                        <h4>Expected Pain Points from Podcast Analysis:</h4>
+                        <p>Scaling team management challenges. Need for better systems to support 15+ projects/year. Project management complexities with coastal construction regulations.</p>
                     </div>
 
                     <div class="goals-section">
-                        <h4>Identified Business Goals:</h4>
-                        <p>Build solid foundation systems for continued scaling. Improve delegation frameworks and team management. Streamline project management for complex coastal builds. Sustainable growth strategy for interior design firm.</p>
+                        <h4>Preliminary Business Goals:</h4>
+                        <p>Build solid foundation systems for continued scaling. Improve delegation frameworks and team management. Sustainable growth strategy for interior design firm.</p>
                     </div>
 
                     <div class="meeting-info">
@@ -462,82 +515,165 @@
                         <button class="btn btn-secondary btn-small">
                             View Podcast Context
                         </button>
-                        <button class="btn btn-secondary btn-small">
-                            Send Reminder
-                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Call Item 2 - Tye (From Podcast) -->
+            <!-- Call Item 2 - Tye (Completed & Qualified) -->
             <div class="call-item">
-                <div class="call-avatar">T</div>
+                <div class="call-avatar" style="background: #27ae60;">T</div>
                 <div class="call-info">
                     <div class="call-header">
                         <div>
                             <div class="call-name">Tye Shumway</div>
                             <div class="call-details">
-                                TWS Construction • Moved from Podcast (35/50) • Sep 24, 2025 at 10:00 AM
+                                TWS Construction • Discovery Call Completed • Sep 24, 2025
                                 <span class="source-tag">From Podcast</span>
                             </div>
                         </div>
-                        <div class="call-status status-scheduled">Scheduled</div>
+                        <div class="call-status status-qualified">Qualified</div>
                     </div>
                     
                     <div class="pain-points">
-                        <h4>AI-Identified Pain Points from Podcast:</h4>
-                        <p>CFO/financial management role challenges - not his expertise area. Construction cashflow management complexities. Has gone through 5 bookkeepers - needs systems integration. Scaling from $750K to $10M revenue goal requires structure.</p>
+                        <h4>Confirmed Pain Points:</h4>
+                        <p>CFO/financial management expertise gap. Construction cashflow complexities with 5 failed bookkeeper attempts. Scaling challenges from $750K to $10M revenue goal.</p>
                     </div>
 
                     <div class="goals-section">
-                        <h4>Identified Business Goals:</h4>
-                        <p>Implement sustainable financial systems for construction business. Develop team to reduce owner dependency ("fire myself as CEO"). Optimize multiple revenue streams (construction + real estate). Create employee ownership/growth pathways.</p>
+                        <h4>Confirmed Business Goals:</h4>
+                        <p>Implement sustainable financial systems. Develop team to "fire myself as CEO". Optimize multiple revenue streams. Create employee ownership pathways.</p>
                     </div>
 
-                    <div class="meeting-info">
-                        Zoom Meeting ID: 987-654-321 | Duration: 60 min | Calendar sync: Active
+                    <div class="call-score">
+                        <div class="score-number">42/50</div>
+                        <div class="score-stars">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star empty">★</span>
+                        </div>
+                    </div>
+
+                    <div class="qualification-result qualified">
+                        <h4>✅ Qualified for Sales Pipeline</h4>
+                        <p>Strong business fundamentals, clear growth challenges, proven revenue track record. Budget confirmed: $10K-25K range for growth consulting.</p>
                     </div>
 
                     <div class="call-actions">
-                        <button class="btn btn-primary btn-small">
-                            Join Meeting
+                        <button class="btn btn-primary btn-small" onclick="moveToSales('tye')">
+                            🚀 Move to Sales Calls
                         </button>
                         <button class="btn btn-secondary btn-small">
-                            Edit Details
+                            View Recording
                         </button>
                         <button class="btn btn-secondary btn-small">
-                            View Podcast Context
-                        </button>
-                        <button class="btn btn-secondary btn-small">
-                            Send Reminder
+                            Edit Analysis
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Call Item 3 - Kami (Pending Analysis) -->
-            <div class="call-item" style="opacity: 0.6;">
-                <div class="call-avatar" style="background: #f39c12;">K</div>
+            <!-- Call Item 3 - Sarah (Completed & Qualified) -->
+            <div class="call-item">
+                <div class="call-avatar" style="background: #27ae60;">S</div>
                 <div class="call-info">
                     <div class="call-header">
                         <div>
-                            <div class="call-name">Kami Gray</div>
+                            <div class="call-name">Sarah Mitchell</div>
                             <div class="call-details">
-                                Psychology From Design • Podcast analysis still processing
-                                <span class="source-tag">Pending Analysis</span>
+                                Coastal Renovation Co • Discovery Call Completed • Sep 18, 2025
+                                <span class="source-tag">From Email Campaign</span>
                             </div>
                         </div>
-                        <div class="call-status status-in-progress">Processing</div>
+                        <div class="call-status status-qualified">Qualified</div>
                     </div>
                     
                     <div class="pain-points">
-                        <h4>Preliminary Assessment:</h4>
-                        <p>Design school owner (58 years old), looking to scale and potentially sell within 5 years. Has 15-year interior design firm alongside education business. Strong business acumen evident from transcript.</p>
+                        <h4>Confirmed Pain Points:</h4>
+                        <p>Team burnout from 300% growth in 2 years. No standardized processes. Client communication breakdowns. Profitability issues despite revenue growth.</p>
+                    </div>
+
+                    <div class="goals-section">
+                        <h4>Confirmed Business Goals:</h4>
+                        <p>Systematic team scaling approach. Standardized workflows for quality consistency. Better project profitability analysis. Leadership team work-life balance.</p>
+                    </div>
+
+                    <div class="call-score">
+                        <div class="score-number">39/50</div>
+                        <div class="score-stars">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star empty">★</span>
+                        </div>
+                    </div>
+
+                    <div class="qualification-result qualified">
+                        <h4>✅ Qualified for Sales Pipeline</h4>
+                        <p>Rapid growth company with clear operational challenges. Demonstrated ability to invest in growth. Strong leadership team engagement.</p>
                     </div>
 
                     <div class="call-actions">
-                        <button class="btn btn-secondary btn-small" disabled>
-                            Awaiting AI Analysis
+                        <button class="btn btn-primary btn-small" onclick="moveToSales('sarah')">
+                            🚀 Move to Sales Calls
+                        </button>
+                        <button class="btn btn-secondary btn-small">
+                            View Recording
+                        </button>
+                        <button class="btn btn-secondary btn-small">
+                            Edit Analysis
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call Item 4 - Mike (Not Qualified) -->
+            <div class="call-item">
+                <div class="call-avatar" style="background: #e74c3c;">M</div>
+                <div class="call-info">
+                    <div class="call-header">
+                        <div>
+                            <div class="call-name">Mike Rodriguez</div>
+                            <div class="call-details">
+                                Elite Builders • Discovery Call Completed • Sep 15, 2025
+                                <span class="source-tag">From LinkedIn</span>
+                            </div>
+                        </div>
+                        <div class="call-status status-not-qualified">Not Qualified</div>
+                    </div>
+                    
+                    <div class="pain-points">
+                        <h4>Identified Challenges:</h4>
+                        <p>Overwhelming project management with 25+ concurrent projects. Team delegation issues. Quality control concerns.</p>
+                    </div>
+
+                    <div class="call-score">
+                        <div class="score-number">28/50</div>
+                        <div class="score-stars">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star empty">★</span>
+                            <span class="star empty">★</span>
+                        </div>
+                    </div>
+
+                    <div class="qualification-result not-qualified">
+                        <h4>❌ Not Qualified for Sales Pipeline</h4>
+                        <p>Limited budget availability. Prefers DIY solutions over consulting investment. Better fit for lower-tier educational products.</p>
+                    </div>
+
+                    <div class="call-actions">
+                        <button class="btn btn-secondary btn-small" onclick="moveToNurture('mike')">
+                            📋 Move to Nurture Campaign
+                        </button>
+                        <button class="btn btn-secondary btn-small">
+                            View Recording
+                        </button>
+                        <button class="btn btn-secondary btn-small">
+                            Send Resources
                         </button>
                     </div>
                 </div>
@@ -546,8 +682,21 @@
     </div>
 
     <script>
-        // Placeholder functions for button interactions
-        console.log('Discovery Calls page loaded');
+        function moveToSales(prospect) {
+            if (confirm(`Move ${prospect} to Sales Calls pipeline?`)) {
+                alert(`${prospect} has been moved to Sales Calls. Growth plan workflow activated.`);
+                // Real implementation would update pipeline status and trigger sales process
+            }
+        }
+
+        function moveToNurture(prospect) {
+            if (confirm(`Move ${prospect} to nurture campaign?`)) {
+                alert(`${prospect} added to 90-day nurture sequence.`);
+                // Real implementation would add to email nurture campaign
+            }
+        }
+
+        console.log('Discovery Calls page - Qualification focused');
     </script>
 </body>
 </html>
