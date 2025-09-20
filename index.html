@@ -842,3 +842,20 @@
 
             <div id="cash-flow" class="page">
                 <div class="simple-
+<script>
+function showPage(pageId) {
+    // Hide all pages
+    const pages = document.querySelectorAll('.page');
+    pages.forEach(page => page.classList.remove('active'));
+
+    // Remove active class from all nav items
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => item.classList.remove('active'));
+
+    // Show selected page
+    document.getElementById(pageId).classList.add('active');
+
+    // Add active class to clicked nav item
+    event.target.closest('.nav-item').classList.add('active');
+}
+</script>
