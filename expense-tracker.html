@@ -927,5 +927,120 @@
             const annualTotal = monthlyTotal * 12;
             const activeCount = expenses.length;
 
-            document.querySelector('.monthly-total .stat-number').textContent = `$${monthlyTotal.toFixed(0)}`;
-            document.querySelector('.annual-total .
+            document.querySelector('.monthly-total .stat-number').textContent = `${monthlyTotal.toFixed(0)}`;
+            document.querySelector('.annual-total .stat-number').textContent = `${annualTotal.toFixed(0)}`;
+            document.querySelector('.active-subscriptions .stat-number').textContent = activeCount;
+            document.querySelector('.avg-per-month .stat-number').textContent = 
+                activeCount > 0 ? `${(monthlyTotal / activeCount).toFixed(0)}` : '$0';
+
+            // Update category breakdown
+            updateCategoryBreakdown();
+        }
+
+        function updateCategoryBreakdown() {
+            const categories = ['software', 'marketing', 'infrastructure', 'business'];
+            const categoryNames = {
+                software: 'Software & Tools',
+                marketing: 'Marketing & Advertising', 
+                infrastructure: 'Infrastructure',
+                business: 'Business Operations'
+            };
+
+            categories.forEach(category => {
+                const categoryExpenses = expenses.filter(e => e.category === category);
+                const monthlyTotal = categoryExpenses.reduce((sum, expense) => 
+                    sum + calculateMonthlyAmount(expense.amount, expense.frequency), 0);
+                
+                const card = document.querySelector(`.category-card:nth-child(${categories.indexOf(category) + 1})`);
+                if (card) {
+                    card.querySelector('.category-amount').textContent = `${monthlyTotal.toFixed(0)}`;
+                    card.querySelector('.category-count').textContent = `${categoryExpenses.length} subscriptions`;
+                }
+            });
+        }
+
+        function filterExpenses(category) {
+            // Update active filter button
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Show/hide expenses based on category
+            const expenseItems = document.querySelectorAll('.expense-item');
+            expenseItems.forEach(item => {
+                if (category === 'all' || item.dataset.category === category) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function editExpense(id) {
+            const expense = expenses.find(e => e.id === id);
+            if (expense) {
+                // Populate form with existing data
+                document.getElementById('expense-name').value = expense.name;
+                document.getElementById('expense-category').value = expense.category;
+                document.getElementById('expense-amount').value = expense.amount;
+                document.getElementById('expense-frequency').value = expense.frequency;
+                document.getElementById('expense-description').value = expense.description || '';
+                
+                // Remove the expense temporarily
+                deleteExpense(id);
+                
+                // Show form
+                toggleAddForm();
+            }
+        }
+
+        function deleteExpense(id) {
+            expenses = expenses.filter(e => e.id !== id);
+            renderExpenses();
+            updateStats();
+        }
+
+        // Sample data for demonstration
+        function loadSampleExpenses() {
+            const sampleExpenses = [
+                {
+                    id: 1,
+                    name: 'Instantly.ai Pro',
+                    category: 'software',
+                    amount: 97,
+                    frequency: 'monthly',
+                    description: 'Email automation platform for outreach campaigns',
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 2,
+                    name: 'Dripfy LinkedIn Automation',
+                    category: 'software',
+                    amount: 89,
+                    frequency: 'monthly',
+                    description: 'LinkedIn outreach automation tool',
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 3,
+                    name: 'Domain & Hosting',
+                    category: 'infrastructure',
+                    amount: 120,
+                    frequency: 'annually',
+                    description: 'Website hosting and domain registration',
+                    createdAt: new Date().toISOString()
+                }
+            ];
+
+            // Uncomment this line to load sample data
+            // expenses = sampleExpenses;
+            // renderExpenses();
+            // updateStats();
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSampleExpenses();
+            updateStats();
+        });
+
+        console.log('Expense Tracker page loaded with full functionality');
