@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deals - Growth Manager Pro</title>
+    <title>Contacts - Growth Manager Pro</title>
     <style>
         * {
             margin: 0;
@@ -192,9 +192,9 @@
             font-size: 0.8rem;
         }
 
-        .revenue-stats {
+        .contacts-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
@@ -219,60 +219,12 @@
             font-weight: 600;
         }
 
-        .total-revenue { color: #27ae60; }
-        .monthly-revenue { color: #3498db; }
-        .closed-deals { color: #f39c12; }
-        .avg-deal { color: #9b59b6; }
+        .total-contacts { color: #3498db; }
+        .qualified-contacts { color: #27ae60; }
+        .active-prospects { color: #f39c12; }
+        .closed-contacts { color: #9b59b6; }
 
-        .goal-progress {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
-
-        .goal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .goal-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .goal-amount {
-            font-size: 1.1rem;
-            color: #27ae60;
-            font-weight: bold;
-        }
-
-        .progress-bar {
-            background: #ecf0f1;
-            border-radius: 10px;
-            height: 20px;
-            overflow: hidden;
-            margin-bottom: 0.5rem;
-        }
-
-        .progress-fill {
-            background: linear-gradient(90deg, #27ae60, #2ecc71);
-            height: 100%;
-            border-radius: 10px;
-            transition: width 0.3s ease;
-        }
-
-        .progress-text {
-            font-size: 0.9rem;
-            color: #7f8c8d;
-            text-align: center;
-        }
-
-        .deals-section {
+        .contacts-section {
             background: white;
             border-radius: 12px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.1);
@@ -294,111 +246,42 @@
             color: #2c3e50;
         }
 
-        .filter-tabs {
+        .search-filter {
             display: flex;
-            gap: 0.5rem;
+            gap: 1rem;
+            align-items: center;
         }
 
-        .filter-tab {
+        .search-input {
             padding: 0.5rem 1rem;
             border: 1px solid #ddd;
             border-radius: 6px;
-            background: white;
-            cursor: pointer;
             font-size: 0.9rem;
-            transition: all 0.2s ease;
+            width: 250px;
         }
 
-        .filter-tab.active {
-            background: #3498db;
-            color: white;
-            border-color: #3498db;
-        }
-
-        .filter-tab:hover {
-            background: #f8f9fa;
-        }
-
-        .filter-tab.active:hover {
-            background: #2980b9;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #7f8c8d;
-        }
-
-        .empty-state h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: #2c3e50;
-        }
-
-        .empty-state p {
-            font-size: 1rem;
-            margin-bottom: 2rem;
-            line-height: 1.6;
-        }
-
-        .pipeline-preview {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 2rem;
-            margin-top: 2rem;
-        }
-
-        .pipeline-preview h4 {
-            color: #2c3e50;
-            margin-bottom: 1rem;
-        }
-
-        .prospect-preview {
-            background: white;
-            padding: 1rem;
-            margin-bottom: 1rem;
+        .filter-dropdown {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
             border-radius: 6px;
-            border-left: 4px solid #f39c12;
-        }
-
-        .prospect-preview:last-child {
-            margin-bottom: 0;
-        }
-
-        .prospect-name {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 0.3rem;
-        }
-
-        .prospect-company {
             font-size: 0.9rem;
-            color: #7f8c8d;
-            margin-bottom: 0.5rem;
         }
 
-        .prospect-status {
-            font-size: 0.8rem;
-            color: #f39c12;
-            font-weight: 500;
-        }
-
-        .deal-item {
+        .contact-item {
             padding: 1.5rem 2rem;
             border-bottom: 1px solid #ecf0f1;
             display: flex;
-            align-items: flex-start;
-            gap: 1.5rem;
+            align-items: center;
+            gap: 1rem;
         }
 
-        .deal-item:last-child {
+        .contact-item:last-child {
             border-bottom: none;
         }
 
-        .deal-avatar {
+        .contact-avatar {
             width: 50px;
             height: 50px;
-            background: #27ae60;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -409,75 +292,69 @@
             flex-shrink: 0;
         }
 
-        .deal-info {
+        .contact-info {
             flex: 1;
-            min-width: 0;
         }
 
-        .deal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 0.5rem;
-            gap: 1rem;
-        }
-
-        .deal-name {
-            font-size: 1.1rem;
+        .contact-name {
             font-weight: 600;
             color: #2c3e50;
             margin-bottom: 0.3rem;
         }
 
-        .deal-details {
+        .contact-company {
             font-size: 0.9rem;
             color: #7f8c8d;
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.3rem;
         }
 
-        .deal-value {
-            text-align: right;
+        .contact-details {
+            font-size: 0.8rem;
+            color: #95a5a6;
         }
 
-        .value-amount {
-            font-size: 1.5rem;
+        .contact-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
             font-weight: bold;
+            text-transform: uppercase;
+            white-space: nowrap;
+            margin-right: 1rem;
+        }
+
+        .status-qualified {
+            background: #d5f4e6;
             color: #27ae60;
-            margin-bottom: 0.3rem;
         }
 
-        .value-label {
-            font-size: 0.8rem;
-            color: #7f8c8d;
+        .status-discovery {
+            background: #fef3cd;
+            color: #f39c12;
         }
 
-        .deal-timeline {
-            background: #f8f9fa;
-            padding: 0.8rem;
-            border-radius: 6px;
-            margin-top: 0.8rem;
+        .status-nurture {
+            background: #dbeafe;
+            color: #3498db;
         }
 
-        .deal-timeline h5 {
-            font-size: 0.8rem;
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
+        .status-pending {
+            background: #fef2f2;
+            color: #e74c3c;
         }
 
-        .timeline-item {
+        .contact-actions {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.8rem;
-            margin-bottom: 0.3rem;
+            gap: 0.5rem;
         }
 
-        .timeline-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .timeline-date {
+        .source-tag {
+            background: #f8f9fa;
             color: #7f8c8d;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
         }
 
         /* Mobile hamburger menu */
@@ -517,23 +394,28 @@
                 padding-top: 4rem;
             }
 
-            .revenue-stats {
+            .contacts-stats {
                 grid-template-columns: 1fr 1fr;
             }
 
-            .deal-item {
+            .search-filter {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: stretch;
             }
 
-            .deal-header {
+            .search-input {
+                width: 100%;
+            }
+
+            .contact-item {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 0.5rem;
             }
 
-            .filter-tabs {
-                flex-wrap: wrap;
+            .contact-actions {
+                width: 100%;
+                justify-content: flex-start;
             }
         }
     </style>
@@ -563,7 +445,7 @@
                     </div>
                 </a>
 
-                <a href="contacts.html" class="nav-item">
+                <a href="contacts.html" class="nav-item active">
                     <div class="nav-icon">👥</div>
                     <div class="nav-text">
                         <div>Contacts</div>
@@ -603,7 +485,7 @@
                     </div>
                 </a>
 
-                <a href="deals.html" class="nav-item active">
+                <a href="deals.html" class="nav-item">
                     <div class="nav-icon">📄</div>
                     <div class="nav-text">
                         <div>Deals</div>
@@ -667,97 +549,200 @@
                 <!-- Page Header -->
                 <div class="page-header">
                     <div class="header-left">
-                        <div class="header-icon">📄</div>
+                        <div class="header-icon">👥</div>
                         <div class="header-text">
-                            <h1>Closed Deals</h1>
-                            <p>Revenue tracking and deal management</p>
+                            <h1>Contact Database</h1>
+                            <p>Manage prospects, clients, and relationship tracking</p>
                         </div>
                     </div>
                     <div class="header-actions">
                         <button class="btn btn-secondary">
-                            📊 Revenue Report
+                            📊 Export Contacts
                         </button>
                         <button class="btn btn-primary">
-                            ➕ Add Deal
+                            ➕ Add Contact
                         </button>
                     </div>
                 </div>
 
-                <!-- Revenue Stats -->
-                <div class="revenue-stats">
+                <!-- Contacts Stats -->
+                <div class="contacts-stats">
                     <div class="stat-card">
-                        <div class="stat-number total-revenue">$0</div>
-                        <div class="stat-label">Total Revenue</div>
+                        <div class="stat-number total-contacts">8</div>
+                        <div class="stat-label">Total Contacts</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number monthly-revenue">$3,500</div>
-                        <div class="stat-label">This Month</div>
+                        <div class="stat-number qualified-contacts">2</div>
+                        <div class="stat-label">Qualified Prospects</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number closed-deals">0</div>
-                        <div class="stat-label">Closed Deals</div>
+                        <div class="stat-number active-prospects">4</div>
+                        <div class="stat-label">Active in Pipeline</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number avg-deal">$0</div>
-                        <div class="stat-label">Avg Deal Size</div>
+                        <div class="stat-number closed-contacts">0</div>
+                        <div class="stat-label">Closed Clients</div>
                     </div>
                 </div>
 
-                <!-- Goal Progress -->
-                <div class="goal-progress">
-                    <div class="goal-header">
-                        <div class="goal-title">Revenue Goal Progress</div>
-                        <div class="goal-amount">$3,500 / $25,000</div>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: 14%"></div>
-                    </div>
-                    <div class="progress-text">
-                        14% toward 3-month target of $25k/month | North Star: $50k/month
-                    </div>
-                </div>
-
-                <!-- Deals Section -->
-                <div class="deals-section">
+                <!-- Contacts List -->
+                <div class="contacts-section">
                     <div class="section-header">
-                        <h2 class="section-title">Deal History</h2>
-                        <div class="filter-tabs">
-                            <div class="filter-tab active" onclick="filterDeals('all')">All</div>
-                            <div class="filter-tab" onclick="filterDeals('won')">Won</div>
-                            <div class="filter-tab" onclick="filterDeals('lost')">Lost</div>
-                            <div class="filter-tab" onclick="filterDeals('this-month')">This Month</div>
+                        <h2 class="section-title">All Contacts</h2>
+                        <div class="search-filter">
+                            <input type="text" class="search-input" placeholder="Search contacts..." onkeyup="searchContacts(this.value)">
+                            <select class="filter-dropdown" onchange="filterContacts(this.value)">
+                                <option value="all">All Contacts</option>
+                                <option value="qualified">Qualified</option>
+                                <option value="discovery">In Discovery</option>
+                                <option value="nurture">Nurture</option>
+                                <option value="pending">Pending</option>
+                            </select>
                         </div>
                     </div>
 
-                    <div class="empty-state">
-                        <h3>No Closed Deals Yet</h3>
-                        <p>Your closed deals will appear here once prospects complete the sales process. Based on your current pipeline, you should see your first deals closing within the next few weeks.</p>
-                        
-                        <div class="pipeline-preview">
-                            <h4>Prospects Moving Toward Deals</h4>
-                            
-                            <div class="prospect-preview">
-                                <div class="prospect-name">Rachel & Shanna</div>
-                                <div class="prospect-company">Hatch Design</div>
-                                <div class="prospect-status">Discovery completed - Waiting on client decision</div>
+                    <div class="section-content" id="contactsList">
+                        <!-- Jonathan - Qualified -->
+                        <div class="contact-item" data-status="qualified" data-name="jonathan brewer suite">
+                            <div class="contact-avatar" style="background: #27ae60;">J</div>
+                            <div class="contact-info">
+                                <div class="contact-name">Jonathan</div>
+                                <div class="contact-company">Brewer Suite Co</div>
+                                <div class="contact-details">
+                                    Interior Design • Costa Mesa, CA
+                                    <span class="source-tag">Podcast</span>
+                                </div>
                             </div>
-
-                            <div class="prospect-preview">
-                                <div class="prospect-name">Tye Shumway</div>
-                                <div class="prospect-company">TWS Construction</div>
-                                <div class="prospect-status">Growth plan overdue - Needs to be sent</div>
+                            <div class="contact-status status-qualified">Qualified</div>
+                            <div class="contact-actions">
+                                <button class="btn btn-primary btn-small">View Profile</button>
+                                <button class="btn btn-secondary btn-small">Contact</button>
                             </div>
+                        </div>
 
-                            <div class="prospect-preview">
-                                <div class="prospect-name">Jonathan</div>
-                                <div class="prospect-company">Brewer Suite Co</div>
-                                <div class="prospect-status">Discovery call scheduled for Sept 23</div>
+                        <!-- Tye - Qualified -->
+                        <div class="contact-item" data-status="qualified" data-name="tye shumway tws construction">
+                            <div class="contact-avatar" style="background: #27ae60;">T</div>
+                            <div class="contact-info">
+                                <div class="contact-name">Tye Shumway</div>
+                                <div class="contact-company">TWS Construction</div>
+                                <div class="contact-details">
+                                    Construction • Moab, UT
+                                    <span class="source-tag">Podcast</span>
+                                </div>
                             </div>
+                            <div class="contact-status status-qualified">Qualified</div>
+                            <div class="contact-actions">
+                                <button class="btn btn-primary btn-small">View Profile</button>
+                                <button class="btn btn-secondary btn-small">Contact</button>
+                            </div>
+                        </div>
 
-                            <div class="prospect-preview">
-                                <div class="prospect-name">Michelle</div>
-                                <div class="prospect-company">Company TBD</div>
-                                <div class="prospect-status">Second discovery call scheduled Sept 30</div>
+                        <!-- Rachel & Shanna - In Discovery -->
+                        <div class="contact-item" data-status="discovery" data-name="rachel shanna hatch design">
+                            <div class="contact-avatar" style="background: #f39c12;">R</div>
+                            <div class="contact-info">
+                                <div class="contact-name">Rachel & Shanna</div>
+                                <div class="contact-company">Hatch Design</div>
+                                <div class="contact-details">
+                                    Design • @hatchdesign.ca
+                                    <span class="source-tag">Direct Outreach</span>
+                                </div>
+                            </div>
+                            <div class="contact-status status-discovery">Discovery</div>
+                            <div class="contact-actions">
+                                <button class="btn btn-primary btn-small">View Profile</button>
+                                <button class="btn btn-secondary btn-small">Contact</button>
+                            </div>
+                        </div>
+
+                        <!-- Michelle - In Discovery -->
+                        <div class="contact-item" data-status="discovery" data-name="michelle">
+                            <div class="contact-avatar" style="background: #f39c12;">M</div>
+                            <div class="contact-info">
+                                <div class="contact-name">Michelle</div>
+                                <div class="contact-company">Company TBD</div>
+                                <div class="contact-details">
+                                    Industry TBD
+                                    <span class="source-tag">Zoom Integration</span>
+                                </div>
+                            </div>
+                            <div class="contact-status status-discovery">Discovery</div>
+                            <div class="contact-actions">
+                                <button class="btn btn-primary btn-small">View Profile</button>
+                                <button class="btn btn-secondary btn-small">Contact</button>
+                            </div>
+                        </div>
+
+                        <!-- Kami - Pending -->
+                        <div class="contact-item" data-status="pending" data-name="kami gray psychology design">
+                            <div class="contact-avatar" style="background: #e74c3c;">K</div>
+                            <div class="contact-info">
+                                <div class="contact-name">Kami Gray</div>
+                                <div class="contact-company">Psychology From Design</div>
+                                <div class="contact-details">
+                                    Education/Design • Salt Lake City, UT
+                                    <span class="source-tag">Podcast</span>
+                                </div>
+                            </div>
+                            <div class="contact-status status-pending">Pending</div>
+                            <div class="contact-actions">
+                                <button class="btn btn-primary btn-small">View Profile</button>
+                                <button class="btn btn-secondary btn-small">Contact</button>
+                            </div>
+                        </div>
+
+                        <!-- Bella - Pending -->
+                        <div class="contact-item" data-status="pending" data-name="bella rodriguez lets go design">
+                            <div class="contact-avatar" style="background: #e74c3c;">B</div>
+                            <div class="contact-info">
+                                <div class="contact-name">Bella Rodriguez</div>
+                                <div class="contact-company">Let's Go Design Co</div>
+                                <div class="contact-details">
+                                    Hospitality Design • Salt Lake City, UT
+                                    <span class="source-tag">Podcast</span>
+                                </div>
+                            </div>
+                            <div class="contact-status status-pending">Pending</div>
+                            <div class="contact-actions">
+                                <button class="btn btn-primary btn-small">View Profile</button>
+                                <button class="btn btn-secondary btn-small">Contact</button>
+                            </div>
+                        </div>
+
+                        <!-- Marla - Pending -->
+                        <div class="contact-item" data-status="pending" data-name="marla stone i deal lifestyle">
+                            <div class="contact-avatar" style="background: #e74c3c;">M</div>
+                            <div class="contact-info">
+                                <div class="contact-name">Marla Stone</div>
+                                <div class="contact-company">I Deal Lifestyle</div>
+                                <div class="contact-details">
+                                    Professional Organizer
+                                    <span class="source-tag">Podcast</span>
+                                </div>
+                            </div>
+                            <div class="contact-status status-pending">Pending</div>
+                            <div class="contact-actions">
+                                <button class="btn btn-primary btn-small">View Profile</button>
+                                <button class="btn btn-secondary btn-small">Contact</button>
+                            </div>
+                        </div>
+
+                        <!-- Bobbie - Nurture -->
+                        <div class="contact-item" data-status="nurture" data-name="bobbie wasserman homeownership collective">
+                            <div class="contact-avatar" style="background: #3498db;">B</div>
+                            <div class="contact-info">
+                                <div class="contact-name">Bobbie Wasserman</div>
+                                <div class="contact-company">Homeownership Collective</div>
+                                <div class="contact-details">
+                                    Real Estate/Education • Los Angeles, CA
+                                    <span class="source-tag">Podcast</span>
+                                </div>
+                            </div>
+                            <div class="contact-status status-nurture">Nurture</div>
+                            <div class="contact-actions">
+                                <button class="btn btn-primary btn-small">View Profile</button>
+                                <button class="btn btn-secondary btn-small">Contact</button>
                             </div>
                         </div>
                     </div>
@@ -784,76 +769,33 @@
             }
         });
 
-        function filterDeals(filter) {
-            // Update active tab
-            document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
+        function searchContacts(query) {
+            const contacts = document.querySelectorAll('.contact-item');
+            const searchTerm = query.toLowerCase();
             
-            console.log('Filtering deals by:', filter);
-            // Here you would filter the deals list based on the selected filter
-            // For now, since there are no deals, this just demonstrates the UI
+            contacts.forEach(contact => {
+                const searchData = contact.dataset.name;
+                if (searchData.includes(searchTerm)) {
+                    contact.style.display = 'flex';
+                } else {
+                    contact.style.display = 'none';
+                }
+            });
         }
 
-        // Simulate deal addition for demo purposes
-        function addSampleDeal() {
-            const dealsSection = document.querySelector('.deals-section');
-            const emptyState = dealsSection.querySelector('.empty-state');
+        function filterContacts(status) {
+            const contacts = document.querySelectorAll('.contact-item');
             
-            if (emptyState) {
-                const dealHTML = `
-                    <div class="deal-item">
-                        <div class="deal-avatar">D</div>
-                        <div class="deal-info">
-                            <div class="deal-header">
-                                <div>
-                                    <div class="deal-name">Sample Client</div>
-                                    <div class="deal-details">
-                                        Sample Company • Closed Won • Sept 25, 2025
-                                    </div>
-                                </div>
-                                <div class="deal-value">
-                                    <div class="value-amount">$15,000</div>
-                                    <div class="value-label">Contract Value</div>
-                                </div>
-                            </div>
-                            
-                            <div class="deal-timeline">
-                                <h5>Deal Timeline:</h5>
-                                <div class="timeline-item">
-                                    <span>Podcast Call</span>
-                                    <span class="timeline-date">Sept 1, 2025</span>
-                                </div>
-                                <div class="timeline-item">
-                                    <span>Discovery Call</span>
-                                    <span class="timeline-date">Sept 8, 2025</span>
-                                </div>
-                                <div class="timeline-item">
-                                    <span>Growth Plan Sent</span>
-                                    <span class="timeline-date">Sept 12, 2025</span>
-                                </div>
-                                <div class="timeline-item">
-                                    <span>Sales Call</span>
-                                    <span class="timeline-date">Sept 18, 2025</span>
-                                </div>
-                                <div class="timeline-item">
-                                    <span>Deal Closed</span>
-                                    <span class="timeline-date">Sept 25, 2025</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                emptyState.style.display = 'none';
-                dealsSection.insertAdjacentHTML('beforeend', dealHTML);
-                
-                // Update stats
-                document.querySelector('.total-revenue .stat-number').textContent = '$15,000';
-                document.querySelector('.closed-deals .stat-number').textContent = '1';
-                document.querySelector('.avg-deal .stat-number').textContent = '$15,000';
-            }
+            contacts.forEach(contact => {
+                if (status === 'all' || contact.dataset.status === status) {
+                    contact.style.display = 'flex';
+                } else {
+                    contact.style.display = 'none';
+                }
+            });
         }
 
-        console.log('Deals page loaded');
+        console.log('Contacts page loaded with prospect database');
     </script>
 </body>
 </html>
