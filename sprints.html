@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprints - Growth Manager Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e1e5e9;
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 2rem 2rem 2rem;
+            border-bottom: 1px solid #e1e5e9;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-header p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            padding: 0 2rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #95a5a6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 2rem;
+            color: #5a6c7d;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+
+        .nav-item.active {
+            background: #3498db;
+            color: white;
+            border-right: 3px solid #2980b9;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .nav-text {
+            flex: 1;
+        }
+
+        .nav-subtitle {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 0.2rem;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-icon {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+        }
+
+        .header-text h1 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-text p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2ecc71;
+        }
+
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+            border: 1px solid #bdc3c7;
+        }
+
+        .btn-secondary:hover {
+            background: #d5dbdb;
+        }
+
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .sprint-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .finished { color: #27ae60; }
+        .on-track { color: #3498db; }
+        .off-track { color: #e74c3c; }
+        .blocked { color: #f39c12; }
+
+        .current-sprint {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .sprint-header {
+            background: #2c3e50;
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sprint-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .sprint-content {
+            padding: 0;
+        }
+
+        .task-item {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-number {
+            background: #f8f9fa;
+            color: #2c3e50;
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .task-details {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .task-meta {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .focus-area {
+            background: #e8f5e8;
+            color: #27ae60;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .due-date {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .task-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 1rem;
+        }
+
+        .status-finished {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+
+        .status-on-track {
+            background: #dbeafe;
+            color: #3498db;
+        }
+
+        .status-off-track {
+            background: #fef2f2;
+            color: #e74c3c;
+        }
+
+        .status-blocked {
+            background: #fef3cd;
+            color: #f39c12;
+        }
+
+        .task-notes {
+            margin-top: 0.8rem;
+            padding: 0.8rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid #3498db;
+        }
+
+        .task-notes h5 {
+            font-size: 0.8rem;
+            color: #2c3e50;
+            margin-bottom: 0.3rem;
+        }
+
+        .task-notes p {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            line-height: 1.4;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+        }
+
+        .sprint-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #34495e;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .completion-rate {
+            font-size: 0.9rem;
+        }
+
+        .collapsed-content {
+            max-height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .expand-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #f8f9fa;
+            border: none;
+            color: #7f8c8d;
+            cursor: pointer;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .expand-btn:hover {
+            background: #ecf0f1;
+        }
+
+        /* Mobile hamburger menu */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .container {
+                padding: 1rem;
+                padding-top: 4rem;
+            }
+
+            .sprint-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .task-details {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+            ☰
+        </button>
+
+        <!-- Sidebar Navigation -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1>Growth Manager Pro</h1>
+                <p>Client Acquisition System</p>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Navigation</div>
+                
+                <a href="index.html" class="nav-item">
+                    <div class="nav-icon">📊</div>
+                    <div class="nav-text">
+                        <div>Dashboard</div>
+                        <div class="nav-subtitle">Overview & KPIs</div>
+                    </div>
+                </a>
+
+                <a href="contacts.html" class="nav-item">
+                    <div class="nav-icon">👥</div>
+                    <div class="nav-text">
+                        <div>Contacts</div>
+                        <div class="nav-subtitle">Prospect database</div>
+                    </div>
+                </a>
+
+                <a href="podcast-calls.html" class="nav-item">
+                    <div class="nav-icon">📞</div>
+                    <div class="nav-text">
+                        <div>Podcast Calls</div>
+                        <div class="nav-subtitle">Interview tracking</div>
+                    </div>
+                </a>
+
+                <a href="discovery-calls.html" class="nav-item">
+                    <div class="nav-icon">🎯</div>
+                    <div class="nav-text">
+                        <div>Discovery Calls</div>
+                        <div class="nav-subtitle">Qualification calls</div>
+                    </div>
+                </a>
+
+                <a href="sales-calls.html" class="nav-item">
+                    <div class="nav-icon">📈</div>
+                    <div class="nav-text">
+                        <div>Sales Calls</div>
+                        <div class="nav-subtitle">Closing conversations</div>
+                    </div>
+                </a>
+
+                <a href="pipeline.html" class="nav-item">
+                    <div class="nav-icon">📋</div>
+                    <div class="nav-text">
+                        <div>Pipeline</div>
+                        <div class="nav-subtitle">Deal management</div>
+                    </div>
+                </a>
+
+                <a href="deals.html" class="nav-item">
+                    <div class="nav-icon">📄</div>
+                    <div class="nav-text">
+                        <div>Deals</div>
+                        <div class="nav-subtitle">Closed deals</div>
+                    </div>
+                </a>
+
+                <a href="cash-flow.html" class="nav-item">
+                    <div class="nav-icon">💰</div>
+                    <div class="nav-text">
+                        <div>Cash Flow</div>
+                        <div class="nav-subtitle">Financial tracking</div>
+                    </div>
+                </a>
+
+                <a href="campaigns.html" class="nav-item">
+                    <div class="nav-icon">⚡</div>
+                    <div class="nav-text">
+                        <div>Campaigns</div>
+                        <div class="nav-subtitle">Outreach tracking</div>
+                    </div>
+                </a>
+
+                <a href="sprints.html" class="nav-item active">
+                    <div class="nav-icon">📅</div>
+                    <div class="nav-text">
+                        <div>Sprints</div>
+                        <div class="nav-subtitle">Task management</div>
+                    </div>
+                </a>
+
+                <a href="expense-tracker.html" class="nav-item">
+                    <div class="nav-icon">🧮</div>
+                    <div class="nav-text">
+                        <div>Expense Tracker</div>
+                        <div class="nav-subtitle">Manage recurring costs</div>
+                    </div>
+                </a>
+
+                <a href="availability.html" class="nav-item">
+                    <div class="nav-icon">🕐</div>
+                    <div class="nav-text">
+                        <div>Availability</div>
+                        <div class="nav-subtitle">Schedule settings</div>
+                    </div>
+                </a>
+
+                <a href="user-management.html" class="nav-item">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-text">
+                        <div>User Management</div>
+                        <div class="nav-subtitle">Manage users & permissions</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="container">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div class="header-left">
+                        <div class="header-icon">📅</div>
+                        <div class="header-text">
+                            <h1>1-Week Sprints</h1>
+                            <p>Task management and progress tracking - Week 6 (9/11/25)</p>
+                        </div>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary">
+                            📊 Sprint Report
+                        </button>
+                        <button class="btn btn-primary" onclick="addTask()">
+                            ➕ Add Task
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sprint Stats -->
+                <div class="sprint-stats">
+                    <div class="stat-card">
+                        <div class="stat-number finished">42</div>
+                        <div class="stat-label">Tasks Finished</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number on-track">8</div>
+                        <div class="stat-label">On Track</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number off-track">6</div>
+                        <div class="stat-label">Off Track</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number blocked">3</div>
+                        <div class="stat-label">Blocked</div>
+                    </div>
+                </div>
+
+                <!-- Current Sprint - Week 6 -->
+                <div class="current-sprint">
+                    <div class="sprint-header">
+                        <div class="sprint-title">Current Sprint - Week 6 (9/11/25)</div>
+                        <div style="font-size: 0.9rem;">5/5 tasks on track</div>
+                    </div>
+                    <div class="sprint-content">
+                        <!-- Task 8.0 -->
+                        <div class="task-item">
+                            <div class="task-number">8.0</div>
+                            <div class="task-info">
+                                <div class="task-title">Update podcast call/discovery call trackers</div>
+                                <div class="task-details">
+                                    <div class="task-meta">
+                                        <span class="focus-area">Business Value Creation</span>
+                                    </div>
+                                    <div class="due-date">Due: 9/11/25</div>
+                                    <div class="task-status status-on-track">On Track</div>
+                                </div>
+                                <div class="task-actions">
+                                    <button class="btn btn-secondary btn-small" onclick="updateStatus(this)">Update Status</button>
+                                    <button class="btn btn-secondary btn-small" onclick="addNotes(this)">Add Notes</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Task 8.1 -->
+                        <div class="task-item">
+                            <div class="task-number">8.1</div>
+                            <div class="task-info">
+                                <div class="task-title">Build a new lead list for campaign</div>
+                                <div class="task-details">
+                                    <div class="task-meta">
+                                        <span class="focus-area">Business Value Creation</span>
+                                    </div>
+                                    <div class="due-date">Due: 9/11/25</div>
+                                    <div class="task-status status-on-track">On Track</div>
+                                </div>
+                                <div class="task-actions">
+                                    <button class="btn btn-secondary btn-small" onclick="updateStatus(this)">Update Status</button>
+                                    <button class="btn btn-secondary btn-small" onclick="addNotes(this)">Add Notes</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Task 8.2 -->
+                        <div class="task-item">
+                            <div class="task-number">8.2</div>
+                            <div class="task-info">
+                                <div class="task-title">Review training on how to scrape leads</div>
+                                <div class="task-details">
+                                    <div class="task-meta">
+                                        <span class="focus-area">Business Value Creation</span>
+                                    </div>
+                                    <div class="due-date">Due: 9/11/25</div>
+                                    <div class="task-status status-on-track">On Track</div>
+                                </div>
+                                <div class="task-actions">
+                                    <button class="btn btn-secondary btn-small" onclick="updateStatus(this)">Update Status</button>
+                                    <button class="btn btn-secondary btn-small" onclick="addNotes(this)">Add Notes</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Task 8.3 -->
+                        <div class="task-item">
+                            <div class="task-number">8.3</div>
+                            <div class="task-info">
+                                <div class="task-title">Review training on how to verify leads</div>
+                                <div class="task-details">
+                                    <div class="task-meta">
+                                        <span class="focus-area">Business Value Creation</span>
+                                    </div>
+                                    <div class="due-date">Due: 9/11/25</div>
+                                    <div class="task-status status-on-track">On Track</div>
+                                </div>
+                                <div class="task-actions">
+                                    <button class="btn btn-secondary btn-small" onclick="updateStatus(this)">Update Status</button>
+                                    <button class="btn btn-secondary btn-small" onclick="addNotes(this)">Add Notes</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Task 8.4 -->
+                        <div class="task-item">
+                            <div class="task-number">8.4</div>
+                            <div class="task-info">
+                                <div class="task-title">Use AI-clients to create new emailing campaigns</div>
+                                <div class="task-details">
+                                    <div class="task-meta">
+                                        <span class="focus-area">Business Value Creation</span>
+                                    </div>
+                                    <div class="due-date">Due: 9/11/25</div>
+                                    <div class="task-status status-on-track">On Track</div>
+                                </div>
+                                <div class="task-actions">
+                                    <button class="btn btn-secondary btn-small" onclick="updateStatus(this)">Update Status</button>
+                                    <button class="btn btn-secondary btn-small" onclick="addNotes(this)">Add Notes</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Overdue Task from Week 5 -->
+                        <div class="task-item">
+                            <div class="task-number">7.4</div>
+                            <div class="task-info">
+                                <div class="task-title">Complete section 7 - AI client service delivery</div>
+                                <div class="task-details">
+                                    <div class="task-meta">
+                                        <span class="focus-area">Business Value Creation</span>
+                                    </div>
+                                    <div class="due-date">Overdue from 8/28/25</div>
+                                    <div class="task-status status-off-track">Off Track</div>
+                                </div>
+                                <div class="task-notes">
+                                    <h5>Notes:</h5>
+                                    <p>Carried over from Week 5 - needs completion for client service delivery process</p>
+                                </div>
+                                <div class="task-actions">
+                                    <button class="btn btn-primary btn-small" onclick="updateStatus(this)">Mark Complete</button>
+                                    <button class="btn btn-secondary btn-small" onclick="addNotes(this)">Add Notes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Previous Sprints (Collapsed) -->
+                <div class="sprint-section">
+                    <div class="section-header">
+                        <div class="section-title">Week 5 (8/28/25)</div>
+                        <div class="completion-rate">4/5 Complete (80%)</div>
+                    </div>
+                    <div class="collapsed-content" id="week5-content">
+                        <div class="task-item">
+                            <div class="task-number">7.0</div>
+                            <div class="task-info">
+                                <div class="task-title">Check out Dripfy for linkedin automation</div>
+                                <div class="task-status status-finished">Finished</div>
+                            </div>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-number">7.1</div>
+                            <div class="task-info">
+                                <div class="task-title">Follow up with Instantly replies</div>
+                                <div class="task-status status-finished">Finished</div>
+                            </div>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-number">7.2</div>
+                            <div class="task-info">
+                                <div class="task-title">Track all Instantly and linkedin responses in funnel tracker</div>
+                                <div class="task-status status-finished">Finished</div>
+                            </div>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-number">7.3</div>
+                            <div class="task-info">
+                                <div class="task-title">Complete section 6 - sales process modules 4-8</div>
+                                <div class="task-status status-finished">Finished</div>
+                            </div>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-number">7.5</div>
+                            <div class="task-info">
+                                <div class="task-title">Master Sales process resource</div>
+                                <div class="task-status status-finished">Finished</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="expand-btn" onclick="toggleSection('week5-content', this)">
+                        Show All Week 5 Tasks
+                    </button>
+                </div>
+
+                <!-- Week 4 Summary -->
+                <div class="sprint-section">
+                    <div class="section-header">
+                        <div class="section-title">Week 4 (8/21/25)</div>
+                        <div class="completion-rate">3/3 Complete (100%)</div>
+                    </div>
+                    <div class="collapsed-content" id="week4-content">
+                        <div class="task-item">
+                            <div class="task-number">6.0</div>
+                            <div class="task-info">
+                                <div class="task-title">Send the lead list to upload into the campaigns</div>
+                                <div class="task-status status-finished">Finished</div>
+                            </div>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-number">6.1</div>
+                            <div class="task-info">
+                                <div class="task-title">Review some recorded discovery and growth calls</div>
+                                <div class="task-status status-finished">Finished</div>
+                            </div>
+                        </div>
+                        <div class="task-item">
+                            <div class="task-number">6.2</div>
+                            <div class="task-info">
+                                <div class="task-title">Track all outreach campaign - funnel</div>
+                                <div class="task-status status-on-track">On Track</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="expand-btn" onclick="toggleSection('week4-content', this)">
+                        Show All Week 4 Tasks
+                    </button>
+                </div>
+
+                <!-- Weeks 1-3 Summary -->
+                <div class="sprint-section">
+                    <div class="section-header">
+                        <div class="section-title">Weeks 1-3 (OB1-OB3)</div>
+                        <div class="completion-rate">32/34 Complete (94%)</div>
+                    </div>
+                    <div class="collapsed-content">
+                        <p style="padding: 1rem 2rem; color: #7f8c8d;">
+                            Foundation setup completed including infrastructure setup, niche definition, offer training, lead generation setup, and initial outreach campaigns. 2 tasks marked as blocked for Facebook groups and networking events.
+                        </p>
+                    </div>
+                    <button class="expand-btn" onclick="showFullHistory()">
+                        View Complete Sprint History
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        function toggleSection(contentId, button) {
+            const content = document.getElementById(contentId);
+            if (content.style.maxHeight === 'none') {
+                content.style.maxHeight = '200px';
+                button.textContent = button.textContent.replace('Hide', 'Show');
+            } else {
+                content.style.maxHeight = 'none';
+                button.textContent = button.textContent.replace('Show', 'Hide');
+            }
+        }
+
+        function updateStatus(button) {
+            const taskItem = button.closest('.task-item');
+            const statusElement = taskItem.querySelector('.task-status');
+            const currentStatus = statusElement.textContent.trim();
+            
+            const statuses = ['On Track', 'Finished', 'Off Track', 'Blocked'];
+            const currentIndex = statuses.indexOf(currentStatus);
+            const nextIndex = (currentIndex + 1) % statuses.length;
+            const newStatus = statuses[nextIndex];
+            
+            statusElement.textContent = newStatus;
+            statusElement.className = 'task-status status-' + newStatus.toLowerCase().replace(' ', '-');
+            
+            console.log('Status updated to:', newStatus);
+            // Here you would save to backend
+        }
+
+        function addNotes(button) {
+            const taskItem = button.closest('.task-item');
+            const taskInfo = taskItem.querySelector('.task-info');
+            
+            let notesSection = taskInfo.querySelector('.task-notes');
+            if (!notesSection) {
+                notesSection = document.createElement('div');
+                notesSection.className = 'task-notes';
+                notesSection.innerHTML = `
+                    <h5>Notes:</h5>
+                    <p contenteditable="true" style="min-height: 40px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; background: white;">Click to add notes...</p>
+                `;
+                taskInfo.appendChild(notesSection);
+            }
+            
+            const notesParagraph = notesSection.querySelector('p');
+            notesParagraph.focus();
+        }
+
+        function addTask() {
+            const currentWeek = document.querySelector('.current-sprint .sprint-content');
+            const newTaskHTML = `
+                <div class="task-item">
+                    <div class="task-number">8.5</div>
+                    <div class="task-info">
+                        <div class="task-title" contenteditable="true">New Task Title</div>
+                        <div class="task-details">
+                            <div class="task-meta">
+                                <span class="focus-area">Business Value Creation</span>
+                            </div>
+                            <div class="due-date">Due: 9/18/25</div>
+                            <div class="task-status status-on-track">On Track</div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="btn btn-secondary btn-small" onclick="updateStatus(this)">Update Status</button>
+                            <button class="btn btn-secondary btn-small" onclick="addNotes(this)">Add Notes</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            currentWeek.insertAdjacentHTML('beforeend', newTaskHTML);
+            console.log('New task added');
+        }
+
+        function showFullHistory() {
+            alert('Full sprint history view would open here with all OB1-OB3 tasks detailed');
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
+
+        console.log('Sprints page loaded with full task management');
+    </script>
+</body>
+</html>
