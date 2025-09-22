@@ -690,7 +690,7 @@
                         <div class="stat-label">Total Revenue</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number monthly-revenue">$3,500</div>
+                        <div class="stat-number monthly-revenue">$0</div>
                         <div class="stat-label">This Month</div>
                     </div>
                     <div class="stat-card">
@@ -707,13 +707,13 @@
                 <div class="goal-progress">
                     <div class="goal-header">
                         <div class="goal-title">Revenue Goal Progress</div>
-                        <div class="goal-amount">$3,500 / $25,000</div>
+                        <div class="goal-amount">$0 / $25,000</div>
                     </div>
                     <div class="progress-bar">
-                        <div class="progress-fill" style="width: 14%"></div>
+                        <div class="progress-fill" style="width: 0%"></div>
                     </div>
                     <div class="progress-text">
-                        14% toward 3-month target of $25k/month | North Star: $50k/month
+                        0% toward 3-month target of $25k/month | North Star: $50k/month
                     </div>
                 </div>
 
@@ -737,9 +737,9 @@
                             <h4>Prospects Moving Toward Deals</h4>
                             
                             <div class="prospect-preview">
-                                <div class="prospect-name">Rachel & Shanna</div>
-                                <div class="prospect-company">Hatch Design</div>
-                                <div class="prospect-status">Discovery completed - Waiting on client decision</div>
+                                <div class="prospect-name">Jonathan</div>
+                                <div class="prospect-company">Brewer Suite Co</div>
+                                <div class="prospect-status">Discovery call scheduled for Sept 23</div>
                             </div>
 
                             <div class="prospect-preview">
@@ -749,9 +749,9 @@
                             </div>
 
                             <div class="prospect-preview">
-                                <div class="prospect-name">Jonathan</div>
-                                <div class="prospect-company">Brewer Suite Co</div>
-                                <div class="prospect-status">Discovery call scheduled for Sept 23</div>
+                                <div class="prospect-name">Rachel & Shanna</div>
+                                <div class="prospect-company">Hatch Design</div>
+                                <div class="prospect-status">Discovery completed - Waiting on client decision</div>
                             </div>
 
                             <div class="prospect-preview">
@@ -794,64 +794,29 @@
             // For now, since there are no deals, this just demonstrates the UI
         }
 
-        // Simulate deal addition for demo purposes
-        function addSampleDeal() {
-            const dealsSection = document.querySelector('.deals-section');
-            const emptyState = dealsSection.querySelector('.empty-state');
-            
-            if (emptyState) {
-                const dealHTML = `
-                    <div class="deal-item">
-                        <div class="deal-avatar">D</div>
-                        <div class="deal-info">
-                            <div class="deal-header">
-                                <div>
-                                    <div class="deal-name">Sample Client</div>
-                                    <div class="deal-details">
-                                        Sample Company • Closed Won • Sept 25, 2025
-                                    </div>
-                                </div>
-                                <div class="deal-value">
-                                    <div class="value-amount">$15,000</div>
-                                    <div class="value-label">Contract Value</div>
-                                </div>
-                            </div>
-                            
-                            <div class="deal-timeline">
-                                <h5>Deal Timeline:</h5>
-                                <div class="timeline-item">
-                                    <span>Podcast Call</span>
-                                    <span class="timeline-date">Sept 1, 2025</span>
-                                </div>
-                                <div class="timeline-item">
-                                    <span>Discovery Call</span>
-                                    <span class="timeline-date">Sept 8, 2025</span>
-                                </div>
-                                <div class="timeline-item">
-                                    <span>Growth Plan Sent</span>
-                                    <span class="timeline-date">Sept 12, 2025</span>
-                                </div>
-                                <div class="timeline-item">
-                                    <span>Sales Call</span>
-                                    <span class="timeline-date">Sept 18, 2025</span>
-                                </div>
-                                <div class="timeline-item">
-                                    <span>Deal Closed</span>
-                                    <span class="timeline-date">Sept 25, 2025</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                emptyState.style.display = 'none';
-                dealsSection.insertAdjacentHTML('beforeend', dealHTML);
+        // Connect to standardized data model when available
+        function loadDealsData() {
+            if (typeof GROWTH_MANAGER_DATA !== 'undefined') {
+                const financial = GROWTH_MANAGER_DATA.financial;
                 
-                // Update stats
-                document.querySelector('.total-revenue .stat-number').textContent = '$15,000';
-                document.querySelector('.closed-deals .stat-number').textContent = '1';
-                document.querySelector('.avg-deal .stat-number').textContent = '$15,000';
+                // Update stats with real data from standardized model
+                document.querySelector('.total-revenue .stat-number').textContent = `${financial.totalRevenue.toLocaleString()}`;
+                document.querySelector('.monthly-revenue .stat-number').textContent = `${financial.monthlyRevenue.toLocaleString()}`;
+                document.querySelector('.closed-deals .stat-number').textContent = financial.closedDeals;
+                document.querySelector('.avg-deal .stat-number').textContent = `${financial.averageDealSize.toLocaleString()}`;
+                
+                // Update goal progress
+                const percentage = (financial.totalRevenue / financial.goalProgress.threeMonthTarget) * 100;
+                document.querySelector('.progress-fill').style.width = `${percentage}%`;
+                document.querySelector('.goal-amount').textContent = 
+                    `${financial.totalRevenue.toLocaleString()} / ${financial.goalProgress.threeMonthTarget.toLocaleString()}`;
+                document.querySelector('.progress-text').textContent = 
+                    `${percentage.toFixed(0)}% toward 3-month target of ${financial.goalProgress.threeMonthTarget.toLocaleString()}/month | North Star: ${financial.goalProgress.northStar.toLocaleString()}/month`;
             }
         }
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', loadDealsData);
 
         console.log('Deals page loaded');
     </script>
