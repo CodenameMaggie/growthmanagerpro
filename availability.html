@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Availability - Growth Manager Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e1e5e9;
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 2rem 2rem 2rem;
+            border-bottom: 1px solid #e1e5e9;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-header p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            padding: 0 2rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #95a5a6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 2rem;
+            color: #5a6c7d;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+
+        .nav-item.active {
+            background: #3498db;
+            color: white;
+            border-right: 3px solid #2980b9;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .nav-text {
+            flex: 1;
+        }
+
+        .nav-subtitle {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 0.2rem;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-icon {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+        }
+
+        .header-text h1 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-text p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2ecc71;
+        }
+
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+            border: 1px solid #bdc3c7;
+        }
+
+        .btn-secondary:hover {
+            background: #d5dbdb;
+        }
+
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .integration-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .integration-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .integration-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .calendly-icon {
+            background: linear-gradient(135deg, #006bff, #0049b8);
+        }
+
+        .zoom-icon {
+            background: linear-gradient(135deg, #2d8cff, #1a73e8);
+        }
+
+        .integration-info {
+            flex: 1;
+        }
+
+        .integration-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .integration-status-text {
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .status-connected {
+            color: #27ae60;
+        }
+
+        .status-disconnected {
+            color: #e74c3c;
+        }
+
+        .integration-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .section-content {
+            padding: 1.5rem 2rem;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .day-header {
+            text-align: center;
+            font-weight: 600;
+            color: #2c3e50;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .time-slot {
+            background: #f8f9fa;
+            border: 1px solid #ecf0f1;
+            padding: 0.3rem;
+            text-align: center;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .time-slot:hover {
+            background: #e3f2fd;
+        }
+
+        .time-slot.available {
+            background: #d5f4e6;
+            color: #27ae60;
+            border-color: #27ae60;
+        }
+
+        .time-slot.busy {
+            background: #fef2f2;
+            color: #e74c3c;
+            border-color: #e74c3c;
+        }
+
+        .meeting-type {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #ecf0f1;
+        }
+
+        .meeting-type h4 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .meeting-type p {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 0.8rem;
+        }
+
+        .meeting-settings {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+
+        .meeting-duration {
+            color: #3498db;
+            font-weight: 500;
+        }
+
+        .meeting-link {
+            color: #27ae60;
+            text-decoration: none;
+        }
+
+        .upcoming-meetings {
+            grid-column: 1 / -1;
+        }
+
+        .meeting-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            background: #f8f9fa;
+        }
+
+        .meeting-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .meeting-avatar {
+            width: 40px;
+            height: 40px;
+            background: #3498db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .meeting-details {
+            flex: 1;
+        }
+
+        .meeting-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.3rem;
+        }
+
+        .meeting-time {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 0.3rem;
+        }
+
+        .meeting-type-label {
+            font-size: 0.8rem;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+        }
+
+        .meeting-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .timezone-selector {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .timezone-selector label {
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .timezone-selector select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .buffer-settings {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .buffer-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .buffer-item label {
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .buffer-item input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+        }
+
+        .empty-state h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        /* Mobile hamburger menu */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .container {
+                padding: 1rem;
+                padding-top: 4rem;
+            }
+
+            .integration-status {
+                grid-template-columns: 1fr;
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .schedule-grid {
+                grid-template-columns: repeat(3, 1fr);
+                font-size: 0.8rem;
+            }
+
+            .buffer-settings {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+            ☰
+        </button>
+
+        <!-- Sidebar Navigation -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1>Growth Manager Pro</h1>
+                <p>Client Acquisition System</p>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Navigation</div>
+                
+                <a href="index.html" class="nav-item">
+                    <div class="nav-icon">📊</div>
+                    <div class="nav-text">
+                        <div>Dashboard</div>
+                        <div class="nav-subtitle">Overview & KPIs</div>
+                    </div>
+                </a>
+
+                <a href="contacts.html" class="nav-item">
+                    <div class="nav-icon">👥</div>
+                    <div class="nav-text">
+                        <div>Contacts</div>
+                        <div class="nav-subtitle">Prospect database</div>
+                    </div>
+                </a>
+
+                <a href="podcast-calls.html" class="nav-item">
+                    <div class="nav-icon">📞</div>
+                    <div class="nav-text">
+                        <div>Podcast Calls</div>
+                        <div class="nav-subtitle">Interview tracking</div>
+                    </div>
+                </a>
+
+                <a href="discovery-calls.html" class="nav-item">
+                    <div class="nav-icon">🎯</div>
+                    <div class="nav-text">
+                        <div>Discovery Calls</div>
+                        <div class="nav-subtitle">Qualification calls</div>
+                    </div>
+                </a>
+
+                <a href="sales-calls.html" class="nav-item">
+                    <div class="nav-icon">📈</div>
+                    <div class="nav-text">
+                        <div>Sales Calls</div>
+                        <div class="nav-subtitle">Closing conversations</div>
+                    </div>
+                </a>
+
+                <a href="pipeline.html" class="nav-item">
+                    <div class="nav-icon">📋</div>
+                    <div class="nav-text">
+                        <div>Pipeline</div>
+                        <div class="nav-subtitle">Deal management</div>
+                    </div>
+                </a>
+
+                <a href="deals.html" class="nav-item">
+                    <div class="nav-icon">📄</div>
+                    <div class="nav-text">
+                        <div>Deals</div>
+                        <div class="nav-subtitle">Closed deals</div>
+                    </div>
+                </a>
+
+                <a href="cash-flow.html" class="nav-item">
+                    <div class="nav-icon">💰</div>
+                    <div class="nav-text">
+                        <div>Cash Flow</div>
+                        <div class="nav-subtitle">Financial tracking</div>
+                    </div>
+                </a>
+
+                <a href="campaigns.html" class="nav-item">
+                    <div class="nav-icon">⚡</div>
+                    <div class="nav-text">
+                        <div>Campaigns</div>
+                        <div class="nav-subtitle">Outreach tracking</div>
+                    </div>
+                </a>
+
+                <a href="sprints.html" class="nav-item">
+                    <div class="nav-icon">📅</div>
+                    <div class="nav-text">
+                        <div>Sprints</div>
+                        <div class="nav-subtitle">Task management</div>
+                    </div>
+                </a>
+
+                <a href="expense-tracker.html" class="nav-item">
+                    <div class="nav-icon">🧮</div>
+                    <div class="nav-text">
+                        <div>Expense Tracker</div>
+                        <div class="nav-subtitle">Manage recurring costs</div>
+                    </div>
+                </a>
+
+                <a href="availability.html" class="nav-item active">
+                    <div class="nav-icon">🕐</div>
+                    <div class="nav-text">
+                        <div>Availability</div>
+                        <div class="nav-subtitle">Schedule settings</div>
+                    </div>
+                </a>
+
+                <a href="user-management.html" class="nav-item">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-text">
+                        <div>User Management</div>
+                        <div class="nav-subtitle">Manage users & permissions</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="container">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div class="header-left">
+                        <div class="header-icon">🕐</div>
+                        <div class="header-text">
+                            <h1>Availability & Scheduling</h1>
+                            <p>Manage calendar integration, meeting types, and availability settings</p>
+                        </div>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary">
+                            📊 Booking Analytics
+                        </button>
+                        <button class="btn btn-primary">
+                            🔗 Sync Calendar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Integration Status -->
+                <div class="integration-status">
+                    <div class="integration-card">
+                        <div class="integration-icon calendly-icon">📅</div>
+                        <div class="integration-info">
+                            <div class="integration-name">Calendly</div>
+                            <div class="integration-status-text status-connected">Connected - Sync active</div>
+                            <div class="integration-actions">
+                                <button class="btn btn-secondary btn-small" onclick="configureCalendly()">Configure</button>
+                                <button class="btn btn-secondary btn-small" onclick="viewEvents('calendly')">View Events</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="integration-card">
+                        <div class="integration-icon zoom-icon">📹</div>
+                        <div class="integration-info">
+                            <div class="integration-name">Zoom</div>
+                            <div class="integration-status-text status-connected">Connected - Auto-generate meetings</div>
+                            <div class="integration-actions">
+                                <button class="btn btn-secondary btn-small" onclick="configureZoom()">Settings</button>
+                                <button class="btn btn-secondary btn-small" onclick="testZoomConnection()">Test Connection</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="integration-card">
+                        <div class="integration-icon" style="background: linear-gradient(135deg, #4285f4, #34a853);">📆</div>
+                        <div class="integration-info">
+                            <div class="integration-name">Google Calendar</div>
+                            <div class="integration-status-text status-connected">Connected - Two-way sync enabled</div>
+                            <div class="integration-actions">
+                                <button class="btn btn-secondary btn-small" onclick="configureGoogleCal()">Settings</button>
+                                <button class="btn btn-secondary btn-small" onclick="syncGoogleCal()">Sync Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Grid -->
+                <div class="main-grid">
+                    <!-- Weekly Availability -->
+                    <div class="section">
+                        <div class="section-header">
+                            <h2 class="section-title">Weekly Availability</h2>
+                            <button class="btn btn-secondary btn-small">Edit Hours</button>
+                        </div>
+                        <div class="section-content">
+                            <div class="timezone-selector">
+                                <label for="timezone">Timezone</label>
+                                <select id="timezone">
+                                    <option value="America/Vancouver">Pacific Time (PT)</option>
+                                    <option value="America/Denver">Mountain Time (MT)</option>
+                                    <option value="America/Chicago">Central Time (CT)</option>
+                                    <option value="America/New_York">Eastern Time (ET)</option>
+                                </select>
+                            </div>
+
+                            <div class="schedule-grid">
+                                <div class="day-header">Mon</div>
+                                <div class="day-header">Tue</div>
+                                <div class="day-header">Wed</div>
+                                <div class="day-header">Thu</div>
+                                <div class="day-header">Fri</div>
+                                <div class="day-header">Sat</div>
+                                <div class="day-header">Sun</div>
+
+                                <!-- 9 AM Row -->
+                                <div class="time-slot available">9 AM</div>
+                                <div class="time-slot available">9 AM</div>
+                                <div class="time-slot available">9 AM</div>
+                                <div class="time-slot available">9 AM</div>
+                                <div class="time-slot available">9 AM</div>
+                                <div class="time-slot">-</div>
+                                <div class="time-slot">-</div>
+
+                                <!-- 10 AM Row -->
+                                <div class="time-slot available">10 AM</div>
+                                <div class="time-slot available">10 AM</div>
+                                <div class="time-slot available">10 AM</div>
+                                <div class="time-slot available">10 AM</div>
+                                <div class="time-slot available">10 AM</div>
+                                <div class="time-slot">-</div>
+                                <div class="time-slot">-</div>
+
+                                <!-- 2 PM Row -->
+                                <div class="time-slot available">2 PM</div>
+                                <div class="time-slot busy">2 PM</div>
+                                <div class="time-slot available">2 PM</div>
+                                <div class="time-slot busy">2 PM</div>
+                                <div class="time-slot available">2 PM</div>
+                                <div class="time-slot">-</div>
+                                <div class="time-slot">-</div>
+
+                                <!-- 3 PM Row -->
+                                <div class="time-slot available">3 PM</div>
+                                <div class="time-slot available">3 PM</div>
+                                <div class="time-slot available">3 PM</div>
+                                <div class="time-slot available">3 PM</div>
+                                <div class="time-slot available">3 PM</div>
+                                <div class="time-slot">-</div>
+                                <div class="time-slot">-</div>
+                            </div>
+
+                            <div class="buffer-settings">
+                                <div class="buffer-item">
+                                    <label for="buffer-before">Buffer Before</label>
+                                    <input type="number" id="buffer-before" value="15" min="0" max="60">
+                                </div>
+                                <div class="buffer-item">
+                                    <label for="buffer-after">Buffer After</label>
+                                    <input type="number" id="buffer-after" value="15" min="0" max="60">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Meeting Types -->
+                    <div class="section">
+                        <div class="section-header">
+                            <h2 class="section-title">Meeting Types</h2>
+                            <button class="btn btn-secondary btn-small">Add Type</button>
+                        </div>
+                        <div class="section-content">
+                            <div class="meeting-type">
+                                <h4>Podcast Interview</h4>
+                                <p>Initial podcast conversation for qualification and relationship building</p>
+                                <div class="meeting-settings">
+                                    <span class="meeting-duration">60 minutes</span>
+                                    <a href="#" class="meeting-link">calendly.com/maggie/podcast</a>
+                                </div>
+                            </div>
+
+                            <div class="meeting-type">
+                                <h4>Discovery Call</h4>
+                                <p>Deep-dive business analysis and growth plan discussion</p>
+                                <div class="meeting-settings">
+                                    <span class="meeting-duration">60 minutes</span>
+                                    <a href="#" class="meeting-link">calendly.com/maggie/discovery</a>
+                                </div>
+                            </div>
+
+                            <div class="meeting-type">
+                                <h4>Sales Consultation</h4>
+                                <p>Growth plan presentation and proposal discussion</p>
+                                <div class="meeting-settings">
+                                    <span class="meeting-duration">45 minutes</span>
+                                    <a href="#" class="meeting-link">calendly.com/maggie/sales</a>
+                                </div>
+                            </div>
+
+                            <div class="meeting-type">
+                                <h4>Quick Connect</h4>
+                                <p>Brief 15-minute conversation for urgent questions</p>
+                                <div class="meeting-settings">
+                                    <span class="meeting-duration">15 minutes</span>
+                                    <a href="#" class="meeting-link">calendly.com/maggie/quick</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Meetings -->
+                <div class="section upcoming-meetings">
+                    <div class="section-header">
+                        <h2 class="section-title">Upcoming Meetings</h2>
+                        <span style="font-size: 0.9rem; color: #7f8c8d;">Next 7 days</span>
+                    </div>
+                    <div class="section-content">
+                        <!-- Jonathan Discovery Call -->
+                        <div class="meeting-item">
+                            <div class="meeting-avatar">J</div>
+                            <div class="meeting-details">
+                                <div class="meeting-title">Discovery Call - Jonathan (Brewer Suite Co)</div>
+                                <div class="meeting-time">Monday, September 23, 2025 at 2:00 PM PT</div>
+                                <div class="meeting-type-label">Discovery Call</div>
+                            </div>
+                            <div class="meeting-actions">
+                                <button class="btn btn-primary btn-small">Join Zoom</button>
+                                <button class="btn btn-secondary btn-small">Reschedule</button>
+                            </div>
+                        </div>
+
+                        <!-- Tye Discovery Call -->
+                        <div class="meeting-item">
+                            <div class="meeting-avatar">T</div>
+                            <div class="meeting-details">
+                                <div class="meeting-title">Discovery Call - Tye Shumway (TWS Construction)</div>
+                                <div class="meeting-time">Tuesday, September 24, 2025 at 10:00 AM PT</div>
+                                <div class="meeting-type-label">Discovery Call</div>
+                            </div>
+                            <div class="meeting-actions">
+                                <button class="btn btn-primary btn-small">Join Zoom</button>
+                                <button class="btn btn-secondary btn-small">Reschedule</button>
+                            </div>
+                        </div>
+
+                        <!-- Michelle Second Discovery -->
+                        <div class="meeting-item">
+                            <div class="meeting-avatar">M</div>
+                            <div class="meeting-details">
+                                <div class="meeting-title">Second Discovery Call - Michelle</div>
+                                <div class="meeting-time">Monday, September 30, 2025 at 3:00 PM PT</div>
+                                <div class="meeting-type-label">Discovery Call</div>
+                            </div>
+                            <div class="meeting-actions">
+                                <button class="btn btn-primary btn-small">Join Zoom</button>
+                                <button class="btn btn-secondary btn-small">Reschedule</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
+
+        // Calendar integration functions
+        function syncCalendar() {
+            console.log('Syncing with calendar...');
+            // This would integrate with Calendly API
+            alert('Calendar sync initiated - would connect to Calendly API');
+        }
+
+        function joinZoom(meetingId) {
+            console.log('Joining Zoom meeting:', meetingId);
+            // This would open Zoom meeting or redirect to Zoom web client
+            const zoomUrl = `https://zoom.us/j/${meetingId}`;
+            window.open(zoomUrl, '_blank');
+        }
+
+        function rescheduleEvent(eventId) {
+            console.log('Rescheduling event:', eventId);
+            // This would open Calendly reschedule flow
+            alert('Reschedule functionality - would integrate with Calendly API');
+        }
+
+        // Calendly integration
+        function configureCalendly() {
+            console.log('Configuring Calendly integration...');
+            alert('Calendly Configuration:\n- API Key setup\n- Event type mapping\n- Webhook configuration\n- Buffer time settings');
+        }
+
+        function viewEvents(platform) {
+            console.log(`Viewing ${platform} events...`);
+            alert(`Opening ${platform} events dashboard`);
+        }
+
+        // Zoom integration
+        function configureZoom() {
+            console.log('Configuring Zoom integration...');
+            alert('Zoom Configuration:\n- OAuth setup\n- Auto-meeting generation\n- Default meeting settings\n- Recording preferences');
+        }
+
+        function testZoomConnection() {
+            console.log('Testing Zoom connection...');
+            // This would test Zoom API connectivity
+            setTimeout(() => {
+                alert('Zoom connection test: ✅ Connected\n- API access: Valid\n- Meeting creation: Working\n- Webhook: Active');
+            }, 1000);
+        }
+
+        // Google Calendar integration
+        function configureGoogleCal() {
+            console.log('Configuring Google Calendar integration...');
+            alert('Google Calendar Configuration:\n- OAuth 2.0 setup\n- Calendar selection\n- Sync preferences\n- Conflict detection\n- Two-way sync settings');
+        }
+
+        function syncGoogleCal() {
+            console.log('Syncing Google Calendar...');
+            // This would trigger a Google Calendar sync
+            setTimeout(() => {
+                alert('Google Calendar sync complete:\n- 3 new events imported\n- 2 conflicts resolved\n- Next sync: Auto in 15 minutes');
+                updateMeetingsList();
+            }, 1500);
+        }
+
+        // Availability management
+        function updateAvailability() {
+            console.log('Updating availability...');
+            // This would save availability changes to backend
+            alert('Availability updated across all platforms');
+        }
+
+        function toggleTimeSlot(element) {
+            if (element.classList.contains('available')) {
+                element.classList.remove('available');
+                element.classList.add('busy');
+            } else if (element.classList.contains('busy')) {
+                element.classList.remove('busy');
+            } else {
+                element.classList.add('available');
+            }
+            updateAvailability();
+        }
+
+        // Meeting management
+        function updateMeetingsList() {
+            console.log('Refreshing meetings list...');
+            // This would fetch latest meetings from all integrated platforms
+        }
+
+        function addMeetingType() {
+            console.log('Adding new meeting type...');
+            const name = prompt('Meeting type name:');
+            const duration = prompt('Duration (minutes):');
+            
+            if (name && duration) {
+                alert(`Meeting type "${name}" (${duration} min) would be created and synced to Calendly`);
+            }
+        }
+
+        // Buffer time management
+        function updateBufferTime() {
+            const bufferBefore = document.getElementById('buffer-before').value;
+            const bufferAfter = document.getElementById('buffer-after').value;
+            
+            console.log(`Buffer time updated: ${bufferBefore}min before, ${bufferAfter}min after`);
+            // This would update buffer settings across all platforms
+        }
+
+        // Timezone handling
+        function updateTimezone() {
+            const timezone = document.getElementById('timezone').value;
+            console.log('Timezone updated to:', timezone);
+            // This would update timezone across all integrations
+            updateAvailability();
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers for time slots
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.addEventListener('click', function() {
+                    if (this.textContent !== '-') {
+                        toggleTimeSlot(this);
+                    }
+                });
+            });
+
+            // Buffer time change handlers
+            document.getElementById('buffer-before').addEventListener('change', updateBufferTime);
+            document.getElementById('buffer-after').addEventListener('change', updateBufferTime);
+            
+            // Timezone change handler
+            document.getElementById('timezone').addEventListener('change', updateTimezone);
+
+            // Simulate real-time updates every 5 minutes
+            setInterval(updateMeetingsList, 300000);
+        });
+
+        // Connect to standardized data model when available
+        function loadAvailabilityData() {
+            if (typeof GROWTH_MANAGER_DATA !== 'undefined') {
+                // Load upcoming meetings from prospects data
+                const prospects = GROWTH_MANAGER_DATA.prospects;
+                console.log('Loading availability data for prospects:', prospects);
+                
+                // Update meeting list with actual prospect data
+                updateMeetingsList();
+            }
+        }
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', loadAvailabilityData);
+
+        console.log('Availability page loaded with Calendly, Zoom, and Google Calendar integration');
