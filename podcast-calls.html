@@ -187,11 +187,6 @@
             background: #d5dbdb;
         }
 
-        .btn-small {
-            padding: 0.4rem 0.8rem;
-            font-size: 0.8rem;
-        }
-
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -224,22 +219,6 @@
         .pending { color: #f39c12; }
         .scheduled { color: #9b59b6; }
 
-        .ai-indicator {
-            background: #e8f5e8;
-            border: 1px solid #27ae60;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .ai-icon {
-            color: #27ae60;
-            font-size: 1.5rem;
-        }
-
         .calls-section {
             background: white;
             border-radius: 12px;
@@ -264,109 +243,32 @@
         .call-item {
             padding: 1.5rem 2rem;
             border-bottom: 1px solid #ecf0f1;
-            display: flex;
-            align-items: flex-start;
-            gap: 1.5rem;
         }
 
         .call-item:last-child {
             border-bottom: none;
         }
 
-        .call-avatar {
-            width: 50px;
-            height: 50px;
-            background: #3498db;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-            font-weight: bold;
-            flex-shrink: 0;
-        }
-
-        .call-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .call-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 0.5rem;
-            gap: 1rem;
-        }
-
         .call-name {
             font-size: 1.1rem;
             font-weight: 600;
             color: #2c3e50;
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.5rem;
         }
 
         .call-details {
             font-size: 0.9rem;
             color: #7f8c8d;
-            margin-bottom: 0.8rem;
+            margin-bottom: 1rem;
         }
 
-        .ai-analysis {
-            background: #f0f9f0;
-            padding: 0.8rem;
-            border-radius: 6px;
-            margin-bottom: 0.8rem;
-            border-left: 3px solid #27ae60;
-        }
-
-        .ai-analysis h4 {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #155724;
-            margin-bottom: 0.3rem;
-        }
-
-        .ai-analysis p {
-            font-size: 0.85rem;
-            color: #155724;
-            line-height: 1.4;
-        }
-
-        .qualification-score {
-            background: white;
-            border: 1px solid #27ae60;
-            border-radius: 6px;
-            padding: 1rem;
-            margin-top: 0.8rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .score-details {
-            flex: 1;
-        }
-
-        .score-number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #27ae60;
-            margin-bottom: 0.3rem;
-        }
-
-        .score-label {
-            font-size: 0.8rem;
-            color: #7f8c8d;
-        }
-
-        .score-verdict {
-            text-align: right;
-            padding: 0.5rem 1rem;
+        .score-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
             border-radius: 20px;
-            font-weight: bold;
             font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
         }
 
         .qualified-badge {
@@ -377,34 +279,6 @@
         .pending-badge {
             background: #fef3cd;
             color: #f39c12;
-        }
-
-        .call-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 0.8rem;
-        }
-
-        .next-step {
-            background: #fff3cd;
-            padding: 0.8rem;
-            border-radius: 6px;
-            margin-top: 0.8rem;
-            border-left: 3px solid #ffc107;
-        }
-
-        .next-step h4 {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #856404;
-            margin-bottom: 0.3rem;
-        }
-
-        .next-step p {
-            font-size: 0.85rem;
-            color: #664d03;
-            line-height: 1.4;
         }
 
         /* Mobile hamburger menu */
@@ -446,17 +320,6 @@
 
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
-            }
-
-            .call-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .call-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
             }
         }
     </style>
@@ -606,15 +469,6 @@
                     </div>
                 </div>
 
-                <!-- AI Processing Indicator -->
-                <div class="ai-indicator">
-                    <div class="ai-icon">🤖</div>
-                    <div>
-                        <strong>AI Analysis Active</strong> - Call recordings automatically processed for pain points, business goals, and qualification scoring. 
-                        Qualified prospects (35+ score) auto-advance to Discovery Calls.
-                    </div>
-                </div>
-
                 <!-- Stats Cards -->
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -644,262 +498,52 @@
                         </div>
                     </div>
 
-                    <!-- Call Item 1 - Jonathan (Qualified) -->
+                    <!-- Jonathan - Qualified -->
                     <div class="call-item">
-                        <div class="call-avatar">J</div>
-                        <div class="call-info">
-                            <div class="call-header">
-                                <div>
-                                    <div class="call-name">Jonathan</div>
-                                    <div class="call-details">
-                                        Brewer Suite Co • Interior Design • Costa Mesa, CA • Sept 17, 2025
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="ai-analysis">
-                                <h4>AI-Extracted Pain Points:</h4>
-                                <p>Scaling team management challenges - growing from individual work to delegating. Need for better systems to support 15+ projects/year. Project management complexities with coastal construction regulations.</p>
-                            </div>
-
-                            <div class="qualification-score">
-                                <div class="score-details">
-                                    <div class="score-number">38</div>
-                                    <div class="score-label">Qualification Score</div>
-                                </div>
-                                <div class="score-verdict qualified-badge">
-                                    QUALIFIED FOR DISCOVERY
-                                </div>
-                            </div>
-
-                            <div class="next-step">
-                                <h4>Next Step:</h4>
-                                <p>Discovery call scheduled for Sept 23, 2:00 PM - Auto-advanced due to 38/50 score</p>
-                            </div>
-
-                            <div class="call-actions">
-                                <button class="btn btn-primary btn-small">
-                                    View Recording
-                                </button>
-                                <button class="btn btn-secondary btn-small">
-                                    AI Analysis Report
-                                </button>
-                                <button class="btn btn-secondary btn-small">
-                                    Discovery Call Details
-                                </button>
-                            </div>
-                        </div>
+                        <div class="call-name">Jonathan</div>
+                        <div class="call-details">Brewer Suite Co • Interior Design • Costa Mesa, CA • Sept 17, 2025</div>
+                        <div class="score-badge qualified-badge">QUALIFIED (38/50) - Discovery Scheduled</div>
+                        <p>Pain Points: Scaling team management, 15+ projects/year system needs, coastal construction regulations</p>
                     </div>
 
-                    <!-- Call Item 2 - Tye (Qualified) -->
+                    <!-- Tye - Qualified -->
                     <div class="call-item">
-                        <div class="call-avatar">T</div>
-                        <div class="call-info">
-                            <div class="call-header">
-                                <div>
-                                    <div class="call-name">Tye Shumway</div>
-                                    <div class="call-details">
-                                        TWS Construction • Construction • Moab, UT • Sept 15, 2025
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="ai-analysis">
-                                <h4>AI-Extracted Pain Points:</h4>
-                                <p>CFO/financial management expertise gap. Construction cashflow complexities with 5 failed bookkeeper attempts. Scaling challenges from $750K to $10M revenue goal.</p>
-                            </div>
-
-                            <div class="qualification-score">
-                                <div class="score-details">
-                                    <div class="score-number">35</div>
-                                    <div class="score-label">Qualification Score</div>
-                                </div>
-                                <div class="score-verdict qualified-badge">
-                                    QUALIFIED FOR DISCOVERY
-                                </div>
-                            </div>
-
-                            <div class="next-step">
-                                <h4>Next Step:</h4>
-                                <p>Discovery call scheduled for Sept 24, 10:00 AM - Auto-advanced due to 35/50 score</p>
-                            </div>
-
-                            <div class="call-actions">
-                                <button class="btn btn-primary btn-small">
-                                    View Recording
-                                </button>
-                                <button class="btn btn-secondary btn-small">
-                                    AI Analysis Report
-                                </button>
-                                <button class="btn btn-secondary btn-small">
-                                    Discovery Call Details
-                                </button>
-                            </div>
-                        </div>
+                        <div class="call-name">Tye Shumway</div>
+                        <div class="call-details">TWS Construction • Construction • Moab, UT • Sept 15, 2025</div>
+                        <div class="score-badge qualified-badge">QUALIFIED (35/50) - Discovery Scheduled</div>
+                        <p>Pain Points: CFO/financial management gap, cashflow complexities, scaling from $750K to $10M</p>
                     </div>
 
-                    <!-- Call Item 3 - Kami (Pending Analysis) -->
+                    <!-- Kami - Pending -->
                     <div class="call-item">
-                        <div class="call-avatar">K</div>
-                        <div class="call-info">
-                            <div class="call-header">
-                                <div>
-                                    <div class="call-name">Kami Gray</div>
-                                    <div class="call-details">
-                                        Psychology From Design • Education/Design • Salt Lake City, UT • Sept 16, 2025
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="ai-analysis">
-                                <h4>Analysis Status:</h4>
-                                <p>Processing - Analysis pending. Call recording being analyzed for pain points and qualification scoring.</p>
-                            </div>
-
-                            <div class="qualification-score">
-                                <div class="score-details">
-                                    <div class="score-number">--</div>
-                                    <div class="score-label">Processing</div>
-                                </div>
-                                <div class="score-verdict pending-badge">
-                                    ANALYSIS PENDING
-                                </div>
-                            </div>
-
-                            <div class="call-actions">
-                                <button class="btn btn-primary btn-small">
-                                    View Recording
-                                </button>
-                                <button class="btn btn-secondary btn-small">
-                                    Manual Review
-                                </button>
-                            </div>
-                        </div>
+                        <div class="call-name">Kami Gray</div>
+                        <div class="call-details">Psychology From Design • Education/Design • Salt Lake City, UT • Sept 16, 2025</div>
+                        <div class="score-badge pending-badge">ANALYSIS PENDING</div>
+                        <p>Processing - Analysis pending for qualification scoring</p>
                     </div>
 
-                    <!-- Call Item 4 - Bella -->
+                    <!-- Bella - Pending -->
                     <div class="call-item">
-                        <div class="call-avatar">B</div>
-                        <div class="call-info">
-                            <div class="call-header">
-                                <div>
-                                    <div class="call-name">Bella Rodriguez</div>
-                                    <div class="call-details">
-                                        Let's Go Design Co • Hospitality Design • Salt Lake City, UT • Sept 20, 2025
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="ai-analysis">
-                                <h4>Analysis Status:</h4>
-                                <p>Processing - Analysis pending. Call recording being analyzed for pain points and qualification scoring.</p>
-                            </div>
-
-                            <div class="qualification-score">
-                                <div class="score-details">
-                                    <div class="score-number">--</div>
-                                    <div class="score-label">Processing</div>
-                                </div>
-                                <div class="score-verdict pending-badge">
-                                    ANALYSIS PENDING
-                                </div>
-                            </div>
-
-                            <div class="call-actions">
-                                <button class="btn btn-primary btn-small">
-                                    View Recording
-                                </button>
-                                <button class="btn btn-secondary btn-small">
-                                    Manual Review
-                                </button>
-                            </div>
-                        </div>
+                        <div class="call-name">Bella Rodriguez</div>
+                        <div class="call-details">Let's Go Design Co • Hospitality Design • Salt Lake City, UT • Sept 20, 2025</div>
+                        <div class="score-badge pending-badge">ANALYSIS PENDING</div>
+                        <p>Processing - Analysis pending for qualification scoring</p>
                     </div>
 
-                    <!-- Call Item 5 - Marla -->
+                    <!-- Marla - Pending -->
                     <div class="call-item">
-                        <div class="call-avatar">M</div>
-                        <div class="call-info">
-                            <div class="call-header">
-                                <div>
-                                    <div class="call-name">Marla Stone</div>
-                                    <div class="call-details">
-                                        I Deal Lifestyle • Professional Organizer • Sept 18, 2025
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="ai-analysis">
-                                <h4>Analysis Status:</h4>
-                                <p>Processing - Analysis pending. Call recording being analyzed for pain points and qualification scoring.</p>
-                            </div>
-
-                            <div class="qualification-score">
-                                <div class="score-details">
-                                    <div class="score-number">--</div>
-                                    <div class="score-label">Processing</div>
-                                </div>
-                                <div class="score-verdict pending-badge">
-                                    ANALYSIS PENDING
-                                </div>
-                            </div>
-
-                            <div class="call-actions">
-                                <button class="btn btn-primary btn-small">
-                                    View Recording
-                                </button>
-                                <button class="btn btn-secondary btn-small">
-                                    Manual Review
-                                </button>
-                            </div>
-                        </div>
+                        <div class="call-name">Marla Stone</div>
+                        <div class="call-details">I Deal Lifestyle • Professional Organizer • Sept 18, 2025</div>
+                        <div class="score-badge pending-badge">ANALYSIS PENDING</div>
+                        <p>Processing - Analysis pending for qualification scoring</p>
                     </div>
 
-                    <!-- Call Item 6 - Bobbie -->
+                    <!-- Bobbie - Below Threshold -->
                     <div class="call-item">
-                        <div class="call-avatar" style="background: #9b59b6;">B</div>
-                        <div class="call-info">
-                            <div class="call-header">
-                                <div>
-                                    <div class="call-name">Bobbie Wasserman</div>
-                                    <div class="call-details">
-                                        Homeownership Collective • Real Estate/Education • Los Angeles, CA • Sept 14, 2025
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="ai-analysis">
-                                <h4>AI-Extracted Pain Points:</h4>
-                                <p>Education platform scaling challenges. Need for systematic approach to content delivery and student engagement in real estate education space.</p>
-                            </div>
-
-                            <div class="qualification-score">
-                                <div class="score-details">
-                                    <div class="score-number">28</div>
-                                    <div class="score-label">Qualification Score</div>
-                                </div>
-                                <div class="score-verdict pending-badge">
-                                    BELOW THRESHOLD
-                                </div>
-                            </div>
-
-                            <div class="next-step">
-                                <h4>Status:</h4>
-                                <p>Score below 35 threshold. Added to nurture sequence for future follow-up.</p>
-                            </div>
-
-                            <div class="call-actions">
-                                <button class="btn btn-primary btn-small">
-                                    View Recording
-                                </button>
-                                <button class="btn btn-secondary btn-small">
-                                    AI Analysis Report
-                                </button>
-                                <button class="btn btn-secondary btn-small">
-                                    Add to Nurture
-                                </button>
-                            </div>
-                        </div>
+                        <div class="call-name">Bobbie Wasserman</div>
+                        <div class="call-details">Homeownership Collective • Real Estate/Education • Los Angeles, CA • Sept 14, 2025</div>
+                        <div class="score-badge" style="background: #fef2f2; color: #e74c3c;">BELOW THRESHOLD (28/50)</div>
+                        <p>Added to nurture sequence - Education platform scaling challenges identified</p>
                     </div>
                 </div>
             </div>
