@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campaigns - Growth Manager Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e1e5e9;
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 2rem 2rem 2rem;
+            border-bottom: 1px solid #e1e5e9;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-header p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            padding: 0 2rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #95a5a6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 2rem;
+            color: #5a6c7d;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+
+        .nav-item.active {
+            background: #3498db;
+            color: white;
+            border-right: 3px solid #2980b9;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .nav-text {
+            flex: 1;
+        }
+
+        .nav-subtitle {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 0.2rem;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-icon {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+        }
+
+        .header-text h1 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-text p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2ecc71;
+        }
+
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+            border: 1px solid #bdc3c7;
+        }
+
+        .btn-secondary:hover {
+            background: #d5dbdb;
+        }
+
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .campaign-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .active-campaigns { color: #3498db; }
+        .total-sent { color: #f39c12; }
+        .responses { color: #27ae60; }
+        .response-rate { color: #9b59b6; }
+        .qualified { color: #e74c3c; }
+
+        .campaign-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .section-content {
+            padding: 0;
+        }
+
+        .campaign-item {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .campaign-item:last-child {
+            border-bottom: none;
+        }
+
+        .campaign-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .email-icon {
+            background: #3498db;
+        }
+
+        .linkedin-icon {
+            background: #0077b5;
+        }
+
+        .campaign-info {
+            flex: 1;
+        }
+
+        .campaign-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.3rem;
+        }
+
+        .campaign-details {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 0.8rem;
+        }
+
+        .campaign-stats-inline {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .inline-stat {
+            font-size: 0.8rem;
+        }
+
+        .inline-stat strong {
+            color: #2c3e50;
+        }
+
+        .campaign-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 1rem;
+        }
+
+        .status-active {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+
+        .status-paused {
+            background: #fef3cd;
+            color: #f39c12;
+        }
+
+        .status-completed {
+            background: #dbeafe;
+            color: #3498db;
+        }
+
+        .campaign-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+        }
+
+        .response-item {
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .response-item:last-child {
+            border-bottom: none;
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .response-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .response-time {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+
+        .response-content {
+            background: #f8f9fa;
+            padding: 0.8rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: #2c3e50;
+            margin-bottom: 0.8rem;
+            border-left: 3px solid #3498db;
+        }
+
+        .response-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .qualification-badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+
+        .qualified-badge {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+
+        .pending-badge {
+            background: #fef3cd;
+            color: #f39c12;
+        }
+
+        .integration-indicator {
+            background: #e8f5e8;
+            border: 1px solid #27ae60;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .integration-icon {
+            color: #27ae60;
+            font-size: 1.5rem;
+        }
+
+        /* Mobile hamburger menu */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .container {
+                padding: 1rem;
+                padding-top: 4rem;
+            }
+
+            .campaign-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .campaign-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .campaign-stats-inline {
+                flex-direction: column;
+                gap: 0.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+            ☰
+        </button>
+
+        <!-- Sidebar Navigation -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1>Growth Manager Pro</h1>
+                <p>Client Acquisition System</p>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Navigation</div>
+                
+                <a href="index.html" class="nav-item">
+                    <div class="nav-icon">📊</div>
+                    <div class="nav-text">
+                        <div>Dashboard</div>
+                        <div class="nav-subtitle">Overview & KPIs</div>
+                    </div>
+                </a>
+
+                <a href="contacts.html" class="nav-item">
+                    <div class="nav-icon">👥</div>
+                    <div class="nav-text">
+                        <div>Contacts</div>
+                        <div class="nav-subtitle">Prospect database</div>
+                    </div>
+                </a>
+
+                <a href="podcast-calls.html" class="nav-item">
+                    <div class="nav-icon">📞</div>
+                    <div class="nav-text">
+                        <div>Podcast Calls</div>
+                        <div class="nav-subtitle">Interview tracking</div>
+                    </div>
+                </a>
+
+                <a href="discovery-calls.html" class="nav-item">
+                    <div class="nav-icon">🎯</div>
+                    <div class="nav-text">
+                        <div>Discovery Calls</div>
+                        <div class="nav-subtitle">Qualification calls</div>
+                    </div>
+                </a>
+
+                <a href="sales-calls.html" class="nav-item">
+                    <div class="nav-icon">📈</div>
+                    <div class="nav-text">
+                        <div>Sales Calls</div>
+                        <div class="nav-subtitle">Closing conversations</div>
+                    </div>
+                </a>
+
+                <a href="pipeline.html" class="nav-item">
+                    <div class="nav-icon">📋</div>
+                    <div class="nav-text">
+                        <div>Pipeline</div>
+                        <div class="nav-subtitle">Deal management</div>
+                    </div>
+                </a>
+
+                <a href="deals.html" class="nav-item">
+                    <div class="nav-icon">📄</div>
+                    <div class="nav-text">
+                        <div>Deals</div>
+                        <div class="nav-subtitle">Closed deals</div>
+                    </div>
+                </a>
+
+                <a href="cash-flow.html" class="nav-item">
+                    <div class="nav-icon">💰</div>
+                    <div class="nav-text">
+                        <div>Cash Flow</div>
+                        <div class="nav-subtitle">Financial tracking</div>
+                    </div>
+                </a>
+
+                <a href="campaigns.html" class="nav-item active">
+                    <div class="nav-icon">⚡</div>
+                    <div class="nav-text">
+                        <div>Campaigns</div>
+                        <div class="nav-subtitle">Outreach tracking</div>
+                    </div>
+                </a>
+
+                <a href="sprints.html" class="nav-item">
+                    <div class="nav-icon">📅</div>
+                    <div class="nav-text">
+                        <div>Sprints</div>
+                        <div class="nav-subtitle">Task management</div>
+                    </div>
+                </a>
+
+                <a href="expense-tracker.html" class="nav-item">
+                    <div class="nav-icon">🧮</div>
+                    <div class="nav-text">
+                        <div>Expense Tracker</div>
+                        <div class="nav-subtitle">Manage recurring costs</div>
+                    </div>
+                </a>
+
+                <a href="availability.html" class="nav-item">
+                    <div class="nav-icon">🕐</div>
+                    <div class="nav-text">
+                        <div>Availability</div>
+                        <div class="nav-subtitle">Schedule settings</div>
+                    </div>
+                </a>
+
+                <a href="user-management.html" class="nav-item">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-text">
+                        <div>User Management</div>
+                        <div class="nav-subtitle">Manage users & permissions</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="container">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div class="header-left">
+                        <div class="header-icon">⚡</div>
+                        <div class="header-text">
+                            <h1>Outreach Campaigns</h1>
+                            <p>Email and LinkedIn automation with AI-powered response tracking</p>
+                        </div>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary">
+                            📊 Campaign Report
+                        </button>
+                        <button class="btn btn-primary">
+                            ➕ New Campaign
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Integration Indicator -->
+                <div class="integration-indicator">
+                    <div class="integration-icon">🔗</div>
+                    <div>
+                        <strong>Integrated Outreach Tracking</strong> - Connected to Instantly.ai, Dripfy (LinkedIn), and podcast funnel. 
+                        Responses automatically qualify prospects and advance them to podcast calls.
+                    </div>
+                </div>
+
+                <!-- Campaign Stats -->
+                <div class="campaign-stats">
+                    <div class="stat-card">
+                        <div class="stat-number active-campaigns">3</div>
+                        <div class="stat-label">Active Campaigns</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number total-sent">1,247</div>
+                        <div class="stat-label">Total Sent</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number responses">34</div>
+                        <div class="stat-label">Responses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number response-rate">2.7%</div>
+                        <div class="stat-label">Response Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number qualified">6</div>
+                        <div class="stat-label">Qualified for Podcast</div>
+                    </div>
+                </div>
+
+                <!-- Campaign Grid -->
+                <div class="campaign-grid">
+                    <!-- Active Campaigns -->
+                    <div class="section">
+                        <div class="section-header">
+                            <h2 class="section-title">Active Campaigns</h2>
+                            <span style="font-size: 0.9rem; color: #7f8c8d;">3 running</span>
+                        </div>
+                        <div class="section-content">
+                            <!-- Email Campaign 1 -->
+                            <div class="campaign-item">
+                                <div class="campaign-icon email-icon">📧</div>
+                                <div class="campaign-info">
+                                    <div class="campaign-name">Interior Design Outreach - Q4</div>
+                                    <div class="campaign-details">
+                                        Instantly.ai • Interior design agencies • 5-step sequence
+                                    </div>
+                                    <div class="campaign-stats-inline">
+                                        <div class="inline-stat">Sent: <strong>487</strong></div>
+                                        <div class="inline-stat">Opened: <strong>21.3%</strong></div>
+                                        <div class="inline-stat">Replied: <strong>14</strong></div>
+                                        <div class="inline-stat">Qualified: <strong>3</strong></div>
+                                    </div>
+                                    <div class="campaign-actions">
+                                        <button class="btn btn-secondary btn-small">View Analytics</button>
+                                        <button class="btn btn-secondary btn-small">Edit Sequence</button>
+                                        <button class="btn btn-secondary btn-small">Pause</button>
+                                    </div>
+                                </div>
+                                <div class="campaign-status status-active">Active</div>
+                            </div>
+
+                            <!-- LinkedIn Campaign -->
+                            <div class="campaign-item">
+                                <div class="campaign-icon linkedin-icon">💼</div>
+                                <div class="campaign-info">
+                                    <div class="campaign-name">Construction LinkedIn Outreach</div>
+                                    <div class="campaign-details">
+                                        Dripfy • Construction business owners • 3-step sequence
+                                    </div>
+                                    <div class="campaign-stats-inline">
+                                        <div class="inline-stat">Sent: <strong>324</strong></div>
+                                        <div class="inline-stat">Accepted: <strong>18.2%</strong></div>
+                                        <div class="inline-stat">Replied: <strong>8</strong></div>
+                                        <div class="inline-stat">Qualified: <strong>2</strong></div>
+                                    </div>
+                                    <div class="campaign-actions">
+                                        <button class="btn btn-secondary btn-small">View Analytics</button>
+                                        <button class="btn btn-secondary btn-small">Edit Sequence</button>
+                                        <button class="btn btn-secondary btn-small">Pause</button>
+                                    </div>
+                                </div>
+                                <div class="campaign-status status-active">Active</div>
+                            </div>
+
+                            <!-- Email Campaign 2 -->
+                            <div class="campaign-item">
+                                <div class="campaign-icon email-icon">📧</div>
+                                <div class="campaign-info">
+                                    <div class="campaign-name">Professional Services Follow-up</div>
+                                    <div class="campaign-details">
+                                        Instantly.ai • Professional services • Warm outreach sequence
+                                    </div>
+                                    <div class="campaign-stats-inline">
+                                        <div class="inline-stat">Sent: <strong>436</strong></div>
+                                        <div class="inline-stat">Opened: <strong>19.7%</strong></div>
+                                        <div class="inline-stat">Replied: <strong>12</strong></div>
+                                        <div class="inline-stat">Qualified: <strong>1</strong></div>
+                                    </div>
+                                    <div class="campaign-actions">
+                                        <button class="btn btn-secondary btn-small">View Analytics</button>
+                                        <button class="btn btn-secondary btn-small">Edit Sequence</button>
+                                        <button class="btn btn-secondary btn-small">Pause</button>
+                                    </div>
+                                </div>
+                                <div class="campaign-status status-active">Active</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Responses -->
+                    <div class="section">
+                        <div class="section-header">
+                            <h2 class="section-title">Recent Responses</h2>
+                            <span style="font-size: 0.9rem; color: #7f8c8d;">Auto-tracked from funnel</span>
+                        </div>
+                        <div class="section-content">
+                            <!-- Response 1 -->
+                            <div class="response-item">
+                                <div class="response-header">
+                                    <div class="response-name">
+                                        Jonathan - Brewer Suite Co
+                                        <span class="qualification-badge qualified-badge">Qualified for Podcast</span>
+                                    </div>
+                                    <div class="response-time">2 days ago</div>
+                                </div>
+                                <div class="response-content">
+                                    "Hi Maggie, thanks for reaching out. I'd be interested in learning more about your approach to scaling interior design firms. We're definitely looking at ways to improve our systems and team management."
+                                </div>
+                                <div class="response-actions">
+                                    <button class="btn btn-primary btn-small">Schedule Podcast</button>
+                                    <button class="btn btn-secondary btn-small">View Thread</button>
+                                </div>
+                            </div>
+
+                            <!-- Response 2 -->
+                            <div class="response-item">
+                                <div class="response-header">
+                                    <div class="response-name">
+                                        Tye Shumway - TWS Construction
+                                        <span class="qualification-badge qualified-badge">Qualified for Podcast</span>
+                                    </div>
+                                    <div class="response-time">5 days ago</div>
+                                </div>
+                                <div class="response-content">
+                                    "This sounds relevant to our growth challenges. We're scaling from $750K and need better financial systems. Would love to discuss this further."
+                                </div>
+                                <div class="response-actions">
+                                    <button class="btn btn-primary btn-small">Schedule Podcast</button>
+                                    <button class="btn btn-secondary btn-small">View Thread</button>
+                                </div>
+                            </div>
+
+                            <!-- Response 3 -->
+                            <div class="response-item">
+                                <div class="response-header">
+                                    <div class="response-name">
+                                        Sarah - Modern Spaces Design
+                                        <span class="qualification-badge pending-badge">Under Review</span>
+                                    </div>
+                                    <div class="response-time">1 day ago</div>
+                                </div>
+                                <div class="response-content">
+                                    "Interested but would need to understand more about the time commitment and what you're looking for in terms of business size."
+                                </div>
+                                <div class="response-actions">
+                                    <button class="btn btn-secondary btn-small">Qualify</button>
+                                    <button class="btn btn-secondary btn-small">Respond</button>
+                                </div>
+                            </div>
+
+                            <!-- Response 4 -->
+                            <div class="response-item">
+                                <div class="response-header">
+                                    <div class="response-name">
+                                        Mike Chen - Chen Architecture
+                                        <span class="qualification-badge pending-badge">Under Review</span>
+                                    </div>
+                                    <div class="response-time">3 hours ago</div>
+                                </div>
+                                <div class="response-content">
+                                    "Thanks for the outreach. Not the right fit for us right now, but appreciate you thinking of us."
+                                </div>
+                                <div class="response-actions">
+                                    <button class="btn btn-secondary btn-small">Add to Nurture</button>
+                                    <button class="btn btn-secondary btn-small">Archive</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
+
+        // Simulate campaign management actions
+        function pauseCampaign(campaignName) {
+            console.log('Pausing campaign:', campaignName);
+            // Here you would integrate with campaign platform APIs
+        }
+
+        function qualifyProspect(prospectName) {
+            console.log('Qualifying prospect for podcast:', prospectName);
+            // Here you would move prospect to podcast funnel
+        }
+
+        function scheduleFollowUp(prospectName) {
+            console.log('Scheduling follow-up with:', prospectName);
+            // Here you would add to follow-up sequence
+        }
+
+        // Auto-refresh response tracking (in real app, this would be real-time)
+        function refreshResponses() {
+            console.log('Checking for new responses...');
+            // Here you would poll campaign platforms for new responses
+        }
+
+        // Check for new responses every 5 minutes
+        setInterval(refreshResponses, 300000);
+
+        console.log('Campaigns page loaded with outreach tracking');
+    </script>
+</body>
+</html>
