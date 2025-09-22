@@ -933,3 +933,53 @@
                             <div class="meeting-info">
                                 Second Discovery Call: Sep 30, 2025 | Zoom Integration: Active
                             </div>
+
+                            <div class="call-actions">
+                                <button class="btn btn-primary btn-small">
+                                    Join Meeting
+                                </button>
+                                <button class="btn btn-secondary btn-small">
+                                    Edit Details
+                                </button>
+                                <button class="btn btn-secondary btn-small">
+                                    Send Reminder
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
+
+        // Placeholder functions for button interactions
+        function uploadPlan(client) {
+            alert('Upload growth plan for ' + client);
+        }
+
+        function sendPlan(client) {
+            alert('Send growth plan to ' + client);
+        }
+
+        console.log('Discovery Calls page loaded with unified navigation');
+    </script>
+</body>
+</html>
