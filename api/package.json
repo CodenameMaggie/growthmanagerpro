@@ -1,14 +1,15 @@
 {
-  "name": "growth-manager-pro",
+  "name": "growthmanagerpro-2",
   "version": "1.0.0",
   "description": "Growth Manager Pro Dashboard with Real-time Features",
+  "type": "module",
   "scripts": {
     "dev": "vercel dev",
-    "build": "next build",
-    "start": "next start"
+    "build": "vercel build",
+    "start": "vercel start"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.38.0"
+    "@supabase/supabase-js": "^2.38.4"
   },
   "engines": {
     "node": ">=18.0.0"
