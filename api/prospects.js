@@ -1,401 +1,361 @@
-// api/prospects.js - Using JSON file storage instead of database
-import fs from 'fs';
-import path from 'path';
+// api/prospects.js - Supabase Real-time Version
+import { createClient } from '@supabase/supabase-js'
 
-// Data file paths
-const DATA_DIR = path.join(process.cwd(), 'data');
-const PROSPECTS_FILE = path.join(DATA_DIR, 'prospects.json');
-const ACTIVITIES_FILE = path.join(DATA_DIR, 'activities.json');
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
+)
 
-// Ensure data directory exists
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
-
-// Initialize data files if they don't exist
-function initializeDataFiles() {
-  if (!fs.existsSync(PROSPECTS_FILE)) {
-    const initialProspects = [
-      {
-        id: 1,
-        name: "Jonathan",
-        email: "jonathan@brewersuite.com",
-        phone: "(555) 123-4567",
-        company: "Brewer Suite Co", 
-        industry: "Interior Design",
-        status: "discovery_scheduled",
-        podcastScore: 38,
-        qualified: true,
-        source: "podcast",
-        nextAction: "Discovery Call - Tomorrow 2:00 PM",
-        notes: "Interested in automated lead generation for interior design clients",
-        tags: ["high-priority", "interior-design", "automation-interested"],
-        createdAt: new Date().toISOString(),
-        lastActivity: new Date().toISOString(),
-        engagementScore: 15
-      },
-      {
-        id: 2,
-        name: "Tye Shumway",
-        email: "tye@twsconstruction.com", 
-        phone: "(555) 987-6543",
-        company: "TWS Construction",
-        industry: "Construction", 
-        status: "discovery_completed",
-        podcastScore: 35,
-        qualified: true,
-        source: "podcast",
-        nextAction: "Send Growth Plan Proposal",
-        notes: "Completed discovery call. Needs help with contractor lead generation",
-        tags: ["discovery-done", "construction", "ready-for-proposal"],
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-        lastActivity: new Date(Date.now() - 86400000).toISOString(),
-        engagementScore: 22
-      },
-      {
-        id: 3,
-        name: "Sarah Mitchell",
-        email: "sarah@digitalmarketingpro.com",
-        phone: "(555) 456-7890", 
-        company: "Digital Marketing Pro",
-        industry: "Digital Marketing",
-        status: "growth_plan_sent",
-        podcastScore: 42,
-        qualified: true,
-        source: "podcast",
-        nextAction: "Follow up on Growth Plan",
-        notes: "Growth plan sent via Instantly. Awaiting response",
-        tags: ["growth-plan-sent", "digital-marketing", "follow-up-needed"],
-        createdAt: new Date(Date.now() - 172800000).toISOString(),
-        lastActivity: new Date(Date.now() - 172800000).toISOString(),
-        engagementScore: 18
-      }
-    ];
-    
-    fs.writeFileSync(PROSPECTS_FILE, JSON.stringify(initialProspects, null, 2));
-  }
-  
-  if (!fs.existsSync(ACTIVITIES_FILE)) {
-    fs.writeFileSync(ACTIVITIES_FILE, JSON.stringify([], null, 2));
-  }
-}
-
-// File operations helpers
-function readProspects() {
-  try {
-    if (!fs.existsSync(PROSPECTS_FILE)) {
-      initializeDataFiles();
-    }
-    const data = fs.readFileSync(PROSPECTS_FILE, 'utf8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.error('Error reading prospects:', error);
-    return [];
-  }
-}
-
-function writeProspects(prospects) {
-  try {
-    fs.writeFileSync(PROSPECTS_FILE, JSON.stringify(prospects, null, 2));
-    return true;
-  } catch (error) {
-    console.error('Error writing prospects:', error);
-    return false;
-  }
-}
-
-function readActivities() {
-  try {
-    if (!fs.existsSync(ACTIVITIES_FILE)) {
-      return [];
-    }
-    const data = fs.readFileSync(ACTIVITIES_FILE, 'utf8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.error('Error reading activities:', error);
-    return [];
-  }
-}
-
-function writeActivities(activities) {
-  try {
-    fs.writeFileSync(ACTIVITIES_FILE, JSON.stringify(activities, null, 2));
-    return true;
-  } catch (error) {
-    console.error('Error writing activities:', error);
-    return false;
-  }
-}
-
-// Main API handler
 export default async function handler(req, res) {
   // CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
   
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    res.status(200).end()
+    return
   }
-
-  // Initialize data files
-  initializeDataFiles();
 
   try {
     switch (req.method) {
       case 'GET':
-        await handleGetProspects(req, res);
-        break;
+        await handleGetProspects(req, res)
+        break
       case 'POST':
-        await handleCreateProspect(req, res);
-        break;
+        await handleCreateProspect(req, res)
+        break
       case 'PUT':
-        await handleUpdateProspect(req, res);
-        break;
+        await handleUpdateProspect(req, res)
+        break
       case 'DELETE':
-        await handleDeleteProspect(req, res);
-        break;
+        await handleDeleteProspect(req, res)
+        break
       default:
-        res.status(405).json({ error: 'Method not allowed' });
+        res.status(405).json({ error: 'Method not allowed' })
     }
   } catch (error) {
-    console.error('API Error:', error);
+    console.error('API Error:', error)
     res.status(500).json({ 
       error: 'Internal server error',
       message: error.message 
-    });
+    })
   }
 }
 
 async function handleGetProspects(req, res) {
-  const prospects = readProspects();
-  const { status, source, qualified, id, search } = req.query;
+  const { status, source, qualified, id, search, limit = 100 } = req.query
   
-  let filteredProspects = prospects;
+  let query = supabase
+    .from('prospects')
+    .select(`
+      *,
+      email_activities(count),
+      meeting_activities(count)
+    `)
   
-  // Filter by ID
+  // Apply filters
   if (id) {
-    filteredProspects = prospects.filter(p => p.id === parseInt(id));
+    query = query.eq('id', id)
   } else {
-    // Apply other filters
     if (status) {
-      filteredProspects = filteredProspects.filter(p => p.status === status);
+      query = query.eq('status', status)
     }
     
     if (source) {
-      filteredProspects = filteredProspects.filter(p => p.source === source);
+      query = query.eq('source', source)
     }
     
     if (qualified !== undefined) {
-      filteredProspects = filteredProspects.filter(p => p.qualified === (qualified === 'true'));
+      query = query.eq('qualified', qualified === 'true')
     }
     
     if (search) {
-      const searchLower = search.toLowerCase();
-      filteredProspects = filteredProspects.filter(p => 
-        p.name.toLowerCase().includes(searchLower) ||
-        p.company.toLowerCase().includes(searchLower) ||
-        p.email.toLowerCase().includes(searchLower) ||
-        p.industry.toLowerCase().includes(searchLower)
-      );
+      query = query.or(`name.ilike.%${search}%,company.ilike.%${search}%,email.ilike.%${search}%,industry.ilike.%${search}%`)
     }
   }
   
-  // Sort by last activity
-  filteredProspects.sort((a, b) => new Date(b.lastActivity) - new Date(a.lastActivity));
+  // Order and limit
+  query = query
+    .order('last_activity', { ascending: false })
+    .limit(parseInt(limit))
+  
+  const { data, error } = await query
+  
+  if (error) {
+    console.error('Supabase error:', error)
+    return res.status(500).json({ error: 'Failed to fetch prospects' })
+  }
   
   res.status(200).json({
     success: true,
-    data: filteredProspects,
-    total: filteredProspects.length,
+    data: data || [],
+    total: data?.length || 0,
     timestamp: new Date().toISOString()
-  });
+  })
 }
 
 async function handleCreateProspect(req, res) {
-  const prospects = readProspects();
-  const newProspect = req.body;
+  const prospectData = req.body
   
-  // Generate new ID
-  const maxId = prospects.length > 0 ? Math.max(...prospects.map(p => p.id)) : 0;
-  
-  const prospect = {
-    ...newProspect,
-    id: maxId + 1,
-    createdAt: new Date().toISOString(),
-    lastActivity: new Date().toISOString(),
-    qualified: newProspect.qualified || false,
-    engagementScore: newProspect.engagementScore || 0,
-    tags: newProspect.tags || []
-  };
-  
-  prospects.push(prospect);
-  
-  if (writeProspects(prospects)) {
-    // Log activity
-    await logActivity({
-      prospectId: prospect.id,
-      type: 'prospect_created',
-      data: { source: prospect.source }
-    });
-    
-    res.status(201).json({
-      success: true,
-      data: prospect,
-      message: 'Prospect created successfully'
-    });
-  } else {
-    res.status(500).json({ error: 'Failed to save prospect' });
-  }
-}
-
-async function handleUpdateProspect(req, res) {
-  const { id } = req.query;
-  const updateData = req.body;
-  const prospects = readProspects();
-  
-  const prospectIndex = prospects.findIndex(p => p.id === parseInt(id));
-  
-  if (prospectIndex === -1) {
-    return res.status(404).json({ error: 'Prospect not found' });
+  // Validate required fields
+  if (!prospectData.email || !prospectData.name) {
+    return res.status(400).json({ 
+      error: 'Email and name are required' 
+    })
   }
   
-  // Update prospect
-  const updatedProspect = {
-    ...prospects[prospectIndex],
-    ...updateData,
-    lastActivity: new Date().toISOString()
-  };
+  const { data, error } = await supabase
+    .from('prospects')
+    .insert([{
+      ...prospectData,
+      created_at: new Date().toISOString(),
+      last_activity: new Date().toISOString()
+    }])
+    .select()
+    .single()
   
-  prospects[prospectIndex] = updatedProspect;
-  
-  if (writeProspects(prospects)) {
-    // Log activity
-    await logActivity({
-      prospectId: updatedProspect.id,
-      type: 'prospect_updated',
-      data: updateData
-    });
-    
-    res.status(200).json({
-      success: true,
-      data: updatedProspect,
-      message: 'Prospect updated successfully'
-    });
-  } else {
-    res.status(500).json({ error: 'Failed to update prospect' });
+  if (error) {
+    console.error('Supabase error:', error)
+    if (error.code === '23505') { // Unique constraint violation
+      return res.status(409).json({ error: 'Prospect with this email already exists' })
+    }
+    return res.status(500).json({ error: 'Failed to create prospect' })
   }
-}
-
-async function handleDeleteProspect(req, res) {
-  const { id } = req.query;
-  const prospects = readProspects();
-  
-  const prospectIndex = prospects.findIndex(p => p.id === parseInt(id));
-  
-  if (prospectIndex === -1) {
-    return res.status(404).json({ error: 'Prospect not found' });
-  }
-  
-  const deletedProspect = prospects.splice(prospectIndex, 1)[0];
-  
-  if (writeProspects(prospects)) {
-    res.status(200).json({
-      success: true,
-      data: deletedProspect,
-      message: 'Prospect deleted successfully'
-    });
-  } else {
-    res.status(500).json({ error: 'Failed to delete prospect' });
-  }
-}
-
-// Activity logging helper
-async function logActivity(activityData) {
-  const activities = readActivities();
-  
-  const activity = {
-    id: activities.length + 1,
-    ...activityData,
-    timestamp: new Date().toISOString()
-  };
-  
-  activities.push(activity);
-  writeActivities(activities);
-  
-  return activity;
-}
-
-// Helper functions for webhooks to use
-export async function findProspectByEmail(email) {
-  const prospects = readProspects();
-  return prospects.find(p => p.email === email);
-}
-
-export async function updateProspectByEmail(email, updateData) {
-  const prospects = readProspects();
-  const prospectIndex = prospects.findIndex(p => p.email === email);
-  
-  if (prospectIndex === -1) {
-    return null;
-  }
-  
-  prospects[prospectIndex] = {
-    ...prospects[prospectIndex],
-    ...updateData,
-    lastActivity: new Date().toISOString()
-  };
-  
-  writeProspects(prospects);
   
   // Log activity
   await logActivity({
-    prospectId: prospects[prospectIndex].id,
+    prospect_id: data.id,
+    type: 'prospect_created',
+    data: { source: data.source }
+  })
+  
+  res.status(201).json({
+    success: true,
+    data: data,
+    message: 'Prospect created successfully'
+  })
+}
+
+async function handleUpdateProspect(req, res) {
+  const { id } = req.query
+  const updateData = req.body
+  
+  if (!id) {
+    return res.status(400).json({ error: 'Prospect ID is required' })
+  }
+  
+  const { data, error } = await supabase
+    .from('prospects')
+    .update({
+      ...updateData,
+      last_activity: new Date().toISOString()
+    })
+    .eq('id', id)
+    .select()
+    .single()
+  
+  if (error) {
+    console.error('Supabase error:', error)
+    if (error.code === 'PGRST116') {
+      return res.status(404).json({ error: 'Prospect not found' })
+    }
+    return res.status(500).json({ error: 'Failed to update prospect' })
+  }
+  
+  // Log activity
+  await logActivity({
+    prospect_id: data.id,
+    type: 'prospect_updated',
+    data: updateData
+  })
+  
+  res.status(200).json({
+    success: true,
+    data: data,
+    message: 'Prospect updated successfully'
+  })
+}
+
+async function handleDeleteProspect(req, res) {
+  const { id } = req.query
+  
+  if (!id) {
+    return res.status(400).json({ error: 'Prospect ID is required' })
+  }
+  
+  const { data, error } = await supabase
+    .from('prospects')
+    .delete()
+    .eq('id', id)
+    .select()
+    .single()
+  
+  if (error) {
+    console.error('Supabase error:', error)
+    if (error.code === 'PGRST116') {
+      return res.status(404).json({ error: 'Prospect not found' })
+    }
+    return res.status(500).json({ error: 'Failed to delete prospect' })
+  }
+  
+  res.status(200).json({
+    success: true,
+    data: data,
+    message: 'Prospect deleted successfully'
+  })
+}
+
+// Helper function to log activities
+async function logActivity(activityData) {
+  try {
+    await supabase
+      .from('integration_logs')
+      .insert([{
+        source: 'api',
+        event_type: activityData.type,
+        prospect_email: null,
+        payload: activityData.data,
+        processed: true,
+        timestamp: new Date().toISOString()
+      }])
+  } catch (error) {
+    console.error('Failed to log activity:', error)
+  }
+}
+
+// Helper functions for webhook integrations
+export async function findProspectByEmail(email) {
+  const { data, error } = await supabase
+    .from('prospects')
+    .select('*')
+    .eq('email', email)
+    .single()
+  
+  if (error && error.code !== 'PGRST116') {
+    console.error('Error finding prospect:', error)
+  }
+  
+  return data
+}
+
+export async function updateProspectByEmail(email, updateData) {
+  const { data, error } = await supabase
+    .from('prospects')
+    .update({
+      ...updateData,
+      last_activity: new Date().toISOString()
+    })
+    .eq('email', email)
+    .select()
+    .single()
+  
+  if (error) {
+    console.error('Error updating prospect:', error)
+    return null
+  }
+  
+  // Log activity
+  await logActivity({
+    prospect_id: data.id,
     type: 'prospect_updated_by_email',
     data: updateData
-  });
+  })
   
-  return prospects[prospectIndex];
+  return data
 }
 
 export async function createProspectFromWebhook(prospectData) {
-  const prospects = readProspects();
-  
   // Check if prospect already exists
-  const existing = prospects.find(p => p.email === prospectData.email);
+  const existing = await findProspectByEmail(prospectData.email)
   if (existing) {
-    return existing;
+    return existing
   }
   
-  // Generate new ID
-  const maxId = prospects.length > 0 ? Math.max(...prospects.map(p => p.id)) : 0;
+  const { data, error } = await supabase
+    .from('prospects')
+    .insert([{
+      name: prospectData.name || prospectData.email.split('@')[0],
+      email: prospectData.email,
+      company: prospectData.company || '',
+      industry: prospectData.industry || '',
+      source: prospectData.source || 'webhook',
+      status: 'new',
+      qualified: false,
+      podcast_score: 0,
+      engagement_score: 0,
+      tags: [],
+      created_at: new Date().toISOString(),
+      last_activity: new Date().toISOString(),
+      ...prospectData
+    }])
+    .select()
+    .single()
   
-  const prospect = {
-    id: maxId + 1,
-    name: prospectData.name || prospectData.email.split('@')[0],
-    email: prospectData.email,
-    company: prospectData.company || '',
-    industry: prospectData.industry || '',
-    source: prospectData.source || 'webhook',
-    status: 'new',
-    qualified: false,
-    podcastScore: 0,
-    engagementScore: 0,
-    tags: [],
-    createdAt: new Date().toISOString(),
-    lastActivity: new Date().toISOString(),
-    ...prospectData
-  };
+  if (error) {
+    console.error('Error creating prospect from webhook:', error)
+    return null
+  }
   
-  prospects.push(prospect);
-  writeProspects(prospects);
-  
+  // Log activity
   await logActivity({
-    prospectId: prospect.id,
+    prospect_id: data.id,
     type: 'prospect_created_from_webhook',
-    data: { source: prospect.source }
-  });
+    data: { source: data.source }
+  })
   
-  return prospect;
+  return data
+}
+
+export async function logEmailActivity(activityData) {
+  const { data, error } = await supabase
+    .from('email_activities')
+    .insert([{
+      prospect_id: activityData.prospect_id,
+      email: activityData.email,
+      activity_type: activityData.activity_type,
+      campaign_name: activityData.campaign_name,
+      sequence_step: activityData.sequence_step,
+      subject_line: activityData.subject_line,
+      metadata: activityData.metadata || {},
+      timestamp: activityData.timestamp || new Date().toISOString()
+    }])
+    .select()
+    .single()
+  
+  if (error) {
+    console.error('Error logging email activity:', error)
+    return null
+  }
+  
+  return data
+}
+
+export async function logMeetingActivity(activityData) {
+  const { data, error } = await supabase
+    .from('meeting_activities')
+    .insert([{
+      prospect_id: activityData.prospect_id,
+      meeting_type: activityData.meeting_type,
+      platform: activityData.platform,
+      platform_meeting_id: activityData.platform_meeting_id,
+      activity_type: activityData.activity_type,
+      scheduled_for: activityData.scheduled_for,
+      duration_minutes: activityData.duration_minutes,
+      attendees: activityData.attendees || {},
+      recording_url: activityData.recording_url,
+      notes: activityData.notes,
+      metadata: activityData.metadata || {},
+      timestamp: activityData.timestamp || new Date().toISOString()
+    }])
+    .select()
+    .single()
+  
+  if (error) {
+    console.error('Error logging meeting activity:', error)
+    return null
+  }
+  
+  return data
 }
