@@ -1,4 +1,4 @@
-// api/prospects.js - Supabase Real-time Version
+// api/prospects.js - Supabase Real-time Version- updated version
 import { createClient } from '@supabase/supabase-js'
 
 // Initialize Supabase client
