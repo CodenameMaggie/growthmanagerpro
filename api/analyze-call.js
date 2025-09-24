@@ -74,20 +74,25 @@ function analyzeTranscript(transcript) {
   let score = 0;
   const text = transcript.toLowerCase();
   
-  // Business size indicators
-  if (text.includes('revenue') || text.includes('million') || text.includes('scale')) score += 10;
-  if (text.includes('employees') || text.includes('team')) score += 8;
+  // Business size indicators (0-15 points)
+  if (text.includes('million') || text.includes('10 million')) score += 15;
+  else if (text.includes('750k') || text.includes('500k')) score += 10;
+  else if (text.includes('revenue')) score += 5;
   
-  // Pain point indicators
-  if (text.includes('challenge') || text.includes('problem')) score += 12;
-  if (text.includes('system') || text.includes('process')) score += 10;
-  if (text.includes('growth') || text.includes('scaling')) score += 15;
+  // Pain point indicators (0-15 points)
+  if (text.includes('cash flow') || text.includes('financial systems')) score += 8;
+  if (text.includes('scaling') || text.includes('systems')) score += 5;
+  if (text.includes('team') && (text.includes('challenge') || text.includes('manage'))) score += 5;
   
-  // Interest indicators
-  if (text.includes('interested') || text.includes('help')) score += 10;
-  if (text.includes('yes') && text.includes('work together')) score += 8;
+  // Interest level (0-10 points)
+  if (text.includes('interested') && text.includes('working together')) score += 8;
+  else if (text.includes('help')) score += 4;
   
-  return Math.min(score, 50); // Cap at 50
+  // Decision-making capability (0-10 points)
+  if (text.includes('looking to') || text.includes('we need')) score += 6;
+  if (text.includes('tried') && text.includes('bookkeeper')) score += 4; // Shows they invest in solutions
+  
+  return Math.min(score, 50);
 }
 
 function extractPainPoints(transcript) {
