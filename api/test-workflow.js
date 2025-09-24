@@ -63,7 +63,7 @@ module.exports = async function handler(req, res) {
         qualification_score: score,
         pipeline_stage: 'qualified_for_discovery',
         last_activity_date: new Date().toISOString(),
-        zoom_meeting_id: 'test_meeting_123'
+        zoom_meeting_id: `test_meeting_${Date.now()}`,
       };
 
       await supabase
