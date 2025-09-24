@@ -821,22 +821,42 @@
         });
 
         // Load live prospect data
-        async function loadProspects() {
-            try {
-                const response = await fetch('/api/prospects');
-                const data = await response.json();
-                
-                if (data.prospects && data.prospects.length > 0) {
-                    renderProspects(data.prospects);
-                    updateStats(data.prospects);
-                } else {
-                    showEmptyState();
-                }
-            } catch (error) {
-                console.error('Error loading prospects:', error);
+        // Replace your existing loadProspects function with this one
+async function loadProspects() {
+    console.log('Starting loadProspects...');
+    
+    const container = document.getElementById('contactsList');
+    container.innerHTML = '<div class="empty-state"><h3>Loading prospects from API...</h3></div>';
+    
+    try {
+        console.log('Fetching from /api/prospects...');
+        const response = await fetch('/api/prospects');
+        console.log('Response status:', response.status);
+        
+        const data = await response.json();
+        console.log('Data received:', data);
+        
+        if (data.prospects) {
+            console.log('Prospects found:', data.prospects.length);
+            
+            if (data.prospects.length > 0) {
+                container.innerHTML = '<div class="empty-state"><h3>Rendering prospects...</h3></div>';
+                renderProspects(data.prospects);
+                updateStats(data.prospects);
+                console.log('Prospects rendered successfully');
+            } else {
+                console.log('No prospects in data, showing empty state');
                 showEmptyState();
             }
+        } else {
+            console.log('No prospects property in data');
+            showEmptyState();
         }
+    } catch (error) {
+        console.error('Error in loadProspects:', error);
+        container.innerHTML = `<div class="empty-state"><h3>Error loading prospects</h3><p>Error: ${error.message}</p></div>`;
+    }
+}
 
         function renderProspects(prospects) {
             const container = document.getElementById('contactsList');
