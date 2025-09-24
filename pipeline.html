@@ -767,85 +767,346 @@
     </div>
 
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
-        }
+        // Replace the existing script section in pipeline.html with this code
 
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const toggle = document.querySelector('.mobile-menu-toggle');
-            
-            if (window.innerWidth <= 768) {
-                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
-                    sidebar.classList.remove('open');
-                }
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('open');
+}
+
+// Close sidebar when clicking outside on mobile
+document.addEventListener('click', function(event) {
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.querySelector('.mobile-menu-toggle');
+    
+    if (window.innerWidth <= 768) {
+        if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+            sidebar.classList.remove('open');
+        }
+    }
+});
+
+// Global prospects data
+let allProspects = [];
+
+// Load live pipeline data
+async function loadPipelineData() {
+    try {
+        const response = await fetch('/api/prospects');
+        const data = await response.json();
+        
+        if (data.prospects) {
+            allProspects = data.prospects;
+            updatePipelineStats(data.prospects);
+            renderPipelineStages(data.prospects);
+        }
+    } catch (error) {
+        console.error('Error loading pipeline data:', error);
+        showDefaultContent();
+    }
+}
+
+function updatePipelineStats(prospects) {
+    // Calculate pipeline metrics
+    const totalValue = prospects.length * 12000; // Assume $12k average deal size
+    const activeDeals = prospects.filter(p => 
+        ['qualified_for_discovery', 'discovery_link_sent', 'discovery_completed', 'proposal_sent'].includes(p.pipeline_stage)
+    ).length;
+    const conversionRate = prospects.length > 0 ? 
+        Math.round((prospects.filter(p => p.qualification_score >= 35).length / prospects.length) * 100) : 0;
+    const avgDealSize = 12000; // Static for now
+
+    // Update stats
+    document.querySelector('.pipeline-value .stat-number').textContent = `$${(totalValue).toLocaleString()}`;
+    document.querySelector('.active-deals .stat-number').textContent = activeDeals;
+    document.querySelector('.conversion-rate .stat-number').textContent = conversionRate + '%';
+    document.querySelector('.avg-deal-size .stat-number').textContent = `$${avgDealSize.toLocaleString()}`;
+}
+
+function renderPipelineStages(prospects) {
+    const stages = [
+        { id: 'new', name: 'New Prospects', prospects: prospects.filter(p => p.pipeline_stage === 'new' || !p.pipeline_stage) },
+        { id: 'qualified_for_discovery', name: 'Qualified', prospects: prospects.filter(p => p.pipeline_stage === 'qualified_for_discovery') },
+        { id: 'discovery_link_sent', name: 'Discovery Scheduled', prospects: prospects.filter(p => p.pipeline_stage === 'discovery_link_sent') },
+        { id: 'discovery_completed', name: 'Discovery Complete', prospects: prospects.filter(p => p.pipeline_stage === 'discovery_completed') },
+        { id: 'proposal_sent', name: 'Proposal Sent', prospects: prospects.filter(p => p.pipeline_stage === 'proposal_sent') },
+        { id: 'closed_won', name: 'Closed Won', prospects: prospects.filter(p => p.pipeline_stage === 'closed_won') }
+    ];
+
+    const pipelineContainer = document.querySelector('.pipeline-stages');
+    if (!pipelineContainer) return;
+
+    const stagesHTML = stages.map(stage => {
+        const stageValue = stage.prospects.length * 12000;
+        
+        return `
+            <div class="pipeline-stage" data-stage="${stage.id}">
+                <div class="stage-header">
+                    <h3 class="stage-title">${stage.name}</h3>
+                    <div class="stage-stats">
+                        <span class="stage-count">${stage.prospects.length}</span>
+                        <span class="stage-value">$${stageValue.toLocaleString()}</span>
+                    </div>
+                </div>
+                <div class="stage-content" id="${stage.id}-stage">
+                    ${renderProspectCards(stage.prospects, stage.id)}
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    pipelineContainer.innerHTML = stagesHTML;
+    
+    // Initialize drag and drop
+    initializeDragAndDrop();
+}
+
+function renderProspectCards(prospects, stageId) {
+    if (prospects.length === 0) {
+        return `<div class="empty-stage">No prospects in this stage</div>`;
+    }
+
+    return prospects.map(prospect => {
+        const avatar = prospect.name.charAt(0).toUpperCase();
+        const scoreColor = getScoreColor(prospect.qualification_score);
+        const scoreDisplay = prospect.qualification_score > 0 ? ` (${prospect.qualification_score}/50)` : '';
+        
+        return `
+            <div class="prospect-card" draggable="true" data-prospect-id="${prospect.id}" data-current-stage="${stageId}">
+                <div class="prospect-header">
+                    <div class="prospect-avatar" style="background: ${scoreColor}">
+                        ${avatar}
+                    </div>
+                    <div class="prospect-info">
+                        <div class="prospect-name">${prospect.name}${scoreDisplay}</div>
+                        <div class="prospect-company">${prospect.company || 'Company TBD'}</div>
+                    </div>
+                </div>
+                <div class="prospect-details">
+                    <div class="prospect-source">${prospect.source || 'Manual'}</div>
+                    <div class="prospect-activity">${getTimeAgo(prospect.last_activity_date || prospect.created_at)}</div>
+                </div>
+                <div class="prospect-actions">
+                    <button class="btn btn-primary btn-small" onclick="advanceProspect(${prospect.id}, '${stageId}')">
+                        ${getNextAction(stageId)}
+                    </button>
+                    <button class="btn btn-secondary btn-small" onclick="viewProspectDetails(${prospect.id})">
+                        View
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function getScoreColor(score) {
+    if (score >= 35) return '#27ae60'; // Green for qualified
+    if (score >= 20) return '#f39c12'; // Orange for potential  
+    if (score > 0) return '#e74c3c'; // Red for low score
+    return '#95a5a6'; // Gray for unscored
+}
+
+function getNextAction(stage) {
+    const actionMap = {
+        'new': 'Qualify',
+        'qualified_for_discovery': 'Send Link',
+        'discovery_link_sent': 'Follow Up',
+        'discovery_completed': 'Send Proposal',
+        'proposal_sent': 'Close Deal',
+        'closed_won': 'Celebrate'
+    };
+    return actionMap[stage] || 'Next';
+}
+
+function getTimeAgo(dateString) {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+    
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+    return `${Math.floor(diffInMinutes / 1440)}d ago`;
+}
+
+// Drag and Drop functionality
+function initializeDragAndDrop() {
+    const cards = document.querySelectorAll('.prospect-card');
+    const stages = document.querySelectorAll('.stage-content');
+
+    cards.forEach(card => {
+        card.addEventListener('dragstart', handleDragStart);
+        card.addEventListener('dragend', handleDragEnd);
+    });
+
+    stages.forEach(stage => {
+        stage.addEventListener('dragover', handleDragOver);
+        stage.addEventListener('drop', handleDrop);
+        stage.addEventListener('dragenter', handleDragEnter);
+        stage.addEventListener('dragleave', handleDragLeave);
+    });
+}
+
+function handleDragStart(e) {
+    e.target.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', e.target.dataset.prospectId);
+}
+
+function handleDragEnd(e) {
+    e.target.classList.remove('dragging');
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+}
+
+function handleDragEnter(e) {
+    e.preventDefault();
+    e.target.closest('.stage-content').classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+    if (!e.target.closest('.stage-content').contains(e.relatedTarget)) {
+        e.target.closest('.stage-content').classList.remove('drag-over');
+    }
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    const prospectId = e.dataTransfer.getData('text/plain');
+    const newStage = e.target.closest('.pipeline-stage').dataset.stage;
+    
+    e.target.closest('.stage-content').classList.remove('drag-over');
+    
+    // Update prospect stage
+    updateProspectStage(prospectId, newStage);
+}
+
+async function updateProspectStage(prospectId, newStage) {
+    try {
+        // In a real app, this would update the database
+        console.log(`Moving prospect ${prospectId} to stage ${newStage}`);
+        
+        // For now, simulate the update by reloading data
+        // In production, you'd call an API endpoint to update the prospect
+        setTimeout(() => {
+            loadPipelineData();
+        }, 500);
+        
+        // Show success message
+        const prospect = allProspects.find(p => p.id == prospectId);
+        if (prospect) {
+            showNotification(`${prospect.name} moved to ${getStageDisplayName(newStage)}`);
+        }
+    } catch (error) {
+        console.error('Error updating prospect stage:', error);
+        showNotification('Error updating prospect stage', 'error');
+    }
+}
+
+function getStageDisplayName(stage) {
+    const stageNames = {
+        'new': 'New Prospects',
+        'qualified_for_discovery': 'Qualified',
+        'discovery_link_sent': 'Discovery Scheduled',
+        'discovery_completed': 'Discovery Complete',
+        'proposal_sent': 'Proposal Sent',
+        'closed_won': 'Closed Won'
+    };
+    return stageNames[stage] || stage;
+}
+
+// Action functions
+function advanceProspect(prospectId, currentStage) {
+    const prospect = allProspects.find(p => p.id == prospectId);
+    if (!prospect) return;
+    
+    if (currentStage === 'new' && prospect.qualification_score < 35) {
+        // Run qualification
+        fetch('/api/test-workflow', { method: 'GET' })
+            .then(() => {
+                setTimeout(loadPipelineData, 1000);
+                showNotification(`${prospect.name} re-qualified with AI analysis`);
+            })
+            .catch(error => console.error('Error qualifying prospect:', error));
+    } else if (currentStage === 'qualified_for_discovery') {
+        // Send Calendly link
+        fetch('/api/calendly-integration', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prospect_id: prospectId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                setTimeout(loadPipelineData, 1000);
+                showNotification(`Discovery call link sent to ${prospect.name}`);
             }
-        });
+        })
+        .catch(error => console.error('Error sending discovery link:', error));
+    } else {
+        // Generic advancement
+        showNotification(`${getNextAction(currentStage)} action for ${prospect.name} - Feature coming soon!`);
+    }
+}
 
-        // Drag and Drop Functionality
-        let draggedElement = null;
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.prospect-card');
-            const columns = document.querySelectorAll('.column-content');
-
-            cards.forEach(card => {
-                card.addEventListener('dragstart', function(e) {
-                    draggedElement = this;
-                    this.classList.add('dragging');
-                });
-
-                card.addEventListener('dragend', function(e) {
-                    this.classList.remove('dragging');
-                    draggedElement = null;
-                });
-            });
-
-            columns.forEach(column => {
-                column.addEventListener('dragover', function(e) {
-                    e.preventDefault();
-                    this.classList.add('drag-over');
-                });
-
-                column.addEventListener('dragleave', function(e) {
-                    this.classList.remove('drag-over');
-                });
-
-                column.addEventListener('drop', function(e) {
-                    e.preventDefault();
-                    this.classList.remove('drag-over');
-                    
-                    if (draggedElement) {
-                        this.appendChild(draggedElement);
-                        updateColumnCounts();
-                        // Here you would normally save the new position to backend
-                        console.log(`Moved ${draggedElement.dataset.prospect} to ${this.id}`);
-                    }
-                });
-            });
-        });
-
-        function updateColumnCounts() {
-            const columns = document.querySelectorAll('.kanban-column');
-            columns.forEach(column => {
-                const count = column.querySelectorAll('.prospect-card').length;
-                const countElement = column.querySelector('.column-count');
-                countElement.textContent = count;
-            });
+function viewProspectDetails(prospectId) {
+    const prospect = allProspects.find(p => p.id == prospectId);
+    if (!prospect) return;
+    
+    let details = `
+        Name: ${prospect.name}
+        Company: ${prospect.company || 'Not specified'}
+        Email: ${prospect.email || 'Not specified'}
+        Score: ${prospect.qualification_score}/50
+        Stage: ${getStageDisplayName(prospect.pipeline_stage)}
+        Source: ${prospect.source || 'Manual'}
+        Last Activity: ${prospect.last_activity_date || prospect.created_at}
+    `;
+    
+    if (prospect.calls && prospect.calls.length > 0) {
+        const call = prospect.calls[0];
+        details += `\n\nAI Analysis:`;
+        if (call.ai_analysis) {
+            details += `\nPain Points: ${call.ai_analysis.pain_points?.join(', ') || 'None identified'}`;
+            details += `\nBusiness Size: ${call.ai_analysis.business_size || 'Unknown'}`;
         }
+    }
+    
+    alert(details);
+}
 
-        // Simulate automatic progression (for demo purposes)
-        function simulateAutomaticProgression() {
-            console.log('Checking for automatic progressions...');
-            // This would check backend for trigger conditions and move prospects
-        }
+function showNotification(message, type = 'success') {
+    // Simple notification system
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'error' ? '#e74c3c' : '#27ae60'};
+        color: white;
+        padding: 1rem;
+        border-radius: 6px;
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
 
-        // Check for progressions every 30 seconds (in real app, this would be server-side)
-        setInterval(simulateAutomaticProgression, 30000);
+function showDefaultContent() {
+    console.log('Using default pipeline content due to API error');
+}
 
-        console.log('Pipeline page loaded with Kanban functionality');
-    </script>
-</body>
-</html>
+// Auto-refresh pipeline every 3 minutes
+setInterval(loadPipelineData, 180000);
+
+// Load data when page loads
+document.addEventListener('DOMContentLoaded', loadPipelineData);
+
+console.log('Pipeline page loaded with live drag-and-drop functionality');
