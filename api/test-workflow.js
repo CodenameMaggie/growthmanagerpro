@@ -13,7 +13,6 @@ module.exports = async function handler(req, res) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     );
 
-    // Simulate a qualifying podcast call
     const mockTranscript = `
       Hi Maggie, thanks for having me on. We're a construction company doing about 750K in revenue, 
       looking to scale to 10 million. Our biggest challenges are cash flow management and team systems. 
@@ -21,12 +20,15 @@ module.exports = async function handler(req, res) {
       I'm really interested in working together if you can help us grow and scale our operations.
     `;
 
-    // 1. Create a call record
+    // Generate unique meeting ID
+    const uniqueMeetingId = `test_meeting_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    // 1. Create a call record with unique meeting ID
     const { data: call, error: callError } = await supabase
       .from('calls')
       .insert({
-        prospect_id: 1, // Your test user
-        zoom_meeting_id: `test_meeting_${Date.now()}`,
+        prospect_id: 1,
+        zoom_meeting_id: uniqueMeetingId,
         transcript: mockTranscript,
         duration_minutes: 45,
         qualification_score: 0
@@ -63,7 +65,7 @@ module.exports = async function handler(req, res) {
         qualification_score: score,
         pipeline_stage: 'qualified_for_discovery',
         last_activity_date: new Date().toISOString(),
-        zoom_meeting_id: `test_meeting_${Date.now()}`,
+        zoom_meeting_id: uniqueMeetingId
       };
 
       await supabase
@@ -76,6 +78,7 @@ module.exports = async function handler(req, res) {
       success: true,
       workflow_completed: true,
       call_id: call.id,
+      meeting_id: uniqueMeetingId,
       analysis_score: score,
       qualified: score >= 35,
       prospect_updated: score >= 35,
@@ -89,7 +92,7 @@ module.exports = async function handler(req, res) {
   }
 };
 
-// Same analysis function as before
+// Updated scoring function (more realistic)
 function analyzeTranscript(transcript) {
   if (!transcript) return 0;
   
@@ -112,7 +115,7 @@ function analyzeTranscript(transcript) {
   
   // Decision-making capability (0-10 points)
   if (text.includes('looking to') || text.includes('we need')) score += 6;
-  if (text.includes('tried') && text.includes('bookkeeper')) score += 4; // Shows they invest in solutions
+  if (text.includes('tried') && text.includes('bookkeeper')) score += 4;
   
   return Math.min(score, 50);
 }
