@@ -918,19 +918,38 @@ document.addEventListener('click', function(event) {
 // Load live campaign and prospect data
 async function loadCampaignData() {
     try {
-        // Load prospects to calculate campaign metrics
+        // Load real campaign data from Instantly
+        const campaignResponse = await fetch('/api/instantly-integration');
+        const campaignData = await campaignResponse.json();
+        
+        // Load prospects for qualification data
         const prospectsResponse = await fetch('/api/prospects');
         const prospectsData = await prospectsResponse.json();
         
-        if (prospectsData.prospects) {
-            updateCampaignStats(prospectsData.prospects);
-            renderRecentResponses(prospectsData.prospects);
+        if (campaignData.success && prospectsData.prospects) {
+            updateCampaignStats(campaignData.campaigns, prospectsData.prospects);
+            renderRecentResponses(campaignData.leads, prospectsData.prospects);
             renderGrowthPlanTracking(prospectsData.prospects);
         }
     } catch (error) {
         console.error('Error loading campaign data:', error);
         showDefaultContent();
     }
+}
+
+function updateCampaignStats(campaigns, prospects) {
+    // Calculate from real Instantly data
+    const activeCampaigns = campaigns.filter(c => c.status === 'active').length;
+    const totalSent = campaigns.reduce((sum, c) => sum + (c.sent || 0), 0);
+    const totalReplies = campaigns.reduce((sum, c) => sum + (c.replied || 0), 0);
+    const qualified = prospects.filter(p => p.qualification_score >= 35).length;
+    const responseRate = totalSent > 0 ? ((totalReplies / totalSent) * 100).toFixed(1) : '0.0';
+
+    document.querySelector('.active-campaigns .stat-number').textContent = activeCampaigns;
+    document.querySelector('.total-sent .stat-number').textContent = totalSent.toLocaleString();
+    document.querySelector('.responses .stat-number').textContent = totalReplies;
+    document.querySelector('.response-rate .stat-number').textContent = responseRate + '%';
+    document.querySelector('.qualified .stat-number').textContent = qualified;
 }
 
 function updateCampaignStats(prospects) {
