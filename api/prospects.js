@@ -1,4 +1,5 @@
-// api/prospects.js
+const { createClient } = require('@supabase/supabase-js');
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
@@ -6,25 +7,25 @@ module.exports = async function handler(req, res) {
   
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  // Mock data for now (or connect to a different database)
-  const mockProspects = [
-    {
-      id: 1,
-      name: "John Smith",
-      email: "john@example.com",
-      company: "Tech Corp",
-      status: "qualified",
-      last_activity: "2024-01-15"
-    },
-    {
-      id: 2,
-      name: "Jane Doe", 
-      email: "jane@startup.com",
-      company: "StartupCo",
-      status: "contacted",
-      last_activity: "2024-01-14"
-    }
-  ];
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    );
 
-  return res.status(200).json({ prospects: mockProspects });
+    const { data, error } = await supabase
+      .from('prospects')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    return res.status(200).json({ prospects: data || [] });
+    
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
 };
