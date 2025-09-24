@@ -1,48 +1,49 @@
-import { createClient } from '@supabase/supabase-js'
+// api/prospects.js
+const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-)
-
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+module.exports = async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   
-  if (req.method === 'OPTIONS') {
-    res.status(200).end()
-    return
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    if (req.method === 'GET') {
-      const { data, error } = await supabase
-        .from('prospects')
-        .select('*')
-        .order('last_activity', { ascending: false })
-
-      if (error) {
-        return res.status(500).json({ 
-          error: 'Database error', 
-          details: error.message,
-          code: error.code 
-        })
-      }
-
-      res.status(200).json({
-        success: true,
-        data: data || [],
-        total: data?.length || 0,
-        timestamp: new Date().toISOString()
-      })
-    } else {
-      res.status(405).json({ error: 'Method not allowed' })
+    // Debug: Check if env vars exist
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    
+    if (!supabaseUrl || !supabaseKey) {
+      return res.status(500).json({ 
+        error: "Missing env vars", 
+        hasUrl: !!supabaseUrl, 
+        hasKey: !!supabaseKey 
+      });
     }
-  } catch (error) {
-    res.status(500).json({ 
-      error: 'Server error', 
-      message: error.message 
-    })
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const { data, error } = await supabase
+      .from('prospects')
+      .select('*')
+      .order('last_activity', { ascending: false })
+      .limit(50);
+
+    if (error) {
+      return res.status(500).json({ 
+        error: "Supabase query error", 
+        details: error.message,
+        code: error.code 
+      });
+    }
+
+    return res.status(200).json({ prospects: data });
+    
+  } catch (e) {
+    return res.status(500).json({ 
+      error: "Database error", 
+      details: e.message,
+      stack: e.stack?.split('\n')[0] // First line of stack trace
+    });
   }
-}
+};
