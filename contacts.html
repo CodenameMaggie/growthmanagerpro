@@ -246,6 +246,17 @@
             color: #2c3e50;
         }
 
+        .section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-content {
+            padding: 0;
+        }
+
         .search-filter {
             display: flex;
             gap: 1rem;
@@ -355,6 +366,124 @@
             border-radius: 12px;
             font-size: 0.75rem;
             margin-left: 0.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+        }
+
+        .empty-state h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        /* CSV Import Styles */
+        .csv-import-section {
+            margin-bottom: 2rem;
+        }
+
+        .import-instructions {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #3498db;
+        }
+
+        .import-instructions h4 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .import-instructions ul {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .import-form {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .csv-preview {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .preview-table {
+            overflow-x: auto;
+            max-height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .preview-table table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        .preview-table th,
+        .preview-table td {
+            padding: 0.5rem;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+
+        .preview-table th {
+            background: #f1f3f4;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .import-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .import-results {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .result-success {
+            color: #27ae60;
+            font-weight: 500;
+        }
+
+        .result-error {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
         }
 
         /* Mobile hamburger menu */
@@ -559,24 +688,83 @@
                         <button class="btn btn-secondary">
                             📊 Export Contacts
                         </button>
-                        <button class="btn btn-primary">
+                        <button class="btn btn-primary" onclick="showAddContactOptions()">
                             ➕ Add Contact
                         </button>
+                    </div>
+                </div>
+
+                <!-- CSV Import Section -->
+                <div class="csv-import-section" id="csvImportSection" style="display: none;">
+                    <div class="section">
+                        <div class="section-header">
+                            <h2 class="section-title">Import Contacts from CSV</h2>
+                            <button class="btn btn-secondary btn-small" onclick="hideCsvImport()">Cancel</button>
+                        </div>
+                        <div class="section-content" style="padding: 1.5rem 2rem;">
+                            <div class="import-instructions">
+                                <h4>CSV Format Requirements:</h4>
+                                <p>Your CSV file should include these columns (case-insensitive):</p>
+                                <ul>
+                                    <li><strong>Required:</strong> name (or first_name), email</li>
+                                    <li><strong>Optional:</strong> company, phone, industry, title, website, linkedin, notes</li>
+                                </ul>
+                                <p><strong>Example:</strong> name, email, company, industry, phone</p>
+                            </div>
+                            
+                            <div class="import-form">
+                                <div class="form-group">
+                                    <label for="csvFile">Select CSV File</label>
+                                    <input type="file" id="csvFile" accept=".csv" onchange="handleFileSelect(event)">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="importSource">Source</label>
+                                    <select id="importSource">
+                                        <option value="csv_import">CSV Import</option>
+                                        <option value="instantly_export">Instantly Export</option>
+                                        <option value="linkedin_campaign">LinkedIn Campaign</option>
+                                        <option value="podcast_outreach">Podcast Outreach</option>
+                                        <option value="referral">Referral</option>
+                                        <option value="website">Website</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="csv-preview" id="csvPreview" style="display: none;">
+                                    <h4>Preview (first 3 rows):</h4>
+                                    <div class="preview-table" id="previewTable"></div>
+                                </div>
+                                
+                                <div class="import-actions">
+                                    <button class="btn btn-primary" onclick="importCsv()" id="importBtn" disabled>
+                                        Import Contacts
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="clearCsvImport()">
+                                        Clear
+                                    </button>
+                                </div>
+                                
+                                <div class="import-results" id="importResults" style="display: none;">
+                                    <h4>Import Results:</h4>
+                                    <div id="resultsContent"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Contacts Stats -->
                 <div class="contacts-stats">
                     <div class="stat-card">
-                        <div class="stat-number total-contacts">8</div>
+                        <div class="stat-number total-contacts">0</div>
                         <div class="stat-label">Total Contacts</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number qualified-contacts">2</div>
+                        <div class="stat-number qualified-contacts">0</div>
                         <div class="stat-label">Qualified Prospects</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number active-prospects">4</div>
+                        <div class="stat-number active-prospects">0</div>
                         <div class="stat-label">Active in Pipeline</div>
                     </div>
                     <div class="stat-card">
@@ -593,157 +781,18 @@
                             <input type="text" class="search-input" placeholder="Search contacts..." onkeyup="searchContacts(this.value)">
                             <select class="filter-dropdown" onchange="filterContacts(this.value)">
                                 <option value="all">All Contacts</option>
-                                <option value="qualified">Qualified</option>
-                                <option value="discovery">In Discovery</option>
+                                <option value="qualified_for_discovery">Qualified</option>
+                                <option value="discovery_link_sent">Discovery Sent</option>
+                                <option value="new">New</option>
                                 <option value="nurture">Nurture</option>
-                                <option value="pending">Pending</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="section-content" id="contactsList">
-                        <!-- Jonathan - Qualified -->
-                        <div class="contact-item" data-status="qualified" data-name="jonathan brewer suite">
-                            <div class="contact-avatar" style="background: #27ae60;">J</div>
-                            <div class="contact-info">
-                                <div class="contact-name">Jonathan</div>
-                                <div class="contact-company">Brewer Suite Co</div>
-                                <div class="contact-details">
-                                    Interior Design • Costa Mesa, CA
-                                    <span class="source-tag">Podcast</span>
-                                </div>
-                            </div>
-                            <div class="contact-status status-qualified">Qualified</div>
-                            <div class="contact-actions">
-                                <button class="btn btn-primary btn-small">View Profile</button>
-                                <button class="btn btn-secondary btn-small">Contact</button>
-                            </div>
-                        </div>
-
-                        <!-- Tye - Qualified -->
-                        <div class="contact-item" data-status="qualified" data-name="tye shumway tws construction">
-                            <div class="contact-avatar" style="background: #27ae60;">T</div>
-                            <div class="contact-info">
-                                <div class="contact-name">Tye Shumway</div>
-                                <div class="contact-company">TWS Construction</div>
-                                <div class="contact-details">
-                                    Construction • Moab, UT
-                                    <span class="source-tag">Podcast</span>
-                                </div>
-                            </div>
-                            <div class="contact-status status-qualified">Qualified</div>
-                            <div class="contact-actions">
-                                <button class="btn btn-primary btn-small">View Profile</button>
-                                <button class="btn btn-secondary btn-small">Contact</button>
-                            </div>
-                        </div>
-
-                        <!-- Rachel & Shanna - In Discovery -->
-                        <div class="contact-item" data-status="discovery" data-name="rachel shanna hatch design">
-                            <div class="contact-avatar" style="background: #f39c12;">R</div>
-                            <div class="contact-info">
-                                <div class="contact-name">Rachel & Shanna</div>
-                                <div class="contact-company">Hatch Design</div>
-                                <div class="contact-details">
-                                    Design • @hatchdesign.ca
-                                    <span class="source-tag">Direct Outreach</span>
-                                </div>
-                            </div>
-                            <div class="contact-status status-discovery">Discovery</div>
-                            <div class="contact-actions">
-                                <button class="btn btn-primary btn-small">View Profile</button>
-                                <button class="btn btn-secondary btn-small">Contact</button>
-                            </div>
-                        </div>
-
-                        <!-- Michelle - In Discovery -->
-                        <div class="contact-item" data-status="discovery" data-name="michelle">
-                            <div class="contact-avatar" style="background: #f39c12;">M</div>
-                            <div class="contact-info">
-                                <div class="contact-name">Michelle</div>
-                                <div class="contact-company">Company TBD</div>
-                                <div class="contact-details">
-                                    Industry TBD
-                                    <span class="source-tag">Zoom Integration</span>
-                                </div>
-                            </div>
-                            <div class="contact-status status-discovery">Discovery</div>
-                            <div class="contact-actions">
-                                <button class="btn btn-primary btn-small">View Profile</button>
-                                <button class="btn btn-secondary btn-small">Contact</button>
-                            </div>
-                        </div>
-
-                        <!-- Kami - Pending -->
-                        <div class="contact-item" data-status="pending" data-name="kami gray psychology design">
-                            <div class="contact-avatar" style="background: #e74c3c;">K</div>
-                            <div class="contact-info">
-                                <div class="contact-name">Kami Gray</div>
-                                <div class="contact-company">Psychology From Design</div>
-                                <div class="contact-details">
-                                    Education/Design • Salt Lake City, UT
-                                    <span class="source-tag">Podcast</span>
-                                </div>
-                            </div>
-                            <div class="contact-status status-pending">Pending</div>
-                            <div class="contact-actions">
-                                <button class="btn btn-primary btn-small">View Profile</button>
-                                <button class="btn btn-secondary btn-small">Contact</button>
-                            </div>
-                        </div>
-
-                        <!-- Bella - Pending -->
-                        <div class="contact-item" data-status="pending" data-name="bella rodriguez lets go design">
-                            <div class="contact-avatar" style="background: #e74c3c;">B</div>
-                            <div class="contact-info">
-                                <div class="contact-name">Bella Rodriguez</div>
-                                <div class="contact-company">Let's Go Design Co</div>
-                                <div class="contact-details">
-                                    Hospitality Design • Salt Lake City, UT
-                                    <span class="source-tag">Podcast</span>
-                                </div>
-                            </div>
-                            <div class="contact-status status-pending">Pending</div>
-                            <div class="contact-actions">
-                                <button class="btn btn-primary btn-small">View Profile</button>
-                                <button class="btn btn-secondary btn-small">Contact</button>
-                            </div>
-                        </div>
-
-                        <!-- Marla - Pending -->
-                        <div class="contact-item" data-status="pending" data-name="marla stone i deal lifestyle">
-                            <div class="contact-avatar" style="background: #e74c3c;">M</div>
-                            <div class="contact-info">
-                                <div class="contact-name">Marla Stone</div>
-                                <div class="contact-company">I Deal Lifestyle</div>
-                                <div class="contact-details">
-                                    Professional Organizer
-                                    <span class="source-tag">Podcast</span>
-                                </div>
-                            </div>
-                            <div class="contact-status status-pending">Pending</div>
-                            <div class="contact-actions">
-                                <button class="btn btn-primary btn-small">View Profile</button>
-                                <button class="btn btn-secondary btn-small">Contact</button>
-                            </div>
-                        </div>
-
-                        <!-- Bobbie - Nurture -->
-                        <div class="contact-item" data-status="nurture" data-name="bobbie wasserman homeownership collective">
-                            <div class="contact-avatar" style="background: #3498db;">B</div>
-                            <div class="contact-info">
-                                <div class="contact-name">Bobbie Wasserman</div>
-                                <div class="contact-company">Homeownership Collective</div>
-                                <div class="contact-details">
-                                    Real Estate/Education • Los Angeles, CA
-                                    <span class="source-tag">Podcast</span>
-                                </div>
-                            </div>
-                            <div class="contact-status status-nurture">Nurture</div>
-                            <div class="contact-actions">
-                                <button class="btn btn-primary btn-small">View Profile</button>
-                                <button class="btn btn-secondary btn-small">Contact</button>
-                            </div>
+                        <div class="empty-state">
+                            <h3>Loading Contacts...</h3>
+                            <p>Please wait while we load your contact database.</p>
                         </div>
                     </div>
                 </div>
@@ -752,180 +801,346 @@
     </div>
 
     <script>
-        // Replace the existing script section in contacts.html with this code
+        let csvData = [];
 
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('open');
-}
-
-// Close sidebar when clicking outside on mobile
-document.addEventListener('click', function(event) {
-    const sidebar = document.getElementById('sidebar');
-    const toggle = document.querySelector('.mobile-menu-toggle');
-    
-    if (window.innerWidth <= 768) {
-        if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
-            sidebar.classList.remove('open');
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
         }
-    }
-});
 
-// Load live prospect data
-async function loadProspects() {
-    try {
-        const response = await fetch('/api/prospects');
-        const data = await response.json();
-        
-        if (data.prospects && data.prospects.length > 0) {
-            renderProspects(data.prospects);
-            updateStats(data.prospects);
-        } else {
-            showEmptyState();
-        }
-    } catch (error) {
-        console.error('Error loading prospects:', error);
-        showEmptyState();
-    }
-}
-
-function renderProspects(prospects) {
-    const container = document.getElementById('contactsList');
-    
-    const prospectsHTML = prospects.map(prospect => {
-        const avatar = prospect.name.charAt(0).toUpperCase();
-        const statusClass = getStatusClass(prospect.pipeline_stage);
-        const statusText = getStatusText(prospect.pipeline_stage);
-        const scoreDisplay = prospect.qualification_score > 0 ? ` (${prospect.qualification_score}/50)` : '';
-        
-        return `
-            <div class="contact-item" data-status="${prospect.pipeline_stage}" data-name="${prospect.name.toLowerCase()} ${(prospect.company || '').toLowerCase()}">
-                <div class="contact-avatar" style="background: ${getAvatarColor(prospect.qualification_score)};">${avatar}</div>
-                <div class="contact-info">
-                    <div class="contact-name">${prospect.name}${scoreDisplay}</div>
-                    <div class="contact-company">${prospect.company || 'Company TBD'}</div>
-                    <div class="contact-details">
-                        ${prospect.industry || 'Industry TBD'}
-                        <span class="source-tag">${prospect.source || 'Manual'}</span>
-                    </div>
-                </div>
-                <div class="contact-status ${statusClass}">${statusText}</div>
-                <div class="contact-actions">
-                    <button class="btn btn-primary btn-small" onclick="viewProfile(${prospect.id})">View Profile</button>
-                    <button class="btn btn-secondary btn-small" onclick="contactProspect(${prospect.id})">Contact</button>
-                </div>
-            </div>
-        `;
-    }).join('');
-
-    container.innerHTML = prospectsHTML;
-}
-
-function getStatusClass(stage) {
-    const statusMap = {
-        'new': 'status-pending',
-        'qualified_for_discovery': 'status-qualified',
-        'discovery_link_sent': 'status-discovery',
-        'discovery_completed': 'status-discovery',
-        'proposal_sent': 'status-qualified',
-        'closed_won': 'status-qualified',
-        'nurture': 'status-nurture'
-    };
-    return statusMap[stage] || 'status-pending';
-}
-
-function getStatusText(stage) {
-    const textMap = {
-        'new': 'New',
-        'qualified_for_discovery': 'Qualified',
-        'discovery_link_sent': 'Discovery Sent',
-        'discovery_completed': 'Discovery Done',
-        'proposal_sent': 'Proposal Sent',
-        'closed_won': 'Closed Won',
-        'nurture': 'Nurture'
-    };
-    return textMap[stage] || 'New';
-}
-
-function getAvatarColor(score) {
-    if (score >= 35) return '#27ae60'; // Green for qualified
-    if (score >= 20) return '#f39c12'; // Orange for potential
-    return '#e74c3c'; // Red for low score
-}
-
-function updateStats(prospects) {
-    const totalContacts = prospects.length;
-    const qualifiedContacts = prospects.filter(p => p.qualification_score >= 35).length;
-    const activeProspects = prospects.filter(p => ['qualified_for_discovery', 'discovery_link_sent', 'discovery_completed'].includes(p.pipeline_stage)).length;
-    const closedContacts = prospects.filter(p => p.pipeline_stage === 'closed_won').length;
-
-    document.querySelector('.total-contacts .stat-number').textContent = totalContacts;
-    document.querySelector('.qualified-contacts .stat-number').textContent = qualifiedContacts;
-    document.querySelector('.active-prospects .stat-number').textContent = activeProspects;
-    document.querySelector('.closed-contacts .stat-number').textContent = closedContacts;
-}
-
-function showEmptyState() {
-    const container = document.getElementById('contactsList');
-    container.innerHTML = `
-        <div class="empty-state" style="text-align: center; padding: 2rem; color: #7f8c8d;">
-            <h3>No Prospects Yet</h3>
-            <p>Your prospect database will populate as you run campaigns and conduct podcast calls.</p>
-            <button class="btn btn-primary" style="margin-top: 1rem;" onclick="addTestProspect()">Add Test Prospect</button>
-        </div>
-    `;
-}
-
-function searchContacts(query) {
-    const contacts = document.querySelectorAll('.contact-item');
-    const searchTerm = query.toLowerCase();
-    
-    contacts.forEach(contact => {
-        const searchData = contact.dataset.name;
-        if (searchData.includes(searchTerm)) {
-            contact.style.display = 'flex';
-        } else {
-            contact.style.display = 'none';
-        }
-    });
-}
-
-function filterContacts(status) {
-    const contacts = document.querySelectorAll('.contact-item');
-    
-    contacts.forEach(contact => {
-        if (status === 'all' || contact.dataset.status === status) {
-            contact.style.display = 'flex';
-        } else {
-            contact.style.display = 'none';
-        }
-    });
-}
-
-function viewProfile(prospectId) {
-    console.log('Viewing profile for prospect:', prospectId);
-    // In the future, this would open a detailed prospect view
-    alert(`Prospect profile view coming soon! Prospect ID: ${prospectId}`);
-}
-
-function contactProspect(prospectId) {
-    console.log('Contacting prospect:', prospectId);
-    // In the future, this would open email/communication interface
-    alert(`Contact interface coming soon! Prospect ID: ${prospectId}`);
-}
-
-function addTestProspect() {
-    // Trigger the test workflow to add a test prospect
-    fetch('/api/test-workflow', { method: 'GET' })
-        .then(() => {
-            setTimeout(loadProspects, 1000); // Reload prospects after 1 second
-        })
-        .catch(error => {
-            console.error('Error adding test prospect:', error);
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+                    sidebar.classList.remove('open');
+                }
+            }
         });
-}
 
-// Load prospects when page loads
-document.addEventListener('DOMContentLoaded', loadProspects);
+        // Load live prospect data
+        async function loadProspects() {
+            try {
+                const response = await fetch('/api/prospects');
+                const data = await response.json();
+                
+                if (data.prospects && data.prospects.length > 0) {
+                    renderProspects(data.prospects);
+                    updateStats(data.prospects);
+                } else {
+                    showEmptyState();
+                }
+            } catch (error) {
+                console.error('Error loading prospects:', error);
+                showEmptyState();
+            }
+        }
 
-console.log('Contacts page loaded with live prospect data');
+        function renderProspects(prospects) {
+            const container = document.getElementById('contactsList');
+            
+            const prospectsHTML = prospects.map(prospect => {
+                const avatar = prospect.name.charAt(0).toUpperCase();
+                const statusClass = getStatusClass(prospect.pipeline_stage);
+                const statusText = getStatusText(prospect.pipeline_stage);
+                const scoreDisplay = prospect.qualification_score > 0 ? ` (${prospect.qualification_score}/50)` : '';
+                
+                return `
+                    <div class="contact-item" data-status="${prospect.pipeline_stage}" data-name="${prospect.name.toLowerCase()} ${(prospect.company || '').toLowerCase()}">
+                        <div class="contact-avatar" style="background: ${getAvatarColor(prospect.qualification_score)};">${avatar}</div>
+                        <div class="contact-info">
+                            <div class="contact-name">${prospect.name}${scoreDisplay}</div>
+                            <div class="contact-company">${prospect.company || 'Company TBD'}</div>
+                            <div class="contact-details">
+                                ${prospect.industry || 'Industry TBD'}
+                                <span class="source-tag">${prospect.source || 'Manual'}</span>
+                            </div>
+                        </div>
+                        <div class="contact-status ${statusClass}">${statusText}</div>
+                        <div class="contact-actions">
+                            <button class="btn btn-primary btn-small" onclick="viewProfile(${prospect.id})">View Profile</button>
+                            <button class="btn btn-secondary btn-small" onclick="contactProspect(${prospect.id})">Contact</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = prospectsHTML;
+        }
+
+        function getStatusClass(stage) {
+            const statusMap = {
+                'new': 'status-pending',
+                'qualified_for_discovery': 'status-qualified',
+                'discovery_link_sent': 'status-discovery',
+                'discovery_completed': 'status-discovery',
+                'proposal_sent': 'status-qualified',
+                'closed_won': 'status-qualified',
+                'nurture': 'status-nurture'
+            };
+            return statusMap[stage] || 'status-pending';
+        }
+
+        function getStatusText(stage) {
+            const textMap = {
+                'new': 'New',
+                'qualified_for_discovery': 'Qualified',
+                'discovery_link_sent': 'Discovery Sent',
+                'discovery_completed': 'Discovery Done',
+                'proposal_sent': 'Proposal Sent',
+                'closed_won': 'Closed Won',
+                'nurture': 'Nurture'
+            };
+            return textMap[stage] || 'New';
+        }
+
+        function getAvatarColor(score) {
+            if (score >= 35) return '#27ae60'; // Green for qualified
+            if (score >= 20) return '#f39c12'; // Orange for potential
+            return '#e74c3c'; // Red for low score
+        }
+
+        function updateStats(prospects) {
+            const totalContacts = prospects.length;
+            const qualifiedContacts = prospects.filter(p => p.qualification_score >= 35).length;
+            const activeProspects = prospects.filter(p => ['qualified_for_discovery', 'discovery_link_sent', 'discovery_completed'].includes(p.pipeline_stage)).length;
+            const closedContacts = prospects.filter(p => p.pipeline_stage === 'closed_won').length;
+
+            document.querySelector('.total-contacts .stat-number').textContent = totalContacts;
+            document.querySelector('.qualified-contacts .stat-number').textContent = qualifiedContacts;
+            document.querySelector('.active-prospects .stat-number').textContent = activeProspects;
+            document.querySelector('.closed-contacts .stat-number').textContent = closedContacts;
+        }
+
+        function showEmptyState() {
+            const container = document.getElementById('contactsList');
+            container.innerHTML = `
+                <div class="empty-state" style="text-align: center; padding: 2rem; color: #7f8c8d;">
+                    <h3>No Prospects Yet</h3>
+                    <p>Your prospect database will populate as you run campaigns and conduct podcast calls.</p>
+                    <button class="btn btn-primary" style="margin-top: 1rem;" onclick="addTestProspect()">Add Test Prospect</button>
+                </div>
+            `;
+        }
+
+        function searchContacts(query) {
+            const contacts = document.querySelectorAll('.contact-item');
+            const searchTerm = query.toLowerCase();
+            
+            contacts.forEach(contact => {
+                const searchData = contact.dataset.name;
+                if (searchData.includes(searchTerm)) {
+                    contact.style.display = 'flex';
+                } else {
+                    contact.style.display = 'none';
+                }
+            });
+        }
+
+        function filterContacts(status) {
+            const contacts = document.querySelectorAll('.contact-item');
+            
+            contacts.forEach(contact => {
+                if (status === 'all' || contact.dataset.status === status) {
+                    contact.style.display = 'flex';
+                } else {
+                    contact.style.display = 'none';
+                }
+            });
+        }
+
+        function viewProfile(prospectId) {
+            console.log('Viewing profile for prospect:', prospectId);
+            alert(`Prospect profile view coming soon! Prospect ID: ${prospectId}`);
+        }
+
+        function contactProspect(prospectId) {
+            console.log('Contacting prospect:', prospectId);
+            alert(`Contact interface coming soon! Prospect ID: ${prospectId}`);
+        }
+
+        function addTestProspect() {
+            fetch('/api/test-workflow', { method: 'GET' })
+                .then(() => {
+                    setTimeout(loadProspects, 1000);
+                })
+                .catch(error => {
+                    console.error('Error adding test prospect:', error);
+                });
+        }
+
+        // CSV Import Functions
+        function showAddContactOptions() {
+            const options = confirm('Add contacts:\nOK = CSV Import\nCancel = Add Single Contact');
+            if (options) {
+                showCsvImport();
+            } else {
+                alert('Single contact form coming soon! Use CSV import for now.');
+            }
+        }
+
+        function showCsvImport() {
+            document.getElementById('csvImportSection').style.display = 'block';
+        }
+
+        function hideCsvImport() {
+            document.getElementById('csvImportSection').style.display = 'none';
+            clearCsvImport();
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
+                alert('Please select a CSV file');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const csv = e.target.result;
+                parseCsv(csv);
+            };
+            reader.readAsText(file);
+        }
+
+        function parseCsv(csvText) {
+            try {
+                const lines = csvText.split('\n').filter(line => line.trim());
+                if (lines.length < 2) {
+                    alert('CSV file must have at least a header row and one data row');
+                    return;
+                }
+
+                const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+                csvData = [];
+
+                for (let i = 1; i < lines.length; i++) {
+                    const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+                    const row = {};
+                    
+                    headers.forEach((header, index) => {
+                        row[header] = values[index] || '';
+                    });
+                    
+                    csvData.push(row);
+                }
+
+                showCsvPreview(headers, csvData.slice(0, 3));
+                document.getElementById('importBtn').disabled = false;
+
+            } catch (error) {
+                console.error('Error parsing CSV:', error);
+                alert('Error parsing CSV file. Please check the format.');
+            }
+        }
+
+        function showCsvPreview(headers, previewData) {
+            const previewDiv = document.getElementById('csvPreview');
+            const tableDiv = document.getElementById('previewTable');
+            
+            let tableHTML = '<table><thead><tr>';
+            headers.forEach(header => {
+                tableHTML += `<th>${header}</th>`;
+            });
+            tableHTML += '</tr></thead><tbody>';
+            
+            previewData.forEach(row => {
+                tableHTML += '<tr>';
+                headers.forEach(header => {
+                    tableHTML += `<td>${row[header] || ''}</td>`;
+                });
+                tableHTML += '</tr>';
+            });
+            
+            tableHTML += '</tbody></table>';
+            tableDiv.innerHTML = tableHTML;
+            previewDiv.style.display = 'block';
+        }
+
+        async function importCsv() {
+            if (csvData.length === 0) {
+                alert('No data to import');
+                return;
+            }
+
+            const source = document.getElementById('importSource').value;
+            const importBtn = document.getElementById('importBtn');
+            
+            importBtn.disabled = true;
+            importBtn.textContent = 'Importing...';
+
+            try {
+                const response = await fetch('/api/import-csv', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        csvData: csvData,
+                        source: source
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showImportResults(result.results);
+                    setTimeout(loadProspects, 1000);
+                } else {
+                    alert('Import failed: ' + result.error);
+                }
+
+            } catch (error) {
+                console.error('Import error:', error);
+                alert('Error importing CSV: ' + error.message);
+            } finally {
+                importBtn.disabled = false;
+                importBtn.textContent = 'Import Contacts';
+            }
+        }
+
+        function showImportResults(results) {
+            const resultsDiv = document.getElementById('importResults');
+            const contentDiv = document.getElementById('resultsContent');
+            
+            let html = `
+                <div class="result-success">
+                    Successfully imported: ${results.imported} contacts<br>
+                    Skipped: ${results.skipped} contacts
+                </div>
+            `;
+            
+            if (results.errors && results.errors.length > 0) {
+                html += '<div class="result-error"><strong>Errors:</strong><br>';
+                results.errors.slice(0, 10).forEach(error => {
+                    html += `• ${error}<br>`;
+                });
+                if (results.errors.length > 10) {
+                    html += `... and ${results.errors.length - 10} more errors`;
+                }
+                html += '</div>';
+            }
+            
+            contentDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+
+        function clearCsvImport() {
+            csvData = [];
+            document.getElementById('csvFile').value = '';
+            document.getElementById('csvPreview').style.display = 'none';
+            document.getElementById('importResults').style.display = 'none';
+            document.getElementById('importBtn').disabled = true;
+        }
+
+        // Load prospects when page loads
+        document.addEventListener('DOMContentLoaded', loadProspects);
+
+        console.log('Contacts page loaded with live prospect data and CSV import');
+    </script>
+</body>
+</html>
