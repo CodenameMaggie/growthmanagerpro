@@ -794,24 +794,335 @@
     </div>
 
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
+       // Replace the existing script section in index.html with this code
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('open');
+}
+
+// Close sidebar when clicking outside on mobile
+document.addEventListener('click', function(event) {
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.querySelector('.mobile-menu-toggle');
+    
+    if (window.innerWidth <= 768) {
+        if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+            sidebar.classList.remove('open');
         }
+    }
+});
 
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const toggle = document.querySelector('.mobile-menu-toggle');
-            
-            if (window.innerWidth <= 768) {
-                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
-                    sidebar.classList.remove('open');
-                }
-            }
+// Load live dashboard data
+async function loadDashboardData() {
+    try {
+        const response = await fetch('/api/prospects');
+        const data = await response.json();
+        
+        if (data.prospects) {
+            updateKPIs(data.prospects);
+            renderActiveProspects(data.prospects);
+            renderRecentActivity(data.prospects);
+            renderUpcomingTasks(data.prospects);
+        }
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+        showDefaultContent();
+    }
+}
+
+function updateKPIs(prospects) {
+    // Calculate real KPIs from prospect data
+    const totalProspects = prospects.length;
+    const qualifiedProspects = prospects.filter(p => p.qualification_score >= 35).length;
+    const activeInPipeline = prospects.filter(p => 
+        ['qualified_for_discovery', 'discovery_link_sent', 'discovery_completed', 'proposal_sent'].includes(p.pipeline_stage)
+    ).length;
+    const closedDeals = prospects.filter(p => p.pipeline_stage === 'closed_won').length;
+    
+    // Calculate conversion rates
+    const qualificationRate = totalProspects > 0 ? Math.round((qualifiedProspects / totalProspects) * 100) : 0;
+    const pipelineRate = totalProspects > 0 ? Math.round((activeInPipeline / totalProspects) * 100) : 0;
+    
+    // Update KPI cards
+    document.querySelector('.total-prospects .stat-number').textContent = totalProspects;
+    document.querySelector('.qualified-leads .stat-number').textContent = qualifiedProspects;
+    document.querySelector('.active-pipeline .stat-number').textContent = activeInPipeline;
+    document.querySelector('.closed-deals .stat-number').textContent = closedDeals;
+    
+    // Update conversion rates if elements exist
+    const qualRate = document.querySelector('.qualification-rate .stat-number');
+    const pipeRate = document.querySelector('.pipeline-conversion .stat-number');
+    if (qualRate) qualRate.textContent = qualificationRate + '%';
+    if (pipeRate) pipeRate.textContent = pipelineRate + '%';
+    
+    // Update progress indicators
+    updateProgressIndicators(prospects);
+}
+
+function updateProgressIndicators(prospects) {
+    // Goal progress (assuming 10 qualified leads as monthly goal)
+    const monthlyGoal = 10;
+    const qualified = prospects.filter(p => p.qualification_score >= 35).length;
+    const progressPercent = Math.min((qualified / monthlyGoal) * 100, 100);
+    
+    const progressBar = document.querySelector('.progress-fill');
+    if (progressBar) {
+        progressBar.style.width = progressPercent + '%';
+    }
+    
+    const progressText = document.querySelector('.progress-text');
+    if (progressText) {
+        progressText.textContent = `${qualified} of ${monthlyGoal} qualified leads this month (${Math.round(progressPercent)}%)`;
+    }
+}
+
+function renderActiveProspects(prospects) {
+    const activeProspects = prospects
+        .filter(p => p.qualification_score >= 35)
+        .sort((a, b) => b.qualification_score - a.qualification_score)
+        .slice(0, 5);
+    
+    const container = document.querySelector('#activeProspects .section-content');
+    if (!container) return;
+    
+    if (activeProspects.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state" style="text-align: center; padding: 2rem; color: #7f8c8d;">
+                <h3>No Active Prospects</h3>
+                <p>Qualified prospects will appear here as your automation processes podcast calls and campaign responses.</p>
+                <button class="btn btn-primary" onclick="runTestWorkflow()">Run Test Workflow</button>
+            </div>
+        `;
+        return;
+    }
+
+    const prospectsHTML = activeProspects.map(prospect => {
+        const avatar = prospect.name.charAt(0).toUpperCase();
+        const stageText = getStageDisplayText(prospect.pipeline_stage);
+        const stageColor = getStageColor(prospect.pipeline_stage);
+        
+        return `
+            <div class="prospect-item" style="display: flex; align-items: center; padding: 1rem; border-bottom: 1px solid #ecf0f1;">
+                <div style="width: 40px; height: 40px; background: ${stageColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 1rem;">
+                    ${avatar}
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; color: #2c3e50; margin-bottom: 0.3rem;">
+                        ${prospect.name} (${prospect.qualification_score}/50)
+                    </div>
+                    <div style="font-size: 0.9rem; color: #7f8c8d;">
+                        ${prospect.company || 'Company TBD'} • ${stageText}
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <button class="btn btn-primary btn-small" onclick="advanceProspect(${prospect.id})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">
+                        ${getNextAction(prospect.pipeline_stage)}
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    container.innerHTML = prospectsHTML;
+}
+
+function renderRecentActivity(prospects) {
+    // Show recent qualification activities
+    const recentlyQualified = prospects
+        .filter(p => p.qualification_score >= 35)
+        .sort((a, b) => new Date(b.last_activity_date) - new Date(a.last_activity_date))
+        .slice(0, 5);
+    
+    const container = document.querySelector('#recentActivity .section-content');
+    if (!container) return;
+    
+    if (recentlyQualified.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state" style="text-align: center; padding: 2rem; color: #7f8c8d;">
+                <h3>No Recent Activity</h3>
+                <p>Qualification activities and prospect advancement will appear here.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const activityHTML = recentlyQualified.map(prospect => {
+        const timeAgo = getTimeAgo(prospect.last_activity_date);
+        
+        return `
+            <div style="display: flex; align-items: center; padding: 0.8rem 0; border-bottom: 1px solid #f8f9fa;">
+                <div style="width: 8px; height: 8px; background: #27ae60; border-radius: 50%; margin-right: 1rem;"></div>
+                <div style="flex: 1;">
+                    <div style="font-size: 0.9rem; color: #2c3e50;">
+                        <strong>${prospect.name}</strong> qualified with score ${prospect.qualification_score}/50
+                    </div>
+                    <div style="font-size: 0.8rem; color: #7f8c8d;">
+                        ${prospect.company || 'Company TBD'} • ${timeAgo}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    container.innerHTML = activityHTML;
+}
+
+function renderUpcomingTasks(prospects) {
+    // Generate upcoming tasks based on prospect stages
+    const tasks = [];
+    
+    prospects.forEach(prospect => {
+        if (prospect.pipeline_stage === 'qualified_for_discovery') {
+            tasks.push({
+                type: 'Send Discovery Link',
+                prospect: prospect.name,
+                priority: 'high',
+                prospectId: prospect.id
+            });
+        }
+        if (prospect.pipeline_stage === 'discovery_completed') {
+            tasks.push({
+                type: 'Create Growth Plan',
+                prospect: prospect.name,
+                priority: 'medium',
+                prospectId: prospect.id
+            });
+        }
+    });
+    
+    const container = document.querySelector('#upcomingTasks .section-content');
+    if (!container) return;
+    
+    if (tasks.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state" style="text-align: center; padding: 2rem; color: #7f8c8d;">
+                <h3>No Upcoming Tasks</h3>
+                <p>Task automation will generate action items as prospects move through your pipeline.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const tasksHTML = tasks.map(task => {
+        const priorityColor = task.priority === 'high' ? '#e74c3c' : '#f39c12';
+        
+        return `
+            <div style="display: flex; align-items: center; padding: 0.8rem 0; border-bottom: 1px solid #f8f9fa;">
+                <div style="width: 8px; height: 8px; background: ${priorityColor}; border-radius: 50%; margin-right: 1rem;"></div>
+                <div style="flex: 1;">
+                    <div style="font-size: 0.9rem; color: #2c3e50;">
+                        ${task.type}: <strong>${task.prospect}</strong>
+                    </div>
+                    <div style="font-size: 0.8rem; color: #7f8c8d;">
+                        Priority: ${task.priority}
+                    </div>
+                </div>
+                <div>
+                    <button class="btn btn-primary btn-small" onclick="completeTask('${task.type}', ${task.prospectId})" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">
+                        Complete
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    container.innerHTML = tasksHTML;
+}
+
+// Helper functions
+function getStageDisplayText(stage) {
+    const stageMap = {
+        'new': 'New Prospect',
+        'qualified_for_discovery': 'Ready for Discovery',
+        'discovery_link_sent': 'Discovery Scheduled',
+        'discovery_completed': 'Discovery Complete',
+        'proposal_sent': 'Proposal Sent',
+        'closed_won': 'Closed Won'
+    };
+    return stageMap[stage] || 'Unknown Stage';
+}
+
+function getStageColor(stage) {
+    const colorMap = {
+        'new': '#95a5a6',
+        'qualified_for_discovery': '#27ae60',
+        'discovery_link_sent': '#3498db',
+        'discovery_completed': '#f39c12',
+        'proposal_sent': '#9b59b6',
+        'closed_won': '#27ae60'
+    };
+    return colorMap[stage] || '#95a5a6';
+}
+
+function getNextAction(stage) {
+    const actionMap = {
+        'qualified_for_discovery': 'Send Link',
+        'discovery_link_sent': 'Follow Up',
+        'discovery_completed': 'Create Plan',
+        'proposal_sent': 'Follow Up'
+    };
+    return actionMap[stage] || 'View';
+}
+
+function getTimeAgo(dateString) {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+    
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+    return `${Math.floor(diffInMinutes / 1440)}d ago`;
+}
+
+// Action functions
+function advanceProspect(prospectId) {
+    console.log('Advancing prospect:', prospectId);
+    // Trigger Calendly integration for qualified prospects
+    fetch('/api/calendly-integration', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prospect_id: prospectId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Discovery call link sent via Instantly!');
+            loadDashboardData(); // Reload dashboard
+        }
+    })
+    .catch(error => console.error('Error advancing prospect:', error));
+}
+
+function completeTask(taskType, prospectId) {
+    console.log('Completing task:', taskType, 'for prospect:', prospectId);
+    
+    if (taskType === 'Send Discovery Link') {
+        advanceProspect(prospectId);
+    } else {
+        alert(`${taskType} interface coming soon!`);
+    }
+}
+
+function runTestWorkflow() {
+    fetch('/api/test-workflow', { method: 'GET' })
+        .then(() => {
+            setTimeout(loadDashboardData, 1000); // Reload after test completes
+            alert('Test workflow completed! Check the dashboard for updated metrics.');
+        })
+        .catch(error => {
+            console.error('Error running test workflow:', error);
         });
+}
 
-        console.log('Dashboard loaded with unified navigation');
-    </script>
-</body>
-</html>
+function showDefaultContent() {
+    console.log('Using default dashboard content due to API error');
+}
+
+// Auto-refresh dashboard every 2 minutes
+setInterval(loadDashboardData, 120000);
+
+// Load data when page loads
+document.addEventListener('DOMContentLoaded', loadDashboardData);
+
+console.log('Dashboard loaded with live automation data');
