@@ -26,7 +26,7 @@ module.exports = async function handler(req, res) {
       .from('calls')
       .insert({
         prospect_id: 1, // Your test user
-        zoom_meeting_id: 'test_meeting_123',
+        zoom_meeting_id: `test_meeting_${Date.now()}`,
         transcript: mockTranscript,
         duration_minutes: 45,
         qualification_score: 0
