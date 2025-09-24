@@ -15,8 +15,15 @@ module.exports = async function handler(req, res) {
 
     const { data, error } = await supabase
       .from('prospects')
-      .select('*')
-      .order('created_at', { ascending: false })
+      .select(`
+        *,
+        calls (
+          qualification_score,
+          ai_analysis,
+          created_at
+        )
+      `)
+      .order('last_activity_date', { ascending: false })
       .limit(50);
 
     if (error) {
