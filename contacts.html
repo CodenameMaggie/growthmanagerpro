@@ -752,50 +752,180 @@
     </div>
 
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
-        }
+        // Replace the existing script section in contacts.html with this code
 
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const toggle = document.querySelector('.mobile-menu-toggle');
-            
-            if (window.innerWidth <= 768) {
-                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
-                    sidebar.classList.remove('open');
-                }
-            }
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('open');
+}
+
+// Close sidebar when clicking outside on mobile
+document.addEventListener('click', function(event) {
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.querySelector('.mobile-menu-toggle');
+    
+    if (window.innerWidth <= 768) {
+        if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+            sidebar.classList.remove('open');
+        }
+    }
+});
+
+// Load live prospect data
+async function loadProspects() {
+    try {
+        const response = await fetch('/api/prospects');
+        const data = await response.json();
+        
+        if (data.prospects && data.prospects.length > 0) {
+            renderProspects(data.prospects);
+            updateStats(data.prospects);
+        } else {
+            showEmptyState();
+        }
+    } catch (error) {
+        console.error('Error loading prospects:', error);
+        showEmptyState();
+    }
+}
+
+function renderProspects(prospects) {
+    const container = document.getElementById('contactsList');
+    
+    const prospectsHTML = prospects.map(prospect => {
+        const avatar = prospect.name.charAt(0).toUpperCase();
+        const statusClass = getStatusClass(prospect.pipeline_stage);
+        const statusText = getStatusText(prospect.pipeline_stage);
+        const scoreDisplay = prospect.qualification_score > 0 ? ` (${prospect.qualification_score}/50)` : '';
+        
+        return `
+            <div class="contact-item" data-status="${prospect.pipeline_stage}" data-name="${prospect.name.toLowerCase()} ${(prospect.company || '').toLowerCase()}">
+                <div class="contact-avatar" style="background: ${getAvatarColor(prospect.qualification_score)};">${avatar}</div>
+                <div class="contact-info">
+                    <div class="contact-name">${prospect.name}${scoreDisplay}</div>
+                    <div class="contact-company">${prospect.company || 'Company TBD'}</div>
+                    <div class="contact-details">
+                        ${prospect.industry || 'Industry TBD'}
+                        <span class="source-tag">${prospect.source || 'Manual'}</span>
+                    </div>
+                </div>
+                <div class="contact-status ${statusClass}">${statusText}</div>
+                <div class="contact-actions">
+                    <button class="btn btn-primary btn-small" onclick="viewProfile(${prospect.id})">View Profile</button>
+                    <button class="btn btn-secondary btn-small" onclick="contactProspect(${prospect.id})">Contact</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    container.innerHTML = prospectsHTML;
+}
+
+function getStatusClass(stage) {
+    const statusMap = {
+        'new': 'status-pending',
+        'qualified_for_discovery': 'status-qualified',
+        'discovery_link_sent': 'status-discovery',
+        'discovery_completed': 'status-discovery',
+        'proposal_sent': 'status-qualified',
+        'closed_won': 'status-qualified',
+        'nurture': 'status-nurture'
+    };
+    return statusMap[stage] || 'status-pending';
+}
+
+function getStatusText(stage) {
+    const textMap = {
+        'new': 'New',
+        'qualified_for_discovery': 'Qualified',
+        'discovery_link_sent': 'Discovery Sent',
+        'discovery_completed': 'Discovery Done',
+        'proposal_sent': 'Proposal Sent',
+        'closed_won': 'Closed Won',
+        'nurture': 'Nurture'
+    };
+    return textMap[stage] || 'New';
+}
+
+function getAvatarColor(score) {
+    if (score >= 35) return '#27ae60'; // Green for qualified
+    if (score >= 20) return '#f39c12'; // Orange for potential
+    return '#e74c3c'; // Red for low score
+}
+
+function updateStats(prospects) {
+    const totalContacts = prospects.length;
+    const qualifiedContacts = prospects.filter(p => p.qualification_score >= 35).length;
+    const activeProspects = prospects.filter(p => ['qualified_for_discovery', 'discovery_link_sent', 'discovery_completed'].includes(p.pipeline_stage)).length;
+    const closedContacts = prospects.filter(p => p.pipeline_stage === 'closed_won').length;
+
+    document.querySelector('.total-contacts .stat-number').textContent = totalContacts;
+    document.querySelector('.qualified-contacts .stat-number').textContent = qualifiedContacts;
+    document.querySelector('.active-prospects .stat-number').textContent = activeProspects;
+    document.querySelector('.closed-contacts .stat-number').textContent = closedContacts;
+}
+
+function showEmptyState() {
+    const container = document.getElementById('contactsList');
+    container.innerHTML = `
+        <div class="empty-state" style="text-align: center; padding: 2rem; color: #7f8c8d;">
+            <h3>No Prospects Yet</h3>
+            <p>Your prospect database will populate as you run campaigns and conduct podcast calls.</p>
+            <button class="btn btn-primary" style="margin-top: 1rem;" onclick="addTestProspect()">Add Test Prospect</button>
+        </div>
+    `;
+}
+
+function searchContacts(query) {
+    const contacts = document.querySelectorAll('.contact-item');
+    const searchTerm = query.toLowerCase();
+    
+    contacts.forEach(contact => {
+        const searchData = contact.dataset.name;
+        if (searchData.includes(searchTerm)) {
+            contact.style.display = 'flex';
+        } else {
+            contact.style.display = 'none';
+        }
+    });
+}
+
+function filterContacts(status) {
+    const contacts = document.querySelectorAll('.contact-item');
+    
+    contacts.forEach(contact => {
+        if (status === 'all' || contact.dataset.status === status) {
+            contact.style.display = 'flex';
+        } else {
+            contact.style.display = 'none';
+        }
+    });
+}
+
+function viewProfile(prospectId) {
+    console.log('Viewing profile for prospect:', prospectId);
+    // In the future, this would open a detailed prospect view
+    alert(`Prospect profile view coming soon! Prospect ID: ${prospectId}`);
+}
+
+function contactProspect(prospectId) {
+    console.log('Contacting prospect:', prospectId);
+    // In the future, this would open email/communication interface
+    alert(`Contact interface coming soon! Prospect ID: ${prospectId}`);
+}
+
+function addTestProspect() {
+    // Trigger the test workflow to add a test prospect
+    fetch('/api/test-workflow', { method: 'GET' })
+        .then(() => {
+            setTimeout(loadProspects, 1000); // Reload prospects after 1 second
+        })
+        .catch(error => {
+            console.error('Error adding test prospect:', error);
         });
+}
 
-        function searchContacts(query) {
-            const contacts = document.querySelectorAll('.contact-item');
-            const searchTerm = query.toLowerCase();
-            
-            contacts.forEach(contact => {
-                const searchData = contact.dataset.name;
-                if (searchData.includes(searchTerm)) {
-                    contact.style.display = 'flex';
-                } else {
-                    contact.style.display = 'none';
-                }
-            });
-        }
+// Load prospects when page loads
+document.addEventListener('DOMContentLoaded', loadProspects);
 
-        function filterContacts(status) {
-            const contacts = document.querySelectorAll('.contact-item');
-            
-            contacts.forEach(contact => {
-                if (status === 'all' || contact.dataset.status === status) {
-                    contact.style.display = 'flex';
-                } else {
-                    contact.style.display = 'none';
-                }
-            });
-        }
-
-        console.log('Contacts page loaded with prospect database');
-    </script>
-</body>
-</html>
+console.log('Contacts page loaded with live prospect data');
