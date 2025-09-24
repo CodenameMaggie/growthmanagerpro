@@ -9,41 +9,23 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    // Debug: Check if env vars exist
+    // Debug: Show what env vars we have
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     
-    if (!supabaseUrl || !supabaseKey) {
-      return res.status(500).json({ 
-        error: "Missing env vars", 
-        hasUrl: !!supabaseUrl, 
-        hasKey: !!supabaseKey 
-      });
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    const { data, error } = await supabase
-      .from('prospects')
-      .select('*')
-      .order('last_activity', { ascending: false })
-      .limit(50);
-
-    if (error) {
-      return res.status(500).json({ 
-        error: "Supabase query error", 
-        details: error.message,
-        code: error.code 
-      });
-    }
-
-    return res.status(200).json({ prospects: data });
+    return res.status(200).json({ 
+      debug: {
+        hasUrl: !!supabaseUrl,
+        hasKey: !!supabaseKey,
+        urlPreview: supabaseUrl ? supabaseUrl.substring(0, 20) + '...' : 'missing',
+        keyPreview: supabaseKey ? supabaseKey.substring(0, 10) + '...' : 'missing'
+      }
+    });
     
   } catch (e) {
     return res.status(500).json({ 
-      error: "Database error", 
-      details: e.message,
-      stack: e.stack?.split('\n')[0] // First line of stack trace
+      error: "Catch block", 
+      details: e.message
     });
   }
 };
