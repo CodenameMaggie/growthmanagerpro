@@ -804,403 +804,384 @@
 
     <script>
         <script>
-    let csvData = [];
-    
-    // Sync from Instantly function
-    function syncFromInstantly() {
-        console.log('Syncing from Instantly...');
-        fetch('/api/instantly-integration')
-            .then(res => res.json())
-            .then(data => {
-                console.log('Instantly response:', data);
-                if (data.success) {
-                    alert(`Found ${data.summary.totalLeads} leads in Instantly. Check Supabase for updates.`);
-                    setTimeout(loadProspects, 1000);
-                } else {
-                    alert('Sync issue: ' + (data.error || 'Check console for details'));
-                }
-            })
-            .catch(err => {
-                console.error('Sync error:', err);
-                alert('Error connecting to Instantly: ' + err.message);
-            });
-    }
+    // Replace the entire <script> section in contacts.html with this code
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
+let csvData = [];
+let allProspects = []; // Store all prospects for filtering
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('open');
+}
+
+// Close sidebar when clicking outside on mobile
+document.addEventListener('click', function(event) {
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.querySelector('.mobile-menu-toggle');
+    
+    if (window.innerWidth <= 768) {
+        if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+            sidebar.classList.remove('open');
         }
+    }
+});
 
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const toggle = document.querySelector('.mobile-menu-toggle');
-            
-            if (window.innerWidth <= 768) {
-                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
-                    sidebar.classList.remove('open');
-                }
-            }
-        });
-
-       async function loadProspects() {
-    console.log('Starting loadProspects...');
-    
+// Sync from Instantly function
+async function syncFromInstantly() {
+    console.log('Starting Instantly sync...');
     const container = document.getElementById('contactsList');
-    container.innerHTML = '<div class="empty-state"><h3>Loading prospects from Instantly...</h3></div>';
+    container.innerHTML = '<div class="empty-state"><h3>Syncing with Instantly...</h3></div>';
     
     try {
-        console.log('Fetching from /api/prospects...');
-        const response = await fetch('/api/prospects');
+        const response = await fetch('/api/instantly-integration');
+        const data = await response.json();
         
-        console.log('Response status:', response.status);
-        console.log('Response OK?', response.ok);
+        console.log('Instantly sync response:', data);
+        
+        if (data.success) {
+            alert(`Successfully synced ${data.summary?.totalLeads || 0} leads from Instantly`);
+            // Reload prospects after sync
+            setTimeout(loadProspects, 1000);
+        } else {
+            alert('Sync failed: ' + (data.error || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Sync error:', error);
+        alert('Error connecting to Instantly. Check console for details.');
+    }
+}
+
+// Load prospects from API
+async function loadProspects() {
+    console.log('Loading prospects...');
+    const container = document.getElementById('contactsList');
+    container.innerHTML = '<div class="empty-state"><h3>Loading contacts...</h3></div>';
+    
+    try {
+        const response = await fetch('/api/prospects');
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log('Raw data from API:', data);
+        console.log('API response:', data);
         
-        // Check what Instantly is actually returning
+        // Handle different response formats
+        let prospects = [];
+        
         if (data.leads) {
-            // Instantly returns "leads" not "prospects"
-            const prospects = data.leads.map(lead => ({
-                id: lead.id,
-                name: `${lead.first_name || ''} ${lead.last_name || ''}`.trim() || lead.email,
-                company: lead.company_name || '',
-                email: lead.email,
+            // Transform Instantly leads format
+            prospects = data.leads.map(lead => ({
+                id: lead.id || Math.random().toString(36).substr(2, 9),
+                name: `${lead.first_name || ''} ${lead.last_name || ''}`.trim() || lead.email?.split('@')[0] || 'Unknown',
+                company: lead.company_name || lead.company || '',
+                email: lead.email || '',
                 qualification_score: lead.custom_variables?.qualification_score || 0,
                 pipeline_stage: lead.status || 'new',
-                industry: lead.custom_variables?.industry || '',
-                phone: lead.phone || ''
+                industry: lead.custom_variables?.industry || lead.industry || '',
+                phone: lead.phone || '',
+                source: lead.source || 'Instantly'
             }));
-            
-            console.log('Transformed prospects:', prospects);
-            renderProspects(prospects);
-            updateStats(prospects);
         } else if (data.prospects) {
-            // Your backend might already transform it
-            renderProspects(data.prospects);
-            updateStats(data.prospects);
-        } else {
-            console.log('Unexpected data structure:', data);
-            showEmptyState();
+            prospects = data.prospects;
+        } else if (Array.isArray(data)) {
+            prospects = data;
         }
+        
+        allProspects = prospects; // Store for filtering
+        renderProspects(prospects);
+        updateStats(prospects);
+        
     } catch (error) {
         console.error('Error loading prospects:', error);
-        container.innerHTML = `<div class="empty-state"><h3>Error loading from Instantly</h3><p>${error.message}</p></div>`;
+        // Show empty state with error message
+        container.innerHTML = `
+            <div class="empty-state">
+                <h3>No Contacts Found</h3>
+                <p>Click "Sync from Instantly" to import your leads, or add contacts manually.</p>
+                <button class="btn btn-primary" onclick="syncFromInstantly()">🔄 Sync from Instantly</button>
+            </div>
+        `;
+        // Set stats to 0
+        updateStats([]);
     }
 }
-        function renderProspects(prospects) {
-            const container = document.getElementById('contactsList');
-            
-            const prospectsHTML = prospects.map(prospect => {
-                const avatar = prospect.name.charAt(0).toUpperCase();
-                const statusClass = getStatusClass(prospect.pipeline_stage);
-                const statusText = getStatusText(prospect.pipeline_stage);
-                const scoreDisplay = prospect.qualification_score > 0 ? ` (${prospect.qualification_score}/50)` : '';
-                
-                return `
-                    <div class="contact-item" data-status="${prospect.pipeline_stage}" data-name="${prospect.name.toLowerCase()} ${(prospect.company || '').toLowerCase()}">
-                        <div class="contact-avatar" style="background: ${getAvatarColor(prospect.qualification_score)};">${avatar}</div>
-                        <div class="contact-info">
-                            <div class="contact-name">${prospect.name}${scoreDisplay}</div>
-                            <div class="contact-company">${prospect.company || 'Company TBD'}</div>
-                            <div class="contact-details">
-                                ${prospect.industry || 'Industry TBD'}
-                                <span class="source-tag">${prospect.source || 'Manual'}</span>
-                            </div>
-                        </div>
-                        <div class="contact-status ${statusClass}">${statusText}</div>
-                        <div class="contact-actions">
-                            <button class="btn btn-primary btn-small" onclick="viewProfile(${prospect.id})">View Profile</button>
-                            <button class="btn btn-secondary btn-small" onclick="contactProspect(${prospect.id})">Contact</button>
-                        </div>
+
+// Render prospects in the UI
+function renderProspects(prospects) {
+    const container = document.getElementById('contactsList');
+    
+    if (!prospects || prospects.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <h3>No Contacts Yet</h3>
+                <p>Import contacts via CSV or sync from Instantly to get started.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const prospectsHTML = prospects.map(prospect => {
+        const avatar = (prospect.name || 'U').charAt(0).toUpperCase();
+        const statusClass = getStatusClass(prospect.pipeline_stage);
+        const statusText = getStatusText(prospect.pipeline_stage);
+        const scoreDisplay = prospect.qualification_score > 0 ? ` (${prospect.qualification_score}/50)` : '';
+        
+        return `
+            <div class="contact-item" data-status="${prospect.pipeline_stage}" data-name="${(prospect.name || '').toLowerCase()} ${(prospect.company || '').toLowerCase()}">
+                <div class="contact-avatar" style="background: ${getAvatarColor(prospect.qualification_score)};">
+                    ${avatar}
+                </div>
+                <div class="contact-info">
+                    <div class="contact-name">${prospect.name}${scoreDisplay}</div>
+                    <div class="contact-company">${prospect.company || 'Company TBD'}</div>
+                    <div class="contact-details">
+                        ${prospect.industry || 'Industry TBD'}
+                        <span class="source-tag">${prospect.source || 'Manual'}</span>
                     </div>
-                `;
-            }).join('');
+                </div>
+                <div class="contact-status ${statusClass}">${statusText}</div>
+                <div class="contact-actions">
+                    <button class="btn btn-primary btn-small" onclick="viewProfile('${prospect.id}')">View</button>
+                    <button class="btn btn-secondary btn-small" onclick="contactProspect('${prospect.id}')">Contact</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    container.innerHTML = prospectsHTML;
+}
 
-            container.innerHTML = prospectsHTML;
-        }
-
-        function getStatusClass(stage) {
-            const statusMap = {
-                'new': 'status-pending',
-                'qualified_for_discovery': 'status-qualified',
-                'discovery_link_sent': 'status-discovery',
-                'discovery_completed': 'status-discovery',
-                'proposal_sent': 'status-qualified',
-                'closed_won': 'status-qualified',
-                'nurture': 'status-nurture'
-            };
-            return statusMap[stage] || 'status-pending';
-        }
-
-        function getStatusText(stage) {
-            const textMap = {
-                'new': 'New',
-                'qualified_for_discovery': 'Qualified',
-                'discovery_link_sent': 'Discovery Sent',
-                'discovery_completed': 'Discovery Done',
-                'proposal_sent': 'Proposal Sent',
-                'closed_won': 'Closed Won',
-                'nurture': 'Nurture'
-            };
-            return textMap[stage] || 'New';
-        }
-
-        function getAvatarColor(score) {
-            if (score >= 35) return '#27ae60'; // Green for qualified
-            if (score >= 20) return '#f39c12'; // Orange for potential
-            return '#e74c3c'; // Red for low score
-        }
-
-     function updateStats(prospects) {
+// Update statistics
+function updateStats(prospects) {
     const totalContacts = prospects.length;
     const qualifiedContacts = prospects.filter(p => p.qualification_score >= 35).length;
-    const activeProspects = prospects.filter(p => ['qualified_for_discovery', 'discovery_link_sent', 'discovery_completed'].includes(p.pipeline_stage)).length;
+    const activeProspects = prospects.filter(p => 
+        ['qualified_for_discovery', 'discovery_link_sent', 'discovery_completed', 'proposal_sent']
+        .includes(p.pipeline_stage)
+    ).length;
     const closedContacts = prospects.filter(p => p.pipeline_stage === 'closed_won').length;
+    
+    // Update stat cards
+    document.querySelector('.stat-number.total-contacts').textContent = totalContacts;
+    document.querySelector('.stat-number.qualified-contacts').textContent = qualifiedContacts;
+    document.querySelector('.stat-number.active-prospects').textContent = activeProspects;
+    document.querySelector('.stat-number.closed-contacts').textContent = closedContacts;
+}
 
-    // The elements have both stat-number AND the specific class
-    const totalElement = document.querySelector('.stat-number.total-contacts');
-    if (totalElement) {
-        totalElement.textContent = totalContacts;
-    }
-    
-    const qualifiedElement = document.querySelector('.stat-number.qualified-contacts');
-    if (qualifiedElement) {
-        qualifiedElement.textContent = qualifiedContacts;
-    }
-    
-    const activeElement = document.querySelector('.stat-number.active-prospects');
-    if (activeElement) {
-        activeElement.textContent = activeProspects;
-    }
-    
-    const closedElement = document.querySelector('.stat-number.closed-contacts');
-    if (closedElement) {
-        closedElement.textContent = closedContacts;
+// Helper functions
+function getStatusClass(stage) {
+    const statusMap = {
+        'new': 'status-pending',
+        'qualified_for_discovery': 'status-qualified',
+        'discovery_link_sent': 'status-discovery',
+        'discovery_completed': 'status-discovery',
+        'proposal_sent': 'status-qualified',
+        'closed_won': 'status-qualified',
+        'nurture': 'status-nurture'
+    };
+    return statusMap[stage] || 'status-pending';
+}
+
+function getStatusText(stage) {
+    const textMap = {
+        'new': 'New',
+        'qualified_for_discovery': 'Qualified',
+        'discovery_link_sent': 'Discovery Sent',
+        'discovery_completed': 'Discovery Done',
+        'proposal_sent': 'Proposal Sent',
+        'closed_won': 'Closed Won',
+        'nurture': 'Nurture'
+    };
+    return textMap[stage] || 'New';
+}
+
+function getAvatarColor(score) {
+    if (score >= 35) return '#27ae60';
+    if (score >= 20) return '#f39c12';
+    return '#3498db';
+}
+
+// Search and filter functions
+function searchContacts(query) {
+    const searchTerm = query.toLowerCase();
+    const filtered = allProspects.filter(prospect => {
+        const name = (prospect.name || '').toLowerCase();
+        const company = (prospect.company || '').toLowerCase();
+        const email = (prospect.email || '').toLowerCase();
+        return name.includes(searchTerm) || company.includes(searchTerm) || email.includes(searchTerm);
+    });
+    renderProspects(filtered);
+}
+
+function filterContacts(status) {
+    if (status === 'all') {
+        renderProspects(allProspects);
+    } else {
+        const filtered = allProspects.filter(p => p.pipeline_stage === status);
+        renderProspects(filtered);
     }
 }
 
-        function searchContacts(query) {
-            const contacts = document.querySelectorAll('.contact-item');
-            const searchTerm = query.toLowerCase();
-            
-            contacts.forEach(contact => {
-                const searchData = contact.dataset.name;
-                if (searchData.includes(searchTerm)) {
-                    contact.style.display = 'flex';
-                } else {
-                    contact.style.display = 'none';
-                }
+// Action functions
+function viewProfile(prospectId) {
+    console.log('Viewing profile:', prospectId);
+    alert(`Profile view for prospect ${prospectId} coming soon!`);
+}
+
+function contactProspect(prospectId) {
+    console.log('Contacting prospect:', prospectId);
+    alert(`Contact interface for prospect ${prospectId} coming soon!`);
+}
+
+// CSV Import functions
+function showAddContactOptions() {
+    const useCSV = confirm('Import multiple contacts from CSV?\n\nOK = CSV Import\nCancel = Add Single Contact');
+    if (useCSV) {
+        showCsvImport();
+    } else {
+        alert('Single contact form coming soon! Use CSV import for now.');
+    }
+}
+
+function showCsvImport() {
+    document.getElementById('csvImportSection').style.display = 'block';
+}
+
+function hideCsvImport() {
+    document.getElementById('csvImportSection').style.display = 'none';
+    clearCsvImport();
+}
+
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (!file.name.endsWith('.csv')) {
+        alert('Please select a CSV file');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        parseCsv(e.target.result);
+    };
+    reader.readAsText(file);
+}
+
+function parseCsv(csvText) {
+    try {
+        const lines = csvText.split('\n').filter(line => line.trim());
+        if (lines.length < 2) {
+            alert('CSV must have headers and at least one data row');
+            return;
+        }
+        
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+        csvData = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+            const row = {};
+            headers.forEach((header, index) => {
+                row[header] = values[index] || '';
             });
+            csvData.push(row);
         }
+        
+        showCsvPreview(headers, csvData.slice(0, 3));
+        document.getElementById('importBtn').disabled = false;
+        
+    } catch (error) {
+        console.error('CSV parse error:', error);
+        alert('Error parsing CSV. Please check the format.');
+    }
+}
 
-        function filterContacts(status) {
-            const contacts = document.querySelectorAll('.contact-item');
-            
-            contacts.forEach(contact => {
-                if (status === 'all' || contact.dataset.status === status) {
-                    contact.style.display = 'flex';
-                } else {
-                    contact.style.display = 'none';
-                }
-            });
+function showCsvPreview(headers, previewData) {
+    const previewDiv = document.getElementById('csvPreview');
+    const tableDiv = document.getElementById('previewTable');
+    
+    let tableHTML = '<table><thead><tr>';
+    headers.forEach(header => {
+        tableHTML += `<th>${header}</th>`;
+    });
+    tableHTML += '</tr></thead><tbody>';
+    
+    previewData.forEach(row => {
+        tableHTML += '<tr>';
+        headers.forEach(header => {
+            tableHTML += `<td>${row[header] || ''}</td>`;
+        });
+        tableHTML += '</tr>';
+    });
+    
+    tableHTML += '</tbody></table>';
+    tableDiv.innerHTML = tableHTML;
+    previewDiv.style.display = 'block';
+}
+
+async function importCsv() {
+    if (!csvData.length) {
+        alert('No data to import');
+        return;
+    }
+    
+    const source = document.getElementById('importSource').value;
+    const importBtn = document.getElementById('importBtn');
+    
+    importBtn.disabled = true;
+    importBtn.textContent = 'Importing...';
+    
+    try {
+        const response = await fetch('/api/import-csv', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({csvData, source})
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showImportResults(result.results || {imported: csvData.length, skipped: 0});
+            setTimeout(loadProspects, 1000);
+        } else {
+            alert('Import failed: ' + (result.error || 'Unknown error'));
         }
+    } catch (error) {
+        console.error('Import error:', error);
+        alert('Error importing CSV');
+    } finally {
+        importBtn.disabled = false;
+        importBtn.textContent = 'Import Contacts';
+    }
+}
 
-        function viewProfile(prospectId) {
-            console.log('Viewing profile for prospect:', prospectId);
-            alert(`Prospect profile view coming soon! Prospect ID: ${prospectId}`);
-        }
+function showImportResults(results) {
+    const resultsDiv = document.getElementById('importResults');
+    const contentDiv = document.getElementById('resultsContent');
+    
+    contentDiv.innerHTML = `
+        <div class="result-success">
+            ✓ Imported: ${results.imported || 0} contacts<br>
+            ⚠ Skipped: ${results.skipped || 0} contacts
+        </div>
+    `;
+    
+    resultsDiv.style.display = 'block';
+}
 
-        function contactProspect(prospectId) {
-            console.log('Contacting prospect:', prospectId);
-            alert(`Contact interface coming soon! Prospect ID: ${prospectId}`);
-        }
+function clearCsvImport() {
+    csvData = [];
+    document.getElementById('csvFile').value = '';
+    document.getElementById('csvPreview').style.display = 'none';
+    document.getElementById('importResults').style.display = 'none';
+    document.getElementById('importBtn').disabled = true;
+}
 
-        function addTestProspect() {
-            fetch('/api/test-workflow', { method: 'GET' })
-                .then(() => {
-                    setTimeout(loadProspects, 1000);
-                })
-                .catch(error => {
-                    console.error('Error adding test prospect:', error);
-                });
-        }
-
-        // CSV Import Functions
-        function showAddContactOptions() {
-            const options = confirm('Add contacts:\nOK = CSV Import\nCancel = Add Single Contact');
-            if (options) {
-                showCsvImport();
-            } else {
-                alert('Single contact form coming soon! Use CSV import for now.');
-            }
-        }
-
-        function showCsvImport() {
-            document.getElementById('csvImportSection').style.display = 'block';
-        }
-
-        function hideCsvImport() {
-            document.getElementById('csvImportSection').style.display = 'none';
-            clearCsvImport();
-        }
-
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
-                alert('Please select a CSV file');
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const csv = e.target.result;
-                parseCsv(csv);
-            };
-            reader.readAsText(file);
-        }
-
-        function parseCsv(csvText) {
-            try {
-                const lines = csvText.split('\n').filter(line => line.trim());
-                if (lines.length < 2) {
-                    alert('CSV file must have at least a header row and one data row');
-                    return;
-                }
-
-                const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-                csvData = [];
-
-                for (let i = 1; i < lines.length; i++) {
-                    const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
-                    const row = {};
-                    
-                    headers.forEach((header, index) => {
-                        row[header] = values[index] || '';
-                    });
-                    
-                    csvData.push(row);
-                }
-
-                showCsvPreview(headers, csvData.slice(0, 3));
-                document.getElementById('importBtn').disabled = false;
-
-            } catch (error) {
-                console.error('Error parsing CSV:', error);
-                alert('Error parsing CSV file. Please check the format.');
-            }
-        }
-
-        function showCsvPreview(headers, previewData) {
-            const previewDiv = document.getElementById('csvPreview');
-            const tableDiv = document.getElementById('previewTable');
-            
-            let tableHTML = '<table><thead><tr>';
-            headers.forEach(header => {
-                tableHTML += `<th>${header}</th>`;
-            });
-            tableHTML += '</tr></thead><tbody>';
-            
-            previewData.forEach(row => {
-                tableHTML += '<tr>';
-                headers.forEach(header => {
-                    tableHTML += `<td>${row[header] || ''}</td>`;
-                });
-                tableHTML += '</tr>';
-            });
-            
-            tableHTML += '</tbody></table>';
-            tableDiv.innerHTML = tableHTML;
-            previewDiv.style.display = 'block';
-        }
-
-        async function importCsv() {
-            if (csvData.length === 0) {
-                alert('No data to import');
-                return;
-            }
-
-            const source = document.getElementById('importSource').value;
-            const importBtn = document.getElementById('importBtn');
-            
-            importBtn.disabled = true;
-            importBtn.textContent = 'Importing...';
-
-            try {
-                const response = await fetch('/api/import-csv', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        csvData: csvData,
-                        source: source
-                    })
-                });
-
-                const result = await response.json();
-                
-                if (result.success) {
-                    showImportResults(result.results);
-                    setTimeout(loadProspects, 1000);
-                } else {
-                    alert('Import failed: ' + result.error);
-                }
-
-            } catch (error) {
-                console.error('Import error:', error);
-                alert('Error importing CSV: ' + error.message);
-            } finally {
-                importBtn.disabled = false;
-                importBtn.textContent = 'Import Contacts';
-            }
-        }
-
-        function showImportResults(results) {
-            const resultsDiv = document.getElementById('importResults');
-            const contentDiv = document.getElementById('resultsContent');
-            
-            let html = `
-                <div class="result-success">
-                    Successfully imported: ${results.imported} contacts<br>
-                    Skipped: ${results.skipped} contacts
-                </div>
-            `;
-            
-            if (results.errors && results.errors.length > 0) {
-                html += '<div class="result-error"><strong>Errors:</strong><br>';
-                results.errors.slice(0, 10).forEach(error => {
-                    html += `• ${error}<br>`;
-                });
-                if (results.errors.length > 10) {
-                    html += `... and ${results.errors.length - 10} more errors`;
-                }
-                html += '</div>';
-            }
-            
-            contentDiv.innerHTML = html;
-            resultsDiv.style.display = 'block';
-        }
-
-        function clearCsvImport() {
-            csvData = [];
-            document.getElementById('csvFile').value = '';
-            document.getElementById('csvPreview').style.display = 'none';
-            document.getElementById('importResults').style.display = 'none';
-            document.getElementById('importBtn').disabled = true;
-        }
-
-        // Load prospects when page loads
-        document.addEventListener('DOMContentLoaded', loadProspects);
-
-        console.log('Contacts page loaded with live prospect data and CSV import');
-    </script>
-</body>
-</html>
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Contacts page initialized');
+    loadProspects();
+});
