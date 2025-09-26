@@ -1,294 +1,160 @@
+// api/instantly-integration.js
 const { createClient } = require('@supabase/supabase-js');
 
+const INSTANTLY_BASE = 'https://api.instantly.ai/api/v2';
+
 module.exports = async function handler(req, res) {
+  // CORS for GitHub Pages → Vercel calls
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  
   if (req.method === 'OPTIONS') return res.status(200).end();
 
+  const token = process.env.INSTANTLY_API_KEY;
+  if (!token) return res.status(500).json({ error: 'Missing INSTANTLY_API_KEY' });
+
+  // Use service role on server routes (reads+writes)
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
+
   try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    );
-
-    const instantlyApiKey = process.env.INSTANTLY_API_KEY;
-    if (!instantlyApiKey) {
-      return res.status(500).json({ error: 'Instantly API key not configured' });
-    }
-
-    // Base URL for Instantly API v2
-    const baseUrl = 'https://api.instantly.ai/api/v2';
-
     if (req.method === 'GET') {
-      const campaigns = await fetchInstantlyCampaigns(instantlyApiKey, baseUrl);
-      const leads = await fetchInstantlyLeads(instantlyApiKey, baseUrl);
-
-      const mocked = Boolean(campaigns.__mocked || leads.__mocked);
+      // Pull campaigns + recent leads
+      const [campaigns, leadsResp] = await Promise.all([
+        instantlyGET('/campaigns', token),
+        // leads/list is POST; add filters as you like:
+        instantlyPOST('/leads/list', token, { limit: 50 })
+      ]);
 
       await updateCampaignData(supabase, campaigns);
-      const matchedLeads = await matchLeadsToProspects(supabase, leads);
+
+      const leads = Array.isArray(leadsResp?.items) ? leadsResp.items : (Array.isArray(leadsResp) ? leadsResp : []);
+      const matched = await matchLeadsToProspects(supabase, leads);
 
       return res.status(200).json({
         success: true,
-        mocked,
-        campaigns: campaigns.data || campaigns,
-        leads: matchedLeads,
+        campaigns,
+        leads: matched,
         summary: {
-          totalCampaigns: (campaigns.data || campaigns).length,
+          totalCampaigns: campaigns.length,
           totalLeads: leads.length,
-          matchedProspects: matchedLeads.filter(l => l.prospectId).length
+          matchedProspects: matched.filter(x => x.prospectId).length
         }
       });
     }
 
     if (req.method === 'POST') {
+      // Example: send an email via Instantly campaign
       const { recipientEmail, subject, message, campaignId } = req.body || {};
-      const emailResult = await sendInstantlyEmail({ 
-        apiKey: instantlyApiKey, 
-        baseUrl, 
-        recipientEmail, 
-        subject, 
-        message, 
-        campaignId 
+      if (!recipientEmail || !subject || !message || !campaignId) {
+        return res.status(400).json({ error: 'recipientEmail, subject, message, campaignId are required' });
+      }
+      const r = await instantlyPOST(`/campaigns/${campaignId}/send`, token, {
+        to: recipientEmail,
+        subject,
+        body: message
       });
-      return res.status(200).json({ success: true, emailResult });
+      return res.status(200).json({ success: true, emailResult: r });
     }
 
     return res.status(405).json({ error: 'Method not allowed' });
-  } catch (error) {
-    console.error('Instantly integration error:', error);
-    return res.status(500).json({ error: error.message });
+  } catch (e) {
+    console.error('instantly-integration error:', e);
+    return res.status(500).json({ error: e.message, where: e.where });
   }
 };
 
-async function fetchInstantlyCampaigns(apiKey, baseUrl) {
-  try {
-    const response = await fetch(`${baseUrl}/campaigns`, {
-      headers: { 
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      const errorBody = await response.text();
-      console.error('Instantly campaigns failed:', response.status, errorBody);
-      throw new Error(`Campaigns API error: ${response.status}`);
-    }
-
-    const json = await response.json();
-    // Handle different response formats
-    return { data: json.data || json.campaigns || json || [] };
-    
-  } catch (error) {
-    console.error('Error fetching campaigns:', error.message);
-    // Return mock data if API fails
-    return { 
-      __mocked: true, 
-      data: [
-        { 
-          id: 'mock_campaign_1', 
-          name: 'Interior Design Outreach - Q4', 
-          status: 'active', 
-          sent: 487, 
-          opened: 104, 
-          replied: 14, 
-          bounced: 8, 
-          unsubscribed: 3 
-        },
-        { 
-          id: 'mock_campaign_2', 
-          name: 'Construction LinkedIn Outreach', 
-          status: 'active', 
-          sent: 324, 
-          opened: 59, 
-          replied: 8, 
-          bounced: 12, 
-          unsubscribed: 2 
-        }
-      ]
-    };
+async function instantlyGET(path, token) {
+  const r = await fetch(`${INSTANTLY_BASE}${path}`, {
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
+  });
+  if (!r.ok) {
+    const text = await r.text();
+    const err = new Error(`Instantly GET ${path} → ${r.status} ${text}`);
+    err.where = `GET ${path}`;
+    throw err;
   }
+  return r.json(); // campaigns: array
 }
 
-async function fetchInstantlyCampaigns(apiKey, baseUrl) {
-  try {
-    const response = await fetch(`${baseUrl}/campaigns`, {
-      headers: { 
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      const errorBody = await response.text();
-      console.error('Instantly campaigns failed:', response.status, errorBody);
-      // Return consistent format
-      return { 
-        __mocked: true, 
-        data: [/* mock campaigns */]
-      };
-    }
-
-    const json = await response.json();
-    // Always return object with data property
-    return { 
-      __mocked: false,
-      data: json.data || json.campaigns || json || [] 
-    };
-    
-  } catch (error) {
-    console.error('Error fetching campaigns:', error.message);
-    return { 
-      __mocked: true, 
-      data: [/* mock campaigns */]
-    };
+async function instantlyPOST(path, token, body) {
+  const r = await fetch(`${INSTANTLY_BASE}${path}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body || {})
+  });
+  if (!r.ok) {
+    const text = await r.text();
+    const err = new Error(`Instantly POST ${path} → ${r.status} ${text}`);
+    err.where = `POST ${path}`;
+    throw err;
   }
+  return r.json();
 }
 
-async function fetchInstantlyLeads(apiKey, baseUrl) {
-  try {
-    const response = await fetch(`${baseUrl}/leads`, {
-      headers: { 
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      const errorBody = await response.text();
-      console.error('Instantly leads failed:', response.status, errorBody);
-      // Return consistent array format with __mocked property
-      const mocks = [/* mock leads */];
-      mocks.__mocked = true;
-      return mocks;
-    }
-
-    const json = await response.json();
-    const leads = json.data || json.leads || json || [];
-    leads.__mocked = false;
-    return leads;
-    
-  } catch (error) {
-    console.error('Error fetching leads:', error.message);
-    const mocks = [/* mock leads */];
-    mocks.__mocked = true;
-    return mocks;
+async function updateCampaignData(supabase, campaigns) {
+  if (!Array.isArray(campaigns)) return;
+  for (const c of campaigns) {
+    // be defensive about keys; Instantly payloads can vary
+    const payload = {
+      instantly_campaign_id: c.id,
+      name: c.name ?? '',
+      status: c.status ?? 'active',
+      total_sent: c.sent ?? 0,
+      opens: c.opened ?? 0,
+      replies: c.replied ?? 0,
+      bounced: c.bounced ?? 0,
+      unsubscribed: c.unsubscribed ?? 0,
+    };
+    const { error } = await supabase
+      .from('campaigns')
+      .upsert(payload, { onConflict: 'instantly_campaign_id' });
+    if (error) console.error('supabase upsert campaign error:', error);
   }
-}
-
-async function updateCampaignData(supabase, campaignsIn) {
-  const campaigns = Array.isArray(campaignsIn) ? campaignsIn : (campaignsIn?.data || []);
-  if (!campaigns.length) return { updated: 0 };
-
-  const rows = campaigns.map(c => ({
-    instantly_campaign_id: c.id || c.campaign_id,
-    name: c.name || c.campaign_name || null,
-    total_sent: Number(c.sent || c.emails_sent || 0),
-    opens: Number(c.opened || c.opens || 0),
-    replies: Number(c.replied || c.replies || 0),
-    qualified_leads: 0,
-    status: c.status || 'active'
-  }));
-
-  const { error } = await supabase
-    .from('campaigns')
-    .upsert(rows, { onConflict: 'instantly_campaign_id' });
-
-  if (error) {
-    console.error('upsert campaigns error:', error);
-    return { updated: 0, error: error.message };
-  }
-  
-  return { updated: rows.length };
 }
 
 async function matchLeadsToProspects(supabase, leads) {
   const out = [];
-  
   for (const lead of leads) {
-    const email = (lead.email || '').toLowerCase();
-    if (!email) {
-      out.push({ 
-        ...lead, 
-        prospectId: null, 
-        prospectName: (`${lead.firstName || lead.first_name || ''} ${lead.lastName || lead.last_name || ''}`).trim(), 
-        qualificationScore: 0, 
-        pipelineStage: 'new' 
-      });
-      continue;
-    }
-    
-    try {
-      const { data: prospect } = await supabase
+    // normalize possible field shapes
+    const email = (lead.email || lead.emailAddress || '').toLowerCase();
+    const first = lead.firstName || lead.first_name || '';
+    const last  = lead.lastName  || lead.last_name  || '';
+    const company = lead.companyName || lead.company_name || lead.company || '';
+    const status  = lead.status || 'new';
+
+    let prospect = null;
+    if (email) {
+      const { data } = await supabase
         .from('prospects')
-        .select('id, name, qualification_score, pipeline_stage')
+        .select('id,name,qualification_score,pipeline_stage')
         .eq('email', email)
         .maybeSingle();
-
-      out.push({
-        ...lead,
-        prospectId: prospect?.id || null,
-        prospectName: prospect?.name || `${lead.firstName || lead.first_name || ''} ${lead.lastName || lead.last_name || ''}`.trim(),
-        qualificationScore: prospect?.qualification_score || 0,
-        pipelineStage: prospect?.pipeline_stage || 'new'
-      });
-
-      if (prospect) {
-        await supabase
-          .from('prospects')
-          .update({
-            instantly_campaign_id: lead.campaignId || lead.campaign_id || null,
-            last_activity_date: lead.repliedAt || lead.replied_at || new Date().toISOString()
-          })
-          .eq('id', prospect.id);
-      }
-    } catch (e) {
-      console.error('match lead error:', email, e.message);
-      out.push({ 
-        ...lead, 
-        prospectId: null, 
-        prospectName: `${lead.firstName || lead.first_name || ''} ${lead.lastName || lead.last_name || ''}`.trim(), 
-        qualificationScore: 0, 
-        pipelineStage: 'new' 
-      });
+      prospect = data || null;
     }
-  }
-  
-  return out;
-}
 
-async function sendInstantlyEmail({ apiKey, baseUrl, recipientEmail, subject, message, campaignId }) {
-  try {
-    const response = await fetch(`${baseUrl}/campaigns/${campaignId}/send`, {
-      method: 'POST',
-      headers: { 
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ 
-        email: recipientEmail, 
-        subject: subject, 
-        body: message 
-      })
+    out.push({
+      ...lead,
+      prospectId: prospect?.id || null,
+      prospectName: prospect?.name || `${first} ${last}`.trim(),
+      qualificationScore: prospect?.qualification_score || 0,
+      pipelineStage: prospect?.pipeline_stage || status,
+      company,
+      email
     });
 
-    if (!response.ok) {
-      const errorBody = await response.text();
-      console.error('Instantly send email error:', response.status, errorBody);
-      throw new Error(`Send email error: ${response.status}`);
+    // Optionally update last_activity_date if matched
+    if (prospect) {
+      await supabase
+        .from('prospects')
+        .update({
+          instantly_campaign_id: lead.campaignId ?? lead.campaign_id ?? null,
+          last_activity_date: lead.repliedAt || new Date().toISOString()
+        })
+        .eq('id', prospect.id);
     }
-
-    return await response.json();
-    
-  } catch (error) {
-    console.error('Error sending email:', error.message);
-    return { 
-      success: true, 
-      messageId: `mock_${Date.now()}`, 
-      message: 'Email sent successfully (mock mode)' 
-    };
   }
+  return out;
 }
