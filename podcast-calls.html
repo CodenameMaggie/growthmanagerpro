@@ -499,20 +499,42 @@
                     </div>
 
                     <!-- Jonathan - Qualified -->
-                    <div class="call-item">
-                        <div class="call-name">Jonathan</div>
-                        <div class="call-details">Brewer Suite Co • Interior Design • Costa Mesa, CA • Sept 17, 2025</div>
-                        <div class="score-badge qualified-badge">QUALIFIED (38/50) - Discovery Scheduled</div>
-                        <p>Pain Points: Scaling team management, 15+ projects/year system needs, coastal construction regulations</p>
-                    </div>
+<div class="call-item">
+    <div class="call-name">Jonathan</div>
+    <div class="call-details">Brewer Suite Co • Interior Design • Costa Mesa, CA • Sept 17, 2025</div>
+    <div class="score-badge qualified-badge">QUALIFIED (38/50) - Discovery Scheduled</div>
+    <p>Pain Points: Scaling team management, 15+ projects/year system needs, coastal construction regulations</p>
+    <!-- ADD THESE BUTTONS -->
+    <div style="margin-top: 1rem;">
+        <button class="btn btn-secondary" style="padding: 0.5rem 1rem; margin-right: 0.5rem;" 
+                onclick='viewCall({"name":"Jonathan","company":"Brewer Suite Co","email":"jonathan@brewerco.com"})'>
+            View Call
+        </button>
+        <button class="btn btn-primary" style="padding: 0.5rem 1rem;" 
+                onclick='scheduleDiscovery({"name":"Jonathan","company":"Brewer Suite Co","email":"jonathan@brewerco.com"})'>
+            Schedule Discovery
+        </button>
+    </div>
+</div>
 
-                    <!-- Tye - Qualified -->
-                    <div class="call-item">
-                        <div class="call-name">Tye Shumway</div>
-                        <div class="call-details">TWS Construction • Construction • Moab, UT • Sept 15, 2025</div>
-                        <div class="score-badge qualified-badge">QUALIFIED (35/50) - Discovery Scheduled</div>
-                        <p>Pain Points: CFO/financial management gap, cashflow complexities, scaling from $750K to $10M</p>
-                    </div>
+                   <!-- Tye - Qualified -->
+<div class="call-item">
+    <div class="call-name">Tye Shumway</div>
+    <div class="call-details">TWS Construction • Construction • Moab, UT • Sept 15, 2025</div>
+    <div class="score-badge qualified-badge">QUALIFIED (35/50) - Discovery Scheduled</div>
+    <p>Pain Points: CFO/financial management gap, cashflow complexities, scaling from $750K to $10M</p>
+    <!-- ADD THESE BUTTONS -->
+    <div style="margin-top: 1rem;">
+        <button class="btn btn-secondary" style="padding: 0.5rem 1rem; margin-right: 0.5rem;" 
+                onclick='viewCall({"name":"Tye Shumway","company":"TWS Construction","email":"tye@twsconstruction.com"})'>
+            View Call
+        </button>
+        <button class="btn btn-primary" style="padding: 0.5rem 1rem;" 
+                onclick='scheduleDiscovery({"name":"Tye Shumway","company":"TWS Construction","email":"tye@twsconstruction.com"})'>
+            Schedule Discovery
+        </button>
+    </div>
+</div>
 
                     <!-- Kami - Pending -->
                     <div class="call-item">
@@ -576,24 +598,62 @@
     let prospects = [];
     
     // Validation function to prevent duplicate invites
-    function canSendInvite(prospectName) {
-        // Check against recent invites stored locally
-        // In production, this would check your database
-        const recentInvites = localStorage.getItem('recentInvites') || '{}';
-        const invites = JSON.parse(recentInvites);
+    function canSendInvite(prospectData) {
+    // Parse the prospect data
+    const prospect = typeof prospectData === 'string' ? 
+        JSON.parse(prospectData) : prospectData;
+    
+    // Check invite history
+    const recentInvites = JSON.parse(localStorage.getItem('recentInvites') || '{}');
+    const prospectKey = prospect.email || prospect.name;
+    
+    if (recentInvites[prospectKey]) {
+        const lastInvite = new Date(recentInvites[prospectKey].timestamp);
+        const daysSince = (Date.now() - lastInvite) / (1000*60*60*24);
         
-        if (invites[prospectName]) {
-            const lastInvite = new Date(invites[prospectName]);
-            const daysSince = (Date.now() - lastInvite) / (1000*60*60*24);
-            
-            if (daysSince < 7) {
-                alert(`Cannot schedule - ${prospectName} was invited ${Math.floor(daysSince)} days ago`);
-                return false;
-            }
+        if (daysSince < 7) {
+            alert(`Cannot schedule - ${prospect.name} received a ${recentInvites[prospectKey].type} invite ${Math.floor(daysSince)} days ago`);
+            return false;
         }
-        
-        return true;
     }
+    
+    return true;
+}
+
+// Generic schedule function
+function scheduleDiscovery(prospectData) {
+    const prospect = typeof prospectData === 'string' ? 
+        JSON.parse(prospectData) : prospectData;
+    
+    if (!canSendInvite(prospect)) {
+        return;
+    }
+    
+    // Record this invite
+    const recentInvites = JSON.parse(localStorage.getItem('recentInvites') || '{}');
+    const prospectKey = prospect.email || prospect.name;
+    recentInvites[prospectKey] = {
+        timestamp: new Date().toISOString(),
+        type: 'discovery',
+        name: prospect.name
+    };
+    localStorage.setItem('recentInvites', JSON.stringify(recentInvites));
+    
+    alert(`Discovery call scheduling for ${prospect.name} from ${prospect.company || 'Unknown Company'}`);
+    
+    // In production, send to your API
+    // fetch('/api/calendly-integration', {
+    //     method: 'POST',
+    //     body: JSON.stringify({ prospect_id: prospect.id, type: 'discovery' })
+    // });
+}
+
+// Generic view function
+function viewCall(prospectData) {
+    const prospect = typeof prospectData === 'string' ? 
+        JSON.parse(prospectData) : prospectData;
+    alert(`Viewing call recording for ${prospect.name}`);
+}
     
     // Schedule Discovery function
     function scheduleDiscovery(prospectName) {
@@ -615,10 +675,6 @@
     function viewCall(prospectName) {
         alert(`Viewing call recording for ${prospectName}`);
     }
-    
-    // ============================================
-    // END OF NEW CODE
-    // ============================================
     
     console.log('Podcast Calls page loaded with unified navigation and invite validation');
 </script>
