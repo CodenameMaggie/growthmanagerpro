@@ -820,44 +820,56 @@
             }
         });
 
-        // Load live prospect data
-        // Replace your existing loadProspects function with this one
-async function loadProspects() {
+       async function loadProspects() {
     console.log('Starting loadProspects...');
     
     const container = document.getElementById('contactsList');
-    container.innerHTML = '<div class="empty-state"><h3>Loading prospects from API...</h3></div>';
+    container.innerHTML = '<div class="empty-state"><h3>Loading prospects from Instantly...</h3></div>';
     
     try {
         console.log('Fetching from /api/prospects...');
         const response = await fetch('/api/prospects');
+        
         console.log('Response status:', response.status);
+        console.log('Response OK?', response.ok);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         
         const data = await response.json();
-        console.log('Data received:', data);
+        console.log('Raw data from API:', data);
         
-        if (data.prospects) {
-            console.log('Prospects found:', data.prospects.length);
+        // Check what Instantly is actually returning
+        if (data.leads) {
+            // Instantly returns "leads" not "prospects"
+            const prospects = data.leads.map(lead => ({
+                id: lead.id,
+                name: `${lead.first_name || ''} ${lead.last_name || ''}`.trim() || lead.email,
+                company: lead.company_name || '',
+                email: lead.email,
+                qualification_score: lead.custom_variables?.qualification_score || 0,
+                pipeline_stage: lead.status || 'new',
+                industry: lead.custom_variables?.industry || '',
+                phone: lead.phone || ''
+            }));
             
-            if (data.prospects.length > 0) {
-                container.innerHTML = '<div class="empty-state"><h3>Rendering prospects...</h3></div>';
-                renderProspects(data.prospects);
-                updateStats(data.prospects);
-                console.log('Prospects rendered successfully');
-            } else {
-                console.log('No prospects in data, showing empty state');
-                showEmptyState();
-            }
+            console.log('Transformed prospects:', prospects);
+            renderProspects(prospects);
+            updateStats(prospects);
+        } else if (data.prospects) {
+            // Your backend might already transform it
+            renderProspects(data.prospects);
+            updateStats(data.prospects);
         } else {
-            console.log('No prospects property in data');
+            console.log('Unexpected data structure:', data);
             showEmptyState();
         }
     } catch (error) {
-        console.error('Error in loadProspects:', error);
-        container.innerHTML = `<div class="empty-state"><h3>Error loading prospects</h3><p>Error: ${error.message}</p></div>`;
+        console.error('Error loading prospects:', error);
+        container.innerHTML = `<div class="empty-state"><h3>Error loading from Instantly</h3><p>${error.message}</p></div>`;
     }
 }
-
         function renderProspects(prospects) {
             const container = document.getElementById('contactsList');
             
