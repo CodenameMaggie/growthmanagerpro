@@ -800,19 +800,21 @@
     </div>
 
       <script>
-/** ---- Contacts page script v3 (debug enabled) ---- **/
+/** ---------------- Contacts page script v4 (debug on) ---------------- **/
 
-/* 1) Point GitHub page to Vercel API */
-const API_BASE = "https://growthmanagerpro-v2.vercel.app";
+/* 1) Point GitHub page to your Vercel API */
+const API_BASE       = "https://growthmanagerpro-v2.vercel.app";
 const PROSPECTS_URL  = `${API_BASE}/api/prospects`;
 const INSTANTLY_URL  = `${API_BASE}/api/instantly-integration`;
 const IMPORT_URL     = `${API_BASE}/api/import-csv`;
 
-console.log("[contacts] boot v3 — API_BASE =", API_BASE);
+console.log("[contacts] boot v4 — API_BASE =", API_BASE);
 
+/* 2) State */
 let csvData = [];
-let allProspects = []; // Store all prospects for filtering
+let allProspects = [];
 
+/* 3) UI helpers */
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   sidebar.classList.toggle('open');
@@ -829,48 +831,49 @@ document.addEventListener('click', function(event) {
   }
 });
 
-/* 2) Sync from Instantly */
+/* 4) Instantly sync */
 async function syncFromInstantly() {
-  console.log("[contacts] syncFromInstantly() click →", INSTANTLY_URL);
+  console.log("[contacts] syncFromInstantly() →", INSTANTLY_URL);
   const container = document.getElementById('contactsList');
   container.innerHTML = '<div class="empty-state"><h3>Syncing with Instantly...</h3></div>';
   try {
     const response = await fetch(INSTANTLY_URL);
-    console.log("[contacts] instantly response status =", response.status);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data = await response.json();
+    console.log("[contacts] instantly status =", response.status);
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data?.error || `HTTP ${response.status}`);
     console.log("[contacts] instantly data =", data);
-    if (data.success) {
-      alert(`Successfully synced ${data.summary?.totalCampaigns ?? 0} campaigns / ${data.summary?.totalLeads ?? 0} leads`);
-      setTimeout(loadProspects, 500);
-    } else {
-      alert('Sync failed: ' + (data.error || 'Unknown error'));
-    }
+    alert(`Sync complete: ${data.summary?.totalCampaigns ?? 0} campaigns / ${data.summary?.totalLeads ?? 0} leads`);
+    setTimeout(loadProspects, 500);
   } catch (err) {
     console.error("[contacts] sync error:", err);
-    alert('Error connecting to Instantly: ' + err.message);
+    container.innerHTML = `
+      <div class="empty-state">
+        <h3>Instantly sync failed</h3>
+        <p>${err.message}</p>
+      </div>`;
   }
 }
 
-/* 3) Load prospects from API */
+/* 5) Load prospects */
 async function loadProspects() {
   console.log("[contacts] loadProspects() →", PROSPECTS_URL);
   const container = document.getElementById('contactsList');
   container.innerHTML = '<div class="empty-state"><h3>Loading contacts...</h3></div>';
   try {
     const response = await fetch(PROSPECTS_URL);
-    console.log("[contacts] prospects response status =", response.status);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data = await response.json();
+    console.log("[contacts] prospects status =", response.status);
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data?.error || `HTTP ${response.status}`);
     console.log("[contacts] prospects data =", data);
 
     let prospects = [];
     if (data.leads) {
+      // Instantly leads format
       prospects = data.leads.map(lead => ({
         id: lead.id || Math.random().toString(36).slice(2),
-        name: `${lead.first_name || ''} ${lead.last_name || ''}`.trim() || lead.email?.split('@')[0] || 'Unknown',
+        name: `${lead.first_name || ''} ${lead.last_name || ''}`.trim() || (lead.email ? lead.email.split('@')[0] : 'Unknown'),
         company: lead.company_name || lead.company || '',
-        email: (lead.email || ''),
+        email: lead.email || '',
         qualification_score: lead.custom_variables?.qualification_score || 0,
         pipeline_stage: lead.status || 'new',
         industry: lead.custom_variables?.industry || lead.industry || '',
@@ -878,15 +881,16 @@ async function loadProspects() {
         source: lead.source || 'Instantly'
       }));
     } else if (data.prospects) {
+      // Your own API format
       prospects = data.prospects;
     } else if (Array.isArray(data)) {
+      // Raw array format
       prospects = data;
     }
 
     allProspects = prospects;
     renderProspects(prospects);
     updateStats(prospects);
-
   } catch (err) {
     console.error("[contacts] load prospects error:", err);
     container.innerHTML = `
@@ -899,7 +903,7 @@ async function loadProspects() {
   }
 }
 
-/* 4) Render + helpers (unchanged) */
+/* 6) Render + stats */
 function renderProspects(prospects) {
   const container = document.getElementById('contactsList');
   if (!prospects || prospects.length === 0) {
@@ -910,63 +914,91 @@ function renderProspects(prospects) {
       </div>`;
     return;
   }
-  const html = prospects.map(prospect => {
-    const avatar = (prospect.name || 'U').charAt(0).toUpperCase();
-    const statusClass = getStatusClass(prospect.pipeline_stage);
-    const statusText  = getStatusText(prospect.pipeline_stage);
-    const scoreDisplay = prospect.qualification_score > 0 ? ` (${prospect.qualification_score}/50)` : '';
+
+  const html = prospects.map(p => {
+    const avatar = (p.name || 'U').charAt(0).toUpperCase();
+    const statusClass = getStatusClass(p.pipeline_stage);
+    const statusText  = getStatusText(p.pipeline_stage);
+    const score = p.qualification_score > 0 ? ` (${p.qualification_score}/50)` : '';
     return `
-      <div class="contact-item" data-status="${prospect.pipeline_stage}" data-name="${(prospect.name || '').toLowerCase()} ${(prospect.company || '').toLowerCase()}">
-        <div class="contact-avatar" style="background:${getAvatarColor(prospect.qualification_score)};">${avatar}</div>
+      <div class="contact-item" data-status="${p.pipeline_stage}" data-name="${(p.name||'').toLowerCase()} ${(p.company||'').toLowerCase()}">
+        <div class="contact-avatar" style="background:${getAvatarColor(p.qualification_score)};">${avatar}</div>
         <div class="contact-info">
-          <div class="contact-name">${prospect.name}${scoreDisplay}</div>
-          <div class="contact-company">${prospect.company || 'Company TBD'}</div>
+          <div class="contact-name">${p.name}${score}</div>
+          <div class="contact-company">${p.company || 'Company TBD'}</div>
           <div class="contact-details">
-            ${prospect.industry || 'Industry TBD'} <span class="source-tag">${prospect.source || 'Manual'}</span>
+            ${p.industry || 'Industry TBD'}
+            <span class="source-tag">${p.source || 'Manual'}</span>
           </div>
         </div>
         <div class="contact-status ${statusClass}">${statusText}</div>
         <div class="contact-actions">
-          <button class="btn btn-primary btn-small" onclick="viewProfile('${prospect.id}')">View</button>
-          <button class="btn btn-secondary btn-small" onclick="contactProspect('${prospect.id}')">Contact</button>
+          <button class="btn btn-primary btn-small" onclick="viewProfile('${p.id}')">View</button>
+          <button class="btn btn-secondary btn-small" onclick="contactProspect('${p.id}')">Contact</button>
         </div>
       </div>`;
   }).join('');
+
   container.innerHTML = html;
 }
 
-function updateStats(prospects) {
-  const total = prospects.length;
-  const qualified = prospects.filter(p => p.qualification_score >= 35).length;
-  const active = prospects.filter(p => ['qualified_for_discovery','discovery_link_sent','discovery_completed','proposal_sent'].includes(p.pipeline_stage)).length;
-  const closed = prospects.filter(p => p.pipeline_stage === 'closed_won').length;
+function updateStats(list) {
+  const total = list.length;
+  const qualified = list.filter(p => p.qualification_score >= 35).length;
+  const active = list.filter(p => ['qualified_for_discovery','discovery_link_sent','discovery_completed','proposal_sent'].includes(p.pipeline_stage)).length;
+  const closed = list.filter(p => p.pipeline_stage === 'closed_won').length;
   document.querySelector('.stat-number.total-contacts').textContent = total;
   document.querySelector('.stat-number.qualified-contacts').textContent = qualified;
   document.querySelector('.stat-number.active-prospects').textContent = active;
   document.querySelector('.stat-number.closed-contacts').textContent = closed;
 }
 
+/* 7) View + search/filter */
+function viewProfile(id) {
+  console.log("[contacts] viewProfile", id);
+  alert(`Profile view for ${id} coming soon!`);
+}
+function contactProspect(id) {
+  console.log("[contacts] contactProspect", id);
+  alert(`Contact interface for ${id} coming soon!`);
+}
+function searchContacts(q) {
+  const s = (q || '').toLowerCase();
+  renderProspects(
+    allProspects.filter(p =>
+      (p.name||'').toLowerCase().includes(s) ||
+      (p.company||'').toLowerCase().includes(s) ||
+      (p.email||'').toLowerCase().includes(s)
+    )
+  );
+}
+function filterContacts(status) {
+  if (status === 'all') return renderProspects(allProspects);
+  renderProspects(allProspects.filter(p => p.pipeline_stage === status));
+}
+
+/* 8) Status helpers */
 function getStatusClass(stage) {
   const map = {
-    'new': 'status-pending',
-    'qualified_for_discovery': 'status-qualified',
-    'discovery_link_sent': 'status-discovery',
-    'discovery_completed': 'status-discovery',
-    'proposal_sent': 'status-qualified',
-    'closed_won': 'status-qualified',
-    'nurture': 'status-nurture'
+    new: 'status-pending',
+    qualified_for_discovery: 'status-qualified',
+    discovery_link_sent: 'status-discovery',
+    discovery_completed: 'status-discovery',
+    proposal_sent: 'status-qualified',
+    closed_won: 'status-qualified',
+    nurture: 'status-nurture'
   };
   return map[stage] || 'status-pending';
 }
 function getStatusText(stage) {
   const map = {
-    'new': 'New',
-    'qualified_for_discovery': 'Qualified',
-    'discovery_link_sent': 'Discovery Sent',
-    'discovery_completed': 'Discovery Done',
-    'proposal_sent': 'Proposal Sent',
-    'closed_won': 'Closed Won',
-    'nurture': 'Nurture'
+    new: 'New',
+    qualified_for_discovery: 'Qualified',
+    discovery_link_sent: 'Discovery Sent',
+    discovery_completed: 'Discovery Done',
+    proposal_sent: 'Proposal Sent',
+    closed_won: 'Closed Won',
+    nurture: 'Nurture'
   };
   return map[stage] || 'New';
 }
@@ -976,54 +1008,111 @@ function getAvatarColor(score) {
   return '#3498db';
 }
 
-/* 5) Search/filter (unchanged) */
-function searchContacts(q) {
-  const s = (q || '').toLowerCase();
-  const filtered = allProspects.filter(p => (p.name||'').toLowerCase().includes(s) || (p.company||'').toLowerCase().includes(s) || (p.email||'').toLowerCase().includes(s));
-  renderProspects(filtered);
+/* 9) Add Contact / CSV Import */
+function showAddContactOptions() {
+  const useCSV = confirm('Import multiple contacts from CSV?\n\nOK = CSV Import\nCancel = Add Single Contact');
+  if (useCSV) showCsvImport();
+  else alert('Single contact form coming soon! Use CSV import for now.');
 }
-function filterContacts(status) {
-  if (status === 'all') return renderProspects(allProspects);
-  renderProspects(allProspects.filter(p => p.pipeline_stage === status));
+function showCsvImport() {
+  document.getElementById('csvImportSection').style.display = 'block';
+}
+function hideCsvImport() {
+  document.getElementById('csvImportSection').style.display = 'none';
+  clearCsvImport();
 }
 
-/* 6) Other actions (unchanged) */
-function viewProfile(id){ console.log("[contacts] viewProfile", id); alert(`Profile view for ${id} coming soon!`); }
-function contactProspect(id){ console.log("[contacts] contactProspect", id); alert(`Contact interface for ${id} coming soon!`); }
+/* 10) CSV helpers */
+function handleFileSelect(e){
+  const file = e.target.files?.[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => parseCsv(ev.target.result);
+  reader.readAsText(file);
+}
 
-/* 7) CSV helpers — keep your originals for brevity (or paste them back) */
-// ... keep your CSV functions here (parseCsv, showCsvPreview, importCsv etc.)
-async function importCsv() {
+function parseCsv(text){
+  try {
+    const lines = text.split('\n').filter(l => l.trim());
+    if (lines.length < 2) { alert('CSV must include a header and at least one row'); return; }
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g,''));
+    csvData = lines.slice(1).map(line => {
+      const values = line.split(',').map(v => v.trim().replace(/"/g,''));
+      const row = {};
+      headers.forEach((h, i) => row[h] = values[i] || '');
+      return row;
+    });
+    showCsvPreview(headers, csvData.slice(0,3));
+    document.getElementById('importBtn').disabled = csvData.length === 0;
+  } catch (err) {
+    console.error("[contacts] CSV parse error:", err);
+    alert('Error parsing CSV: ' + err.message);
+  }
+}
+
+function showCsvPreview(headers, rows){
+  const previewDiv = document.getElementById('csvPreview');
+  const tableDiv   = document.getElementById('previewTable');
+  let html = '<table><thead><tr>' + headers.map(h=>`<th>${h}</th>`).join('') + '</tr></thead><tbody>';
+  rows.forEach(r => { html += '<tr>' + headers.map(h=>`<td>${r[h]||''}</td>`).join('') + '</tr>'; });
+  html += '</tbody></table>';
+  tableDiv.innerHTML = html;
+  previewDiv.style.display = 'block';
+}
+
+async function importCsv(){
   if (!csvData.length) return alert('No data to import');
-  const source = document.getElementById('importSource').value;
+  const source    = document.getElementById('importSource').value;
   const importBtn = document.getElementById('importBtn');
   importBtn.disabled = true; importBtn.textContent = 'Importing...';
   try {
-    console.log("[contacts] importCsv() →", IMPORT_URL);
-    const response = await fetch(IMPORT_URL, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
+    console.log('[contacts] importCsv() →', IMPORT_URL);
+    const resp = await fetch(IMPORT_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ csvData, source })
     });
-    console.log("[contacts] import response status =", response.status);
-    const result = await response.json().catch(()=> ({}));
-    if (!response.ok) throw new Error(result?.error || `HTTP ${response.status}`);
-    showImportResults(result.results || {imported: csvData.length, skipped: 0});
+    console.log('[contacts] import status =', resp.status);
+    const result = await resp.json().catch(()=> ({}));
+    if (!resp.ok) throw new Error(result?.error || `HTTP ${resp.status}`);
+    showImportResults(result.results || { imported: csvData.length, skipped: 0 });
     setTimeout(loadProspects, 500);
-  } catch (err) {
-    console.error("[contacts] import error:", err);
+  } catch (err){
+    console.error('[contacts] import error:', err);
     alert('Error importing CSV: ' + err.message);
   } finally {
     importBtn.disabled = false; importBtn.textContent = 'Import Contacts';
   }
 }
 
-/* 8) Expose click handlers for inline onclick=... */
-window.syncFromInstantly    = syncFromInstantly;
-window.showAddContactOptions = showAddContactOptions;
-window.importCsv             = importCsv; // if used inline
+function showImportResults(results){
+  const box = document.getElementById('importResults');
+  const c   = document.getElementById('resultsContent');
+  c.innerHTML = `✓ Imported: ${results.imported||0} &nbsp;&nbsp; ⚠ Skipped: ${results.skipped||0}`;
+  box.style.display = 'block';
+}
 
-/* 9) Init */
+function clearCsvImport(){
+  csvData = [];
+  const f = document.getElementById('csvFile'); if (f) f.value = '';
+  document.getElementById('csvPreview').style.display = 'none';
+  document.getElementById('importResults').style.display = 'none';
+  const b = document.getElementById('importBtn'); if (b) b.disabled = true;
+}
+
+/* 11) Expose handlers for inline HTML attributes */
+window.toggleSidebar        = toggleSidebar;
+window.syncFromInstantly    = syncFromInstantly;
+window.showAddContactOptions= showAddContactOptions;
+window.importCsv            = importCsv;
+window.viewProfile          = viewProfile;
+window.contactProspect      = contactProspect;
+window.searchContacts       = searchContacts;
+window.filterContacts       = filterContacts;
+window.hideCsvImport        = hideCsvImport;
+window.handleFileSelect     = handleFileSelect;
+
+/* 12) Init */
 document.addEventListener('DOMContentLoaded', () => {
   console.log("[contacts] DOMContentLoaded — initializing");
   loadProspects();
