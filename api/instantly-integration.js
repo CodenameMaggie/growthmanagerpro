@@ -56,23 +56,27 @@ module.exports = async function handler(req, res) {
 };
 
 async function fetchInstantlyCampaigns(apiKey, baseUrl) {
-  const r = await fetch(`${baseUrl}/v1/campaigns`, {
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }
+  const r = await fetch(`${baseUrl}/v1/campaigns?api_key=${apiKey}`, {
+    headers: { 'Content-Type': 'application/json' }
   });
   if (!r.ok) {
     console.error('Instantly campaigns non-200:', r.status, await r.text());
-    return { __mocked: true, data: [
-      { id:'mock_campaign_1', name:'Interior Design Outreach - Q4', status:'active', sent:487, opened:104, replied:14, bounced:8, unsubscribed:3 },
-      { id:'mock_campaign_2', name:'Construction LinkedIn Outreach', status:'active', sent:324, opened:59, replied:8, bounced:12, unsubscribed:2 },
-    ]};
+    return { 
+      __mocked: true, 
+      data: [
+        { id:'mock_campaign_1', name:'Interior Design Outreach - Q4', status:'active', sent:487, opened:104, replied:14, bounced:8, unsubscribed:3 },
+        { id:'mock_campaign_2', name:'Construction LinkedIn Outreach', status:'active', sent:324, opened:59, replied:8, bounced:12, unsubscribed:2 },
+      ]
+    };
   }
   const data = await r.json();
   return { data: data.campaigns || [] };
 }
 
 async function fetchInstantlyLeads(apiKey, baseUrl) {
-  const r = await fetch(`${baseUrl}/v1/leads`, {
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }
+  const r = await fetch(`${baseUrl}/v1/leads?api_key=${apiKey}`, {
+    headers: { 'Content-Type': 'application/json' }
+    // NO Authorization header!
   });
   if (!r.ok) {
     console.error('Instantly leads non-200:', r.status, await r.text());
@@ -85,7 +89,6 @@ async function fetchInstantlyLeads(apiKey, baseUrl) {
   const data = await r.json();
   return data.leads || [];
 }
-
 async function updateCampaignData(supabase, campaignsIn) {
   const campaigns = Array.isArray(campaignsIn) ? campaignsIn : (campaignsIn?.data || []);
   if (!campaigns.length) return { updated: 0 };
@@ -152,11 +155,14 @@ async function matchLeadsToProspects(supabase, leads) {
 }
 
 async function sendInstantlyEmail({ apiKey, baseUrl, recipientEmail, subject, message, campaignId }) {
-  const r = await fetch(`${baseUrl}/v1/campaigns/${campaignId}/send`, {
+  const r = await fetch(`${baseUrl}/v1/campaigns/${campaignId}/send?api_key=${apiKey}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+    headers: { 
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify({ to: recipientEmail, subject, body: message })
   });
+  
   if (!r.ok) {
     console.error('Instantly send email non-200:', r.status, await r.text());
     return { success: true, messageId: `mock_${Date.now()}`, message: 'Email sent successfully (mock mode)' };
