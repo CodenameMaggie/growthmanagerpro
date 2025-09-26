@@ -568,7 +568,59 @@
             }
         });
 
-        console.log('Podcast Calls page loaded with unified navigation');
-    </script>
+        // ============================================
+    // NEW CODE FOR INVITE VALIDATION
+    // ============================================
+    
+    // Store prospect data
+    let prospects = [];
+    
+    // Validation function to prevent duplicate invites
+    function canSendInvite(prospectName) {
+        // Check against recent invites stored locally
+        // In production, this would check your database
+        const recentInvites = localStorage.getItem('recentInvites') || '{}';
+        const invites = JSON.parse(recentInvites);
+        
+        if (invites[prospectName]) {
+            const lastInvite = new Date(invites[prospectName]);
+            const daysSince = (Date.now() - lastInvite) / (1000*60*60*24);
+            
+            if (daysSince < 7) {
+                alert(`Cannot schedule - ${prospectName} was invited ${Math.floor(daysSince)} days ago`);
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    // Schedule Discovery function
+    function scheduleDiscovery(prospectName) {
+        if (!canSendInvite(prospectName)) {
+            return;
+        }
+        
+        // Record this invite
+        const recentInvites = JSON.parse(localStorage.getItem('recentInvites') || '{}');
+        recentInvites[prospectName] = new Date().toISOString();
+        localStorage.setItem('recentInvites', JSON.stringify(recentInvites));
+        
+        alert(`Discovery call scheduling for ${prospectName} - Calendly link would be sent here`);
+        // In production, this would call your Calendly API
+        // fetch('/api/calendly-integration', {...})
+    }
+    
+    // View Call function  
+    function viewCall(prospectName) {
+        alert(`Viewing call recording for ${prospectName}`);
+    }
+    
+    // ============================================
+    // END OF NEW CODE
+    // ============================================
+    
+    console.log('Podcast Calls page loaded with unified navigation and invite validation');
+</script>
 </body>
 </html>
