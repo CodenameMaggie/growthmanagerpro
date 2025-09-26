@@ -922,29 +922,29 @@ async function loadProspects() {
             return '#e74c3c'; // Red for low score
         }
 
-        function updateStats(prospects) {
+     function updateStats(prospects) {
     const totalContacts = prospects.length;
     const qualifiedContacts = prospects.filter(p => p.qualification_score >= 35).length;
     const activeProspects = prospects.filter(p => ['qualified_for_discovery', 'discovery_link_sent', 'discovery_completed'].includes(p.pipeline_stage)).length;
     const closedContacts = prospects.filter(p => p.pipeline_stage === 'closed_won').length;
 
-    // Check if elements exist before updating them
-    const totalElement = document.querySelector('.total-contacts');
+    // The elements have both stat-number AND the specific class
+    const totalElement = document.querySelector('.stat-number.total-contacts');
     if (totalElement) {
         totalElement.textContent = totalContacts;
     }
     
-    const qualifiedElement = document.querySelector('.qualified-contacts');
+    const qualifiedElement = document.querySelector('.stat-number.qualified-contacts');
     if (qualifiedElement) {
         qualifiedElement.textContent = qualifiedContacts;
     }
     
-    const activeElement = document.querySelector('.active-prospects');
+    const activeElement = document.querySelector('.stat-number.active-prospects');
     if (activeElement) {
         activeElement.textContent = activeProspects;
     }
     
-    const closedElement = document.querySelector('.closed-contacts');
+    const closedElement = document.querySelector('.stat-number.closed-contacts');
     if (closedElement) {
         closedElement.textContent = closedContacts;
     }
