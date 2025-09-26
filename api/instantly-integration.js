@@ -113,9 +113,43 @@ async function fetchInstantlyCampaigns(apiKey, baseUrl) {
   }
 }
 
+async function fetchInstantlyCampaigns(apiKey, baseUrl) {
+  try {
+    const response = await fetch(`${baseUrl}/campaigns`, {
+      headers: { 
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error('Instantly campaigns failed:', response.status, errorBody);
+      // Return consistent format
+      return { 
+        __mocked: true, 
+        data: [/* mock campaigns */]
+      };
+    }
+
+    const json = await response.json();
+    // Always return object with data property
+    return { 
+      __mocked: false,
+      data: json.data || json.campaigns || json || [] 
+    };
+    
+  } catch (error) {
+    console.error('Error fetching campaigns:', error.message);
+    return { 
+      __mocked: true, 
+      data: [/* mock campaigns */]
+    };
+  }
+}
+
 async function fetchInstantlyLeads(apiKey, baseUrl) {
   try {
-    // First try the direct leads endpoint
     const response = await fetch(`${baseUrl}/leads`, {
       headers: { 
         'Authorization': `Bearer ${apiKey}`,
@@ -125,54 +159,21 @@ async function fetchInstantlyLeads(apiKey, baseUrl) {
 
     if (!response.ok) {
       const errorBody = await response.text();
-      console.error('Instantly leads endpoint failed:', response.status, errorBody);
-      
-      // If /leads doesn't work, try /leads/list with POST
-      const listResponse = await fetch(`${baseUrl}/leads/list`, {
-        method: 'POST',
-        headers: { 
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ limit: 100 })
-      });
-      
-      if (listResponse.ok) {
-        const listJson = await listResponse.json();
-        return listJson.data || listJson.leads || listJson || [];
-      }
-      
-      throw new Error(`Leads API error: ${response.status}`);
+      console.error('Instantly leads failed:', response.status, errorBody);
+      // Return consistent array format with __mocked property
+      const mocks = [/* mock leads */];
+      mocks.__mocked = true;
+      return mocks;
     }
 
     const json = await response.json();
-    return json.data || json.leads || json || [];
+    const leads = json.data || json.leads || json || [];
+    leads.__mocked = false;
+    return leads;
     
   } catch (error) {
     console.error('Error fetching leads:', error.message);
-    // Return mock data if API fails
-    const mocks = [
-      { 
-        email: 'jonathan@brewersuite.com', 
-        firstName: 'Jonathan', 
-        lastName: '', 
-        company: 'Brewer Suite Co', 
-        campaignId: 'mock_campaign_1', 
-        status: 'replied', 
-        lastMessage: 'Hi Maggie, thanks for reaching out. I\'d be interested in learning more.', 
-        repliedAt: new Date(Date.now() - 2 * 86400000).toISOString() 
-      },
-      {
-        email: 'tye@twsconstruction.com',
-        firstName: 'Tye',
-        lastName: 'Shumway',
-        company: 'TWS Construction',
-        campaignId: 'mock_campaign_2',
-        status: 'replied',
-        lastMessage: 'This sounds relevant to our growth challenges.',
-        repliedAt: new Date(Date.now() - 5 * 86400000).toISOString()
-      }
-    ];
+    const mocks = [/* mock leads */];
     mocks.__mocked = true;
     return mocks;
   }
