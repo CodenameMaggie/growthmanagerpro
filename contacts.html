@@ -800,8 +800,14 @@
     </div>
 
         <script>
-    // Replace the entire <script> section in contacts.html with this code
+    /// Use your live Vercel deployment base URL
+const API_BASE = "https://growthmanagerpro-v2.vercel.app";  
 
+// Build full API URLs
+const PROSPECTS_URL = `${API_BASE}/api/prospects`;
+const INSTANTLY_URL = `${API_BASE}/api/instantly-integration`;
+const IMPORT_URL = `${API_BASE}/api/import-csv`;
+            
 let csvData = [];
 let allProspects = []; // Store all prospects for filtering
 
@@ -829,7 +835,7 @@ async function syncFromInstantly() {
     container.innerHTML = '<div class="empty-state"><h3>Syncing with Instantly...</h3></div>';
     
     try {
-        const response = await fetch('/api/instantly-integration');
+   const response = await fetch(INSTANTLY_URL);
         const data = await response.json();
         
         console.log('Instantly sync response:', data);
@@ -854,7 +860,7 @@ async function loadProspects() {
     container.innerHTML = '<div class="empty-state"><h3>Loading contacts...</h3></div>';
     
     try {
-        const response = await fetch('/api/prospects');
+       const response = await fetch(PROSPECTS_URL);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -1033,13 +1039,11 @@ function contactProspect(prospectId) {
 
 // CSV Import functions
 function showAddContactOptions() {
-    const useCSV = confirm('Import multiple contacts from CSV?\n\nOK = CSV Import\nCancel = Add Single Contact');
-    if (useCSV) {
-        showCsvImport();
-    } else {
-        alert('Single contact form coming soon! Use CSV import for now.');
-    }
-}
+    const response = await fetch(IMPORT_URL, {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({ csvData, source })
+});
 
 function showCsvImport() {
     document.getElementById('csvImportSection').style.display = 'block';
