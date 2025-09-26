@@ -18,18 +18,12 @@ module.exports = async function handler(req, res) {
       return res.status(500).json({ error: 'Instantly API key not configured' });
     }
 
-    // Base URL for Instantly API
-    const baseUrl = 'https://api.instantly.ai/api/v1';
+    // Base URL for Instantly API v2
+    const baseUrl = 'https://api.instantly.ai/api/v2';
 
-    async function fetchInstantlyCampaigns(apiKey, baseUrl) {
-  const r = await fetch(`${baseUrl}/campaign/list?api_key=${apiKey}`, {
-    headers: { 'Content-Type': 'application/json' }
-  });
-  // rest of your code
-}
     if (req.method === 'GET') {
       const campaigns = await fetchInstantlyCampaigns(instantlyApiKey, baseUrl);
-      const leads = await fetchInstantlyLeads(instantlyApiKey, baseUrl, campaigns);
+      const leads = await fetchInstantlyLeads(instantlyApiKey, baseUrl);
 
       const mocked = Boolean(campaigns.__mocked || leads.__mocked);
 
@@ -71,19 +65,22 @@ module.exports = async function handler(req, res) {
 
 async function fetchInstantlyCampaigns(apiKey, baseUrl) {
   try {
-    const response = await fetch(`${baseUrl}/campaigns/list?api_key=${apiKey}&limit=100`, {
-      headers: { 'Content-Type': 'application/json' }
+    const response = await fetch(`${baseUrl}/campaigns`, {
+      headers: { 
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      }
     });
 
     if (!response.ok) {
-      console.error('Instantly campaigns error:', response.status);
-      const errorText = await response.text();
-      console.error('Error details:', errorText);
+      const errorBody = await response.text();
+      console.error('Instantly campaigns failed:', response.status, errorBody);
       throw new Error(`Campaigns API error: ${response.status}`);
     }
 
-    const data = await response.json();
-    return { data: data || [] };
+    const json = await response.json();
+    // Handle different response formats
+    return { data: json.data || json.campaigns || json || [] };
     
   } catch (error) {
     console.error('Error fetching campaigns:', error.message);
@@ -116,57 +113,40 @@ async function fetchInstantlyCampaigns(apiKey, baseUrl) {
   }
 }
 
-async function fetchInstantlyLeads(apiKey, baseUrl, campaigns) {
+async function fetchInstantlyLeads(apiKey, baseUrl) {
   try {
-    const allLeads = [];
-    const campaignList = campaigns.data || campaigns;
-    
-    // If we have campaigns, get leads for each
-    if (campaignList && campaignList.length > 0 && !campaigns.__mocked) {
-      for (const campaign of campaignList) {
-        try {
-          // Try to get leads for this campaign
-          const response = await fetch(`${baseUrl}/campaigns/${campaign.id}/leads?api_key=${apiKey}&limit=100`, {
-            headers: { 'Content-Type': 'application/json' }
-          });
-          
-          if (response.ok) {
-            const leadsData = await response.json();
-            if (leadsData && Array.isArray(leadsData)) {
-              // Add campaign ID to each lead
-              const leadsWithCampaign = leadsData.map(lead => ({
-                ...lead,
-                campaignId: campaign.id,
-                campaignName: campaign.name
-              }));
-              allLeads.push(...leadsWithCampaign);
-            }
-          }
-        } catch (err) {
-          console.error(`Error fetching leads for campaign ${campaign.id}:`, err.message);
-        }
+    // First try the direct leads endpoint
+    const response = await fetch(`${baseUrl}/leads`, {
+      headers: { 
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
       }
-    }
-    
-    // If we got some leads, return them
-    if (allLeads.length > 0) {
-      return allLeads;
-    }
-    
-    // Otherwise, try the general analytics endpoint
-    const analyticsResponse = await fetch(`${baseUrl}/analytics/campaigns/summary?api_key=${apiKey}`, {
-      headers: { 'Content-Type': 'application/json' }
     });
-    
-    if (analyticsResponse.ok) {
-      const analyticsData = await analyticsResponse.json();
-      // Extract leads from analytics if available
-      if (analyticsData.leads) {
-        return analyticsData.leads;
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error('Instantly leads endpoint failed:', response.status, errorBody);
+      
+      // If /leads doesn't work, try /leads/list with POST
+      const listResponse = await fetch(`${baseUrl}/leads/list`, {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ limit: 100 })
+      });
+      
+      if (listResponse.ok) {
+        const listJson = await listResponse.json();
+        return listJson.data || listJson.leads || listJson || [];
       }
+      
+      throw new Error(`Leads API error: ${response.status}`);
     }
-    
-    throw new Error('No leads endpoint available');
+
+    const json = await response.json();
+    return json.data || json.leads || json || [];
     
   } catch (error) {
     console.error('Error fetching leads:', error.message);
@@ -203,11 +183,11 @@ async function updateCampaignData(supabase, campaignsIn) {
   if (!campaigns.length) return { updated: 0 };
 
   const rows = campaigns.map(c => ({
-    instantly_campaign_id: c.id,
-    name: c.name || null,
-    total_sent: Number(c.sent || 0),
-    opens: Number(c.opened || 0),
-    replies: Number(c.replied || 0),
+    instantly_campaign_id: c.id || c.campaign_id,
+    name: c.name || c.campaign_name || null,
+    total_sent: Number(c.sent || c.emails_sent || 0),
+    opens: Number(c.opened || c.opens || 0),
+    replies: Number(c.replied || c.replies || 0),
     qualified_leads: 0,
     status: c.status || 'active'
   }));
@@ -233,7 +213,7 @@ async function matchLeadsToProspects(supabase, leads) {
       out.push({ 
         ...lead, 
         prospectId: null, 
-        prospectName: (`${lead.firstName || ''} ${lead.lastName || ''}`).trim(), 
+        prospectName: (`${lead.firstName || lead.first_name || ''} ${lead.lastName || lead.last_name || ''}`).trim(), 
         qualificationScore: 0, 
         pipelineStage: 'new' 
       });
@@ -250,7 +230,7 @@ async function matchLeadsToProspects(supabase, leads) {
       out.push({
         ...lead,
         prospectId: prospect?.id || null,
-        prospectName: prospect?.name || `${lead.firstName || ''} ${lead.lastName || ''}`.trim(),
+        prospectName: prospect?.name || `${lead.firstName || lead.first_name || ''} ${lead.lastName || lead.last_name || ''}`.trim(),
         qualificationScore: prospect?.qualification_score || 0,
         pipelineStage: prospect?.pipeline_stage || 'new'
       });
@@ -259,8 +239,8 @@ async function matchLeadsToProspects(supabase, leads) {
         await supabase
           .from('prospects')
           .update({
-            instantly_campaign_id: lead.campaignId || null,
-            last_activity_date: lead.repliedAt || new Date().toISOString()
+            instantly_campaign_id: lead.campaignId || lead.campaign_id || null,
+            last_activity_date: lead.repliedAt || lead.replied_at || new Date().toISOString()
           })
           .eq('id', prospect.id);
       }
@@ -269,7 +249,7 @@ async function matchLeadsToProspects(supabase, leads) {
       out.push({ 
         ...lead, 
         prospectId: null, 
-        prospectName: `${lead.firstName || ''} ${lead.lastName || ''}`.trim(), 
+        prospectName: `${lead.firstName || lead.first_name || ''} ${lead.lastName || lead.last_name || ''}`.trim(), 
         qualificationScore: 0, 
         pipelineStage: 'new' 
       });
@@ -281,9 +261,12 @@ async function matchLeadsToProspects(supabase, leads) {
 
 async function sendInstantlyEmail({ apiKey, baseUrl, recipientEmail, subject, message, campaignId }) {
   try {
-    const response = await fetch(`${baseUrl}/campaigns/${campaignId}/leads/send?api_key=${apiKey}`, {
+    const response = await fetch(`${baseUrl}/campaigns/${campaignId}/send`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ 
         email: recipientEmail, 
         subject: subject, 
@@ -292,7 +275,8 @@ async function sendInstantlyEmail({ apiKey, baseUrl, recipientEmail, subject, me
     });
 
     if (!response.ok) {
-      console.error('Instantly send email error:', response.status);
+      const errorBody = await response.text();
+      console.error('Instantly send email error:', response.status, errorBody);
       throw new Error(`Send email error: ${response.status}`);
     }
 
