@@ -1,6 +1,4 @@
-// /api/prospects.js  (Vercel serverless)
-// Node runtime 18+ (default). CommonJS is fine.
-
+// /api/prospects.js
 const { createClient } = require('@supabase/supabase-js');
 
 module.exports = async function handler(req, res) {
@@ -10,18 +8,16 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  // 1) Check env vars early
-  const url  = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key  = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) {
     return res.status(500).json({
       ok: false,
       where: 'env',
       message: 'Missing Supabase env vars',
       details: {
-        NEXT_PUBLIC_SUPABASE_URL: Boolean(url),
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: Boolean(key)
+        NEXT_PUBLIC_SUPABASE_URL: !!url,
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: !!key
       }
     });
   }
@@ -29,7 +25,7 @@ module.exports = async function handler(req, res) {
   try {
     const supabase = createClient(url, key);
 
-    // 2) Lightweight ping to catch RLS / table existence problems
+    // 1) Ping table to catch RLS/table issues early
     const ping = await supabase.from('prospects').select('id').limit(1);
     if (ping.error) {
       return res.status(500).json({
@@ -45,11 +41,11 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 3) Safe SELECT — only columns you’re sure exist
-    // (add more fields once this succeeds)
+    // 2) Safe fetch — no fragile column list
     const { data, error } = await supabase
       .from('prospects')
-      .select('id,name,email,company,qualification_score,pipeline_stage,industry,phone,source')   // <— adjust to your schema
+      .select('*')       // <-- avoids unknown column errors
+      .order('id', { ascending: false })
       .limit(50);
 
     if (error) {
@@ -66,7 +62,24 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    return res.status(200).json({ ok: true, prospects: data || [] });
+    // 3) Normalize to the shape your UI expects
+    const prospects = (data || []).map(r => ({
+      id: r.id,
+      name: r.name ?? '',
+      email: r.email ?? '',
+      company: r.company ?? '',
+      qualification_score: r.qualification_score ?? 0,
+      pipeline_stage: r.pipeline_stage ?? 'new',
+      // unify possible schema variants or absence
+      industry: r.industry ?? r.sector ?? r.vertical ?? '',
+      phone: r.phone ?? '',
+      source: r.source ?? 'Supabase',
+      // keep anything else you like:
+      last_activity_date: r.last_activity_date ?? null,
+      instantly_campaign_id: r.instantly_campaign_id ?? null
+    }));
+
+    return res.status(200).json({ ok: true, prospects });
   } catch (e) {
     return res.status(500).json({ ok: false, where: 'catch', message: e.message });
   }
