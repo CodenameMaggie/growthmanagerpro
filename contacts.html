@@ -685,14 +685,16 @@
                         </div>
                     </div>
                     <div class="header-actions">
-                        <button class="btn btn-secondary">
-                            📊 Export Contacts
-                        </button>
-                        <button class="btn btn-primary" onclick="showAddContactOptions()">
-                            ➕ Add Contact
-                        </button>
-                    </div>
-                </div>
+    <button class="btn btn-secondary">
+        📊 Export Contacts
+    </button>
+    <button class="btn btn-primary" onclick="syncFromInstantly()">
+        🔄 Sync from Instantly
+    </button>
+    <button class="btn btn-primary" onclick="showAddContactOptions()">
+        ➕ Add Contact
+    </button>
+</div>
 
                 <!-- CSV Import Section -->
                 <div class="csv-import-section" id="csvImportSection" style="display: none;">
@@ -801,7 +803,28 @@
     </div>
 
     <script>
-        let csvData = [];
+        <script>
+    let csvData = [];
+    
+    // Sync from Instantly function
+    function syncFromInstantly() {
+        console.log('Syncing from Instantly...');
+        fetch('/api/instantly-integration')
+            .then(res => res.json())
+            .then(data => {
+                console.log('Instantly response:', data);
+                if (data.success) {
+                    alert(`Found ${data.summary.totalLeads} leads in Instantly. Check Supabase for updates.`);
+                    setTimeout(loadProspects, 1000);
+                } else {
+                    alert('Sync issue: ' + (data.error || 'Check console for details'));
+                }
+            })
+            .catch(err => {
+                console.error('Sync error:', err);
+                alert('Error connecting to Instantly: ' + err.message);
+            });
+    }
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
