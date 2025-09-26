@@ -923,27 +923,32 @@ async function loadProspects() {
         }
 
         function updateStats(prospects) {
-            const totalContacts = prospects.length;
-            const qualifiedContacts = prospects.filter(p => p.qualification_score >= 35).length;
-            const activeProspects = prospects.filter(p => ['qualified_for_discovery', 'discovery_link_sent', 'discovery_completed'].includes(p.pipeline_stage)).length;
-            const closedContacts = prospects.filter(p => p.pipeline_stage === 'closed_won').length;
+    const totalContacts = prospects.length;
+    const qualifiedContacts = prospects.filter(p => p.qualification_score >= 35).length;
+    const activeProspects = prospects.filter(p => ['qualified_for_discovery', 'discovery_link_sent', 'discovery_completed'].includes(p.pipeline_stage)).length;
+    const closedContacts = prospects.filter(p => p.pipeline_stage === 'closed_won').length;
 
-            document.querySelector('.total-contacts .stat-number').textContent = totalContacts;
-            document.querySelector('.qualified-contacts .stat-number').textContent = qualifiedContacts;
-            document.querySelector('.active-prospects .stat-number').textContent = activeProspects;
-            document.querySelector('.closed-contacts .stat-number').textContent = closedContacts;
-        }
-
-        function showEmptyState() {
-            const container = document.getElementById('contactsList');
-            container.innerHTML = `
-                <div class="empty-state" style="text-align: center; padding: 2rem; color: #7f8c8d;">
-                    <h3>No Prospects Yet</h3>
-                    <p>Your prospect database will populate as you run campaigns and conduct podcast calls.</p>
-                    <button class="btn btn-primary" style="margin-top: 1rem;" onclick="addTestProspect()">Add Test Prospect</button>
-                </div>
-            `;
-        }
+    // Check if elements exist before updating them
+    const totalElement = document.querySelector('.total-contacts');
+    if (totalElement) {
+        totalElement.textContent = totalContacts;
+    }
+    
+    const qualifiedElement = document.querySelector('.qualified-contacts');
+    if (qualifiedElement) {
+        qualifiedElement.textContent = qualifiedContacts;
+    }
+    
+    const activeElement = document.querySelector('.active-prospects');
+    if (activeElement) {
+        activeElement.textContent = activeProspects;
+    }
+    
+    const closedElement = document.querySelector('.closed-contacts');
+    if (closedElement) {
+        closedElement.textContent = closedContacts;
+    }
+}
 
         function searchContacts(query) {
             const contacts = document.querySelectorAll('.contact-item');
