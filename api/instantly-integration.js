@@ -16,7 +16,7 @@ module.exports = async function handler(req, res) {
     const instantlyApiKey = process.env.INSTANTLY_API_KEY;
     if (!instantlyApiKey) return res.status(500).json({ error: 'Instantly API key not configured' });
 
-    const baseUrl = 'https://api.instantly.ai';
+    const baseUrl = 'https://api.instantly.ai/api';
 
     if (req.method === 'GET') {
       const campaigns = await fetchInstantlyCampaigns(instantlyApiKey, baseUrl);
