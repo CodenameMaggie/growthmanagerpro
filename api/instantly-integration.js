@@ -19,8 +19,14 @@ module.exports = async function handler(req, res) {
     }
 
     // Base URL for Instantly API
-    const baseUrl = 'https://api.instantly.ai/api/v1';
+    const baseUrl = 'https://api.instantly.ai/v1';
 
+    async function fetchInstantlyCampaigns(apiKey, baseUrl) {
+  const r = await fetch(`${baseUrl}/campaign/list?api_key=${apiKey}`, {
+    headers: { 'Content-Type': 'application/json' }
+  });
+  // rest of your code
+}
     if (req.method === 'GET') {
       const campaigns = await fetchInstantlyCampaigns(instantlyApiKey, baseUrl);
       const leads = await fetchInstantlyLeads(instantlyApiKey, baseUrl, campaigns);
