@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contacts - Growth Manager Pro</title>
+    <title>Contacts - Growth Manager Pro-v2</title>
     <style>
         * {
             margin: 0;
@@ -803,7 +803,7 @@
 /** ---------------- Contacts page script v4 (debug on) ---------------- **/
 
 /* 1) Point GitHub page to your Vercel API */
-const API_BASE       = "https://growthmanagerpro-v2.vercel.app";
+const API_BASE = window.location.origin; // Uses current domain automatically
 const PROSPECTS_URL  = `${API_BASE}/api/prospects`;
 const INSTANTLY_URL  = `${API_BASE}/api/instantly-integration`;
 const IMPORT_URL     = `${API_BASE}/api/import-csv`;
