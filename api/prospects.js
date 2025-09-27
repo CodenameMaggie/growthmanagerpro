@@ -1,11 +1,13 @@
 // API endpoint for Growth Manager Pro v2 - Prospects/Contacts data
-// Optimized based on site audit findings
+// Production-ready with comprehensive error handling
 
 export default async function handler(req, res) {
-    // Set CORS headers for cross-origin requests
+    // Set security and CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('X-Powered-By', 'Growth Manager Pro v2');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     
     // Handle preflight requests
     if (req.method === 'OPTIONS') {
@@ -13,25 +15,44 @@ export default async function handler(req, res) {
         return;
     }
 
+    // Log request for monitoring
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+
     try {
+        // Validate request method
+        const allowedMethods = ['GET', 'POST', 'PUT', 'DELETE'];
+        if (!allowedMethods.includes(req.method)) {
+            return res.status(405).json({ 
+                success: false,
+                error: 'Method not allowed',
+                allowedMethods: allowedMethods 
+            });
+        }
+
         // Handle different HTTP methods
         switch (req.method) {
             case 'GET':
-                return handleGetContacts(req, res);
+                return await handleGetContacts(req, res);
             case 'POST':
-                return handleCreateContact(req, res);
+                return await handleCreateContact(req, res);
             case 'PUT':
-                return handleUpdateContact(req, res);
+                return await handleUpdateContact(req, res);
             case 'DELETE':
-                return handleDeleteContact(req, res);
+                return await handleDeleteContact(req, res);
             default:
-                res.status(405).json({ error: 'Method not allowed' });
+                return res.status(405).json({ 
+                    success: false,
+                    error: 'Method not allowed' 
+                });
         }
     } catch (error) {
         console.error('API Error:', error);
-        res.status(500).json({ 
+        
+        return res.status(500).json({ 
+            success: false,
             error: 'Internal server error',
-            message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+            message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong',
+            timestamp: new Date().toISOString()
         });
     }
 }
