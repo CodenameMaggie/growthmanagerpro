@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://growthmanagerpro-v2.vercel.app/sitemap.xml
+
+# Crawl delay
+Crawl-delay: 1
+
+# Block unnecessary paths
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /favicon.ico
