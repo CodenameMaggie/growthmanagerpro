@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Growth Manager Pro - Deals</title>
+    <meta name="description" content="Track closed deals, revenue analytics, and client success metrics with Growth Manager Pro.">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="canonical" href="https://growthmanagerpro-v2.vercel.app/deals.html">
+    <meta name="robots" content="index, follow">
+    
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-bg: #1f2937;
+            --card-bg: #ffffff;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f9fafb;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container { display: flex; min-height: 100vh; }
+
+        .sidebar {
+            width: 280px; background: var(--dark-bg); color: white; padding: 2rem 0;
+            position: fixed; height: 100vh; overflow-y: auto; transition: transform 0.3s ease;
+        }
+
+        .logo { padding: 0 2rem 2rem; border-bottom: 1px solid #374151; margin-bottom: 2rem; }
+        .logo h1 { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); }
+
+        .nav-menu { list-style: none; }
+        .nav-item { margin-bottom: 0.5rem; }
+        .nav-link {
+            display: flex; align-items: center; padding: 1rem 2rem; color: #d1d5db;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .nav-link:hover, .nav-link.active {
+            background-color: #374151; color: white; border-right: 3px solid var(--primary-color);
+        }
+        .nav-icon { margin-right: 0.75rem; font-size: 1.25rem; }
+
+        .main-content { flex: 1; margin-left: 280px; padding: 2rem; transition: margin-left 0.3s ease; }
+        .mobile-menu-toggle {
+            display: none; position: fixed; top: 1rem; left: 1rem; z-index: 1000;
+            background: var(--primary-color); color: white; border: none; padding: 0.75rem;
+            border-radius: 0.5rem; cursor: pointer;
+        }
+
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+        }
+        .page-title { font-size: 2rem; font-weight: 700; color: var(--text-primary); }
+
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem; margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: var(--card-bg); padding: 1.5rem; border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color);
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2rem; font-weight: 700; color: var(--primary-color); margin-bottom: 0.5rem;
+        }
+        .stat-label {
+            font-size: 0.875rem; color: var(--text-secondary);
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+
+        .card {
+            background: var(--card-bg); border-radius: 1rem; padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
+        }
+        .card-title { font-size: 1.25rem; font-weight: 600; color: var(--text-primary); }
+
+        .btn {
+            padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: none; font-weight: 500;
+            cursor: pointer; transition: all 0.2s; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+        }
+        .btn-primary { background: var(--primary-color); color: white; }
+        .btn-primary:hover { background: var(--secondary-color); }
+        .btn-secondary { background: #f3f4f6; color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: #e5e7eb; }
+
+        .table-container {
+            background: var(--card-bg); border-radius: 1rem; overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color);
+        }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th, .table td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .table th {
+            background: #f9fafb; font-weight: 600; color: var(--text-primary);
+            font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .table tr:hover { background: #f9fafb; }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem;
+            font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .status-won { background: #d1fae5; color: #065f46; }
+        .status-lost { background: #fee2e2; color: #991b1b; }
+
+        .deal-value { font-weight: 600; color: var(--success-color); }
+        .action-btn {
+            padding: 0.25rem 0.5rem; border-radius: 0.25rem; border: none;
+            font-size: 0.75rem; cursor: pointer; margin-right: 0.5rem; transition: all 0.2s;
+        }
+        .action-btn:hover { transform: translateY(-1px); }
+
+        .empty-state { text-align: center; padding: 3rem; color: var(--text-secondary); }
+        .empty-state h3 { margin-bottom: 0.5rem; color: var(--text-primary); }
+
+        .loading {
+            display: flex; align-items: center; justify-content: center;
+            padding: 2rem; color: var(--text-secondary);
+        }
+        .spinner {
+            width: 20px; height: 20px; border: 2px solid #f3f3f3;
+            border-top: 2px solid var(--primary-color); border-radius: 50%;
+            animation: spin 1s linear infinite; margin-right: 0.5rem;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle { display: block; }
+            .sidebar { transform: translateX(-100%); z-index: 999; }
+            .sidebar.mobile-visible { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 1rem; padding-top: 4rem; }
+            .header { flex-direction: column; text-align: center; }
+            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
+            .table-container { overflow-x: auto; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+
+        <nav class="sidebar" id="sidebar">
+            <div class="logo"><h1>Growth Manager Pro</h1></div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="index.html" class="nav-link"><span class="nav-icon">📊</span>Dashboard</a></li>
+                <li class="nav-item"><a href="contacts.html" class="nav-link"><span class="nav-icon">👥</span>Contacts</a></li>
+                <li class="nav-item"><a href="podcast-calls.html" class="nav-link"><span class="nav-icon">🎙️</span>Podcast Calls</a></li>
+                <li class="nav-item"><a href="discovery-calls.html" class="nav-link"><span class="nav-icon">🔍</span>Discovery Calls</a></li>
+                <li class="nav-item"><a href="sales-calls.html" class="nav-link"><span class="nav-icon">💰</span>Sales Calls</a></li>
+                <li class="nav-item"><a href="pipeline.html" class="nav-link"><span class="nav-icon">📈</span>Pipeline</a></li>
+                <li class="nav-item"><a href="deals.html" class="nav-link active"><span class="nav-icon">🤝</span>Deals</a></li>
+                <li class="nav-item"><a href="cash-flow.html" class="nav-link"><span class="nav-icon">💵</span>Cash Flow</a></li>
+                <li class="nav-item"><a href="campaigns.html" class="nav-link"><span class="nav-icon">📧</span>Campaigns</a></li>
+                <li class="nav-item"><a href="sprints.html" class="nav-link"><span class="nav-icon">⚡</span>Sprints</a></li>
+                <li class="nav-item"><a href="expense-tracker.html" class="nav-link"><span class="nav-icon">📋</span>Expense Tracker</a></li>
+                <li class="nav-item"><a href="availability.html" class="nav-link"><span class="nav-icon">📅</span>Availability</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content" id="mainContent">
+            <header class="header">
+                <h1 class="page-title">Closed Deals</h1>
+                <button class="btn btn-primary" onclick="addDeal()">➕ Add Deal</button>
+            </header>
+
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalRevenue">$0</div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="dealsWon">0</div>
+                    <div class="stat-label">Deals Won</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgDealSize">$0</div>
+                    <div class="stat-label">Avg Deal Size</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="monthlyRevenue">$0</div>
+                    <div class="stat-label">This Month</div>
+                </div>
+            </section>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Deal History</h2>
+                    <select class="btn btn-secondary" id="statusFilter" onchange="filterDeals()">
+                        <option value="">All Deals</option>
+                        <option value="won">Won</option>
+                        <option value="lost">Lost</option>
+                    </select>
+                </div>
+                
+                <div class="table-container">
+                    <div id="dealsLoading" class="loading">
+                        <div class="spinner"></div>
+                        Loading deals...
+                    </div>
+                    <div id="dealsTable" style="display: none;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Company</th>
+                                    <th>Deal Value</th>
+                                    <th>Close Date</th>
+                                    <th>Status</th>
+                                    <th>Source</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dealsTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div id="emptyState" class="empty-state" style="display: none;">
+                        <h3>No deals closed yet</h3>
+                        <p>Your closed deals will appear here as you complete sales.</p>
+                        <button class="btn btn-primary" onclick="addDeal()" style="margin-top: 1rem;">
+                            Add First Deal
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let allDeals = [];
+
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            sidebar.classList.toggle('mobile-visible');
+            mainContent.classList.toggle('sidebar-hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDeals();
+        });
+
+        async function loadDeals() {
+            try {
+                const response = await fetch('/api/deals');
+                if (!response.ok) throw new Error('Failed to fetch deals');
+                
+                const data = await response.json();
+                if (data.success && data.data) {
+                    allDeals = data.data.deals || [];
+                    updateStats(data.data.stats || {});
+                    displayDeals(allDeals);
+                } else {
+                    throw new Error('Invalid API response');
+                }
+            } catch (error) {
+                console.error('Failed to load deals:', error);
+                showEmptyState();
+            }
+        }
+
+        function showEmptyState() {
+            const loading = document.getElementById('dealsLoading');
+            const table = document.getElementById('dealsTable');
+            const empty = document.getElementById('emptyState');
+            
+            loading.style.display = 'none';
+            table.style.display = 'none';
+            empty.style.display = 'block';
+            
+            updateStats({ totalRevenue: 0, dealsWon: 0, avgDealSize: 0, monthlyRevenue: 0 });
+        }
+
+        function updateStats(stats) {
+            document.getElementById('totalRevenue').textContent = `$${(stats.totalRevenue || 0).toLocaleString()}`;
+            document.getElementById('dealsWon').textContent = stats.dealsWon || 0;
+            document.getElementById('avgDealSize').textContent = `$${(stats.avgDealSize || 0).toLocaleString()}`;
+            document.getElementById('monthlyRevenue').textContent = `$${(stats.monthlyRevenue || 0).toLocaleString()}`;
+        }
+
+        function displayDeals(deals) {
+            const loading = document.getElementById('dealsLoading');
+            const table = document.getElementById('dealsTable');
+            const empty = document.getElementById('emptyState');
+            const tbody = document.getElementById('dealsTableBody');
+
+            loading.style.display = 'none';
+
+            if (deals.length === 0) {
+                table.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+
+            empty.style.display = 'none';
+            table.style.display = 'block';
+
+            tbody.innerHTML = deals.map(deal => `
+                <tr>
+                    <td><strong>${deal.clientName}</strong><br><small>${deal.clientEmail}</small></td>
+                    <td>${deal.company}</td>
+                    <td class="deal-value">$${deal.value.toLocaleString()}</td>
+                    <td>${formatDate(deal.closeDate)}</td>
+                    <td><span class="status-badge status-${deal.status}">${deal.status}</span></td>
+                    <td>${deal.source}</td>
+                    <td>
+                        <button class="action-btn btn-primary" onclick="viewDeal(${deal.id})">View</button>
+                        <button class="action-btn btn-secondary" onclick="editDeal(${deal.id})">Edit</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function filterDeals() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const filteredDeals = allDeals.filter(deal => !statusFilter || deal.status === statusFilter);
+            displayDeals(filteredDeals);
+        }
+
+        function addDeal() {
+            alert('Add deal functionality would be implemented here.');
+        }
+
+        function viewDeal(dealId) {
+            alert(`View deal ${dealId} functionality would be implemented here.`);
+        }
+
+        function editDeal(dealId) {
+            alert(`Edit deal ${dealId} functionality would be implemented here.`);
+        }
+
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                const sidebar = document.getElementById('sidebar');
+                const mainContent = document.getElementById('mainContent');
+                sidebar.classList.remove('mobile-visible');
+                mainContent.classList.remove('sidebar-hidden');
+            }
+        });
+    </script>
+</body>
+</html>
