@@ -610,17 +610,15 @@
                 }
                 
                 const data = await response.json();
-                updateKPIs(data);
+                
+                if (data.success && data.data) {
+                    updateKPIs(data.data.stats);
+                } else {
+                    throw new Error('Invalid API response');
+                }
             } catch (error) {
-                console.log('Using demo data - API not available');
-                // Use demo data for development
-                const demoData = {
-                    totalContacts: 125,
-                    activePipeline: 23,
-                    closedDeals: 8,
-                    conversionRate: 6.4
-                };
-                updateKPIs(demoData);
+                console.error('Failed to load dashboard data:', error);
+                showDashboardError();
             }
         }
 
@@ -631,11 +629,11 @@
             document.getElementById('closedDeals').textContent = data.closedDeals || 0;
             document.getElementById('conversionRate').textContent = `${data.conversionRate || 0}%`;
 
-            // Update change indicators
-            document.getElementById('contactsChange').textContent = '+12 this week';
-            document.getElementById('pipelineChange').textContent = '+5 this week';
-            document.getElementById('dealsChange').textContent = '+3 this month';
-            document.getElementById('conversionChange').textContent = '+1.2% this month';
+            // Update change indicators - use real data if available
+            document.getElementById('contactsChange').textContent = data.contactsChange || 'No change';
+            document.getElementById('pipelineChange').textContent = data.pipelineChange || 'No change';
+            document.getElementById('dealsChange').textContent = data.dealsChange || 'No change';
+            document.getElementById('conversionChange').textContent = data.conversionChange || 'No change';
         }
 
         // Load sprint tasks
