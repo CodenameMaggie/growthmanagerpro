@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Growth Manager Pro - Dashboard</title>
+    <meta name="description" content="Professional client acquisition and business development dashboard with real-time KPI tracking, pipeline management, and advisor reporting.">
+    <meta name="keywords" content="CRM, lead management, business development, client acquisition, pipeline tracking">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Growth Manager Pro - Dashboard">
+    <meta property="og:description" content="Professional client acquisition and business development platform">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://growthmanagerpro-v2.vercel.app">
+    
+    <!-- Performance & SEO -->
+    <link rel="canonical" href="https://growthmanagerpro-v2.vercel.app">
+    <meta name="robots" content="index, follow">
+    
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-bg: #1f2937;
+            --card-bg: #ffffff;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f9fafb;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--dark-bg);
+            color: white;
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.mobile-hidden {
+            transform: translateX(-100%);
+        }
+
+        .logo {
+            padding: 0 2rem 2rem;
+            border-bottom: 1px solid #374151;
+            margin-bottom: 2rem;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            color: #d1d5db;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: #374151;
+            color: white;
+            border-right: 3px solid var(--primary-color);
+        }
+
+        .nav-icon {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.sidebar-hidden {
+            margin-left: 0;
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1000;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .date-display {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .kpi-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .kpi-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .kpi-change {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .kpi-change.positive {
+            color: var(--success-color);
+        }
+
+        .kpi-change.negative {
+            color: var(--danger-color);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        /* Sprint Tasks */
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .task-meta {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .task-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-in-progress {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-blocked {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            list-style: none;
+        }
+
+        .action-item {
+            margin-bottom: 1rem;
+        }
+
+        .action-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.2s;
+            border: 1px solid var(--border-color);
+        }
+
+        .action-link:hover {
+            background: #f3f4f6;
+            transform: translateY(-1px);
+        }
+
+        .action-icon {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
+            color: var(--primary-color);
+        }
+
+        /* Loading States */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 999;
+            }
+
+            .sidebar.mobile-visible {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+                padding-top: 4rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kpi-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+            ☰
+        </button>
+
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+            <div class="logo">
+                <h1>Growth Manager Pro</h1>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link active" aria-current="page">
+                        <span class="nav-icon">📊</span>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="contacts.html" class="nav-link">
+                        <span class="nav-icon">👥</span>
+                        Contacts
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <header class="header">
+                <div>
+                    <h1 class="page-title">Dashboard</h1>
+                    <p class="date-display" id="currentDate"></p>
+                </div>
+            </header>
+
+            <!-- KPI Cards -->
+            <section class="kpi-grid" aria-label="Key Performance Indicators">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Total Contacts</span>
+                    </div>
+                    <div class="kpi-value" id="totalContacts">0</div>
+                    <div class="kpi-change positive" id="contactsChange">Loading...</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Active Pipeline</span>
+                    </div>
+                    <div class="kpi-value" id="activePipeline">0</div>
+                    <div class="kpi-change positive" id="pipelineChange">Loading...</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Closed Deals</span>
+                    </div>
+                    <div class="kpi-value" id="closedDeals">0</div>
+                    <div class="kpi-change positive" id="dealsChange">Loading...</div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-title">Conversion Rate</span>
+                    </div>
+                    <div class="kpi-value" id="conversionRate">0%</div>
+                    <div class="kpi-change positive" id="conversionChange">Loading...</div>
+                </div>
+            </section>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Current Sprint Tasks -->
+                <section class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Current Sprint Tasks</h2>
+                        <a href="#" class="btn btn-secondary">View All</a>
+                    </div>
+                    <div id="sprintTasks" class="loading">
+                        <div class="spinner"></div>
+                        Loading tasks...
+                    </div>
+                </section>
+
+                <!-- Quick Actions -->
+                <section class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Quick Actions</h2>
+                    </div>
+                    <ul class="quick-actions">
+                        <li class="action-item">
+                            <a href="contacts.html" class="action-link">
+                                <span class="action-icon">➕</span>
+                                <div>
+                                    <div>Add New Contact</div>
+                                    <small>Import or create new prospects</small>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="action-item">
+                            <a href="contacts.html" class="action-link">
+                                <span class="action-icon">📈</span>
+                                <div>
+                                    <div>View Pipeline</div>
+                                    <small>Track deal progress</small>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="action-item">
+                            <a href="#" class="action-link">
+                                <span class="action-icon">📧</span>
+                                <div>
+                                    <div>Send Campaign</div>
+                                    <small>Launch email outreach</small>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Mobile menu functionality
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            sidebar.classList.toggle('mobile-visible');
+            sidebar.classList.toggle('mobile-hidden');
+            mainContent.classList.toggle('sidebar-hidden');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(event.target) && 
+                !toggle.contains(event.target) &&
+                sidebar.classList.contains('mobile-visible')) {
+                toggleMobileMenu();
+            }
+        });
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date
+            const currentDate = document.getElementById('currentDate');
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            currentDate.textContent = now.toLocaleDateString('en-US', options);
+
+            // Load dashboard data
+            loadDashboardData();
+            loadSprintTasks();
+        });
+
+        // Load dashboard KPI data
+        async function loadDashboardData() {
+            try {
+                const response = await fetch('/api/prospects');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+                
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    updateKPIs(data.data.stats);
+                } else {
+                    throw new Error('Invalid API response');
+                }
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+                showDashboardError();
+            }
+        }
+
+        // Update KPI display
+        function updateKPIs(data) {
+            document.getElementById('totalContacts').textContent = data.totalContacts || 0;
+            document.getElementById('activePipeline').textContent = data.activePipeline || 0;
+            document.getElementById('closedDeals').textContent = data.closedDeals || 0;
+            document.getElementById('conversionRate').textContent = `${data.conversionRate || 0}%`;
+
+            // Update change indicators - use real data if available
+            document.getElementById('contactsChange').textContent = data.contactsChange || 'No change';
+            document.getElementById('pipelineChange').textContent = data.pipelineChange || 'No change';
+            document.getElementById('dealsChange').textContent = data.dealsChange || 'No change';
+            document.getElementById('conversionChange').textContent = data.conversionChange || 'No change';
+        }
+
+        // Load sprint tasks
+        async function loadSprintTasks() {
+            const sprintTasksContainer = document.getElementById('sprintTasks');
+            
+            try {
+                const response = await fetch('/api/tasks');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch tasks');
+                }
+                
+                const data = await response.json();
+                
+                if (data.success && data.data && data.data.length > 0) {
+                    const tasksHTML = `
+                        <ul class="task-list">
+                            ${data.data.map(task => `
+                                <li class="task-item">
+                                    <div class="task-info">
+                                        <div class="task-title">${task.title}</div>
+                                        <div class="task-meta">Assigned to ${task.assignee} • ${task.priority} priority</div>
+                                    </div>
+                                    <span class="task-status status-${task.status}">${task.status.replace('-', ' ')}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    `;
+                    sprintTasksContainer.innerHTML = tasksHTML;
+                } else {
+                    showEmptyTasks();
+                }
+            } catch (error) {
+                console.error('Failed to load sprint tasks:', error);
+                showEmptyTasks();
+            }
+        }
+
+        // Show empty tasks state
+        function showEmptyTasks() {
+            const sprintTasksContainer = document.getElementById('sprintTasks');
+            sprintTasksContainer.innerHTML = `
+                <div class="empty-state" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                    <h3 style="margin-bottom: 0.5rem; color: var(--text-primary);">No active tasks</h3>
+                    <p>Sprint tasks will appear here when created.</p>
+                </div>
+            `;
+        }
+
+        // Show dashboard error state
+        function showDashboardError() {
+            // Reset all KPIs to 0 and show appropriate messages
+            document.getElementById('totalContacts').textContent = '0';
+            document.getElementById('activePipeline').textContent = '0';
+            document.getElementById('closedDeals').textContent = '0';
+            document.getElementById('conversionRate').textContent = '0%';
+
+            document.getElementById('contactsChange').textContent = 'Error loading';
+            document.getElementById('pipelineChange').textContent = 'Error loading';
+            document.getElementById('dealsChange').textContent = 'Error loading';
+            document.getElementById('conversionChange').textContent = 'Error loading';
+
+            // Show error in tasks section
+            const sprintTasksContainer = document.getElementById('sprintTasks');
+            sprintTasksContainer.innerHTML = `
+                <div class="error-state" style="text-align: center; padding: 2rem; color: var(--danger-color);">
+                    <h3 style="margin-bottom: 0.5rem;">Unable to load data</h3>
+                    <p>Please check your connection and try refreshing the page.</p>
+                    <button class="btn btn-primary" onclick="window.location.reload()" style="margin-top: 1rem;">
+                        Refresh Page
+                    </button>
+                </div>
+            `;
+        }
+
+        // Handle responsive behavior
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                const sidebar = document.getElementById('sidebar');
+                const mainContent = document.getElementById('mainContent');
+                
+                sidebar.classList.remove('mobile-visible', 'mobile-hidden');
+                mainContent.classList.remove('sidebar-hidden');
+            }
+        });
+    </script>
+</body>
+</html>
