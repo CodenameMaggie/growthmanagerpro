@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Debug Console - Growth Manager Pro</title>
+    <style>
+        body {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            margin: 0;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: #252526;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .test-section {
+            background: #252526;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .test-header {
+            background: #007acc;
+            color: white;
+            padding: 15px 20px;
+            font-weight: bold;
+        }
+        .test-content {
+            padding: 20px;
+        }
+        .endpoint {
+            background: #2d2d30;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .method.get { background: #4caf50; color: white; }
+        .method.post { background: #2196f3; color: white; }
+        .method.put { background: #ff9800; color: white; }
+        .method.delete { background: #f44336; color: white; }
+        .url {
+            font-family: monospace;
+            background: #1e1e1e;
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status.success { background: #4caf50; color: white; }
+        .status.error { background: #f44336; color: white; }
+        .status.loading { background: #ff9800; color: white; }
+        .response {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #005a9e;
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #2d2d30;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            color: #969696;
+            font-size: 0.9em;
+        }
+        .log {
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        .log-entry.info { color: #4fc3f7; }
+        .log-entry.success { color: #4caf50; }
+        .log-entry.error { color: #f44336; }
+        .log-entry.warning { color: #ff9800; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Growth Manager Pro - API Debug Console</h1>
+            <p>Real-time API testing and connection diagnostics</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="total-requests">0</div>
+                <div class="stat-label">Total Requests</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="successful-requests">0</div>
+                <div class="stat-label">Successful</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="failed-requests">0</div>
+                <div class="stat-label">Failed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avg-response-time">0ms</div>
+                <div class="stat-label">Avg Response Time</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-header">API Endpoints Testing</div>
+            <div class="test-content">
+                <button onclick="testAllEndpoints()">🚀 Test All Endpoints</button>
+                <button onclick="clearResults()">🗑️ Clear Results</button>
+                <button onclick="exportResults()">📁 Export Results</button>
+                <button onclick="runContinuousTest()">🔄 Continuous Test (30s)</button>
+                
+                <div id="endpoints-container">
+                    <!-- Endpoints will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-header">Live Data Monitor</div>
+            <div class="test-content">
+                <button onclick="startLiveMonitor()">▶️ Start Live Monitor</button>
+                <button onclick="stopLiveMonitor()">⏹️ Stop Live Monitor</button>
+                <div id="live-data-display" class="response"></div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-header">Connection Health Check</div>
+            <div class="test-content">
+                <button onclick="runHealthCheck()">🏥 Run Health Check</button>
+                <div id="health-results" class="response"></div>
+            </div>
+        </div>
+
+        <div id="debug-log" class="log">
+            <div class="log-entry info">[INFO] Debug console initialized</div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE = window.location.origin;
+        const endpoints = [
+            { method: 'GET', path: '/api/prospects', description: 'Get all prospects' },
+            { method: 'GET', path: '/api/health', description: 'Health check' },
+            { method: 'GET', path: '/api/stats', description: 'Get statistics' },
+            { method: 'GET', path: '/', description: 'Main dashboard' }
+        ];
+
+        // Stats tracking
+        let stats = {
+            totalRequests: 0,
+            successfulRequests: 0,
+            failedRequests: 0,
+            responseTimes: []
+        };
+
+        let liveMonitorInterval = null;
+        let continuousTestInterval = null;
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${timestamp}] [${type.toUpperCase()}] ${message}`;
+            
+            const logContainer = document.getElementById('debug-log');
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function updateStats() {
+            document.getElementById('total-requests').textContent = stats.totalRequests;
+            document.getElementById('successful-requests').textContent = stats.successfulRequests;
+            document.getElementById('failed-requests').textContent = stats.failedRequests;
+            
+            const avgTime = stats.responseTimes.length > 0 
+                ? Math.round(stats.responseTimes.reduce((a, b) => a + b, 0) / stats.responseTimes.length)
+                : 0;
+            document.getElementById('avg-response-time').textContent = `${avgTime}ms`;
+        }
+
+        async function testEndpoint(endpoint) {
+            const url = `${API_BASE}${endpoint.path}`;
+            const startTime = performance.now();
+            
+            stats.totalRequests++;
+            log(`Testing ${endpoint.method} ${url}`, 'info');
+            
+            const statusEl = document.getElementById(`status-${endpoint.path.replace(/\//g, '-')}`);
+            const responseEl = document.getElementById(`response-${endpoint.path.replace(/\//g, '-')}`);
+            
+            statusEl.className = 'status loading';
+            statusEl.textContent = 'Testing...';
+            
+            try {
+                const response = await fetch(url, {
+                    method: endpoint.method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache'
+                    }
+                });
+
+                const endTime = performance.now();
+                const responseTime = Math.round(endTime - startTime);
+                stats.responseTimes.push(responseTime);
+
+                const responseText = await response.text();
+                let responseData;
+                
+                try {
+                    responseData = JSON.parse(responseText);
+                } catch {
+                    responseData = responseText;
+                }
+
+                if (response.ok) {
+                    stats.successfulRequests++;
+                    statusEl.className = 'status success';
+                    statusEl.textContent = `✓ ${response.status} (${responseTime}ms)`;
+                    log(`SUCCESS: ${endpoint.method} ${url} - ${response.status} in ${responseTime}ms`, 'success');
+                } else {
+                    stats.failedRequests++;
+                    statusEl.className = 'status error';
+                    statusEl.textContent = `✗ ${response.status} (${responseTime}ms)`;
+                    log(`ERROR: ${endpoint.method} ${url} - ${response.status} ${response.statusText}`, 'error');
+                }
+
+                responseEl.textContent = JSON.stringify(responseData, null, 2);
+                
+            } catch (error) {
+                const endTime = performance.now();
+                const responseTime = Math.round(endTime - startTime);
+                
+                stats.failedRequests++;
+                statusEl.className = 'status error';
+                statusEl.textContent = `✗ Network Error (${responseTime}ms)`;
+                responseEl.textContent = `Error: ${error.message}`;
+                log(`NETWORK ERROR: ${endpoint.method} ${url} - ${error.message}`, 'error');
+            }
+            
+            updateStats();
+        }
+
+        async function testAllEndpoints() {
+            log('Starting comprehensive endpoint testing...', 'info');
+            for (const endpoint of endpoints) {
+                await testEndpoint(endpoint);
+                await new Promise(resolve => setTimeout(resolve, 500)); // Small delay between tests
+            }
+            log('All endpoint tests completed', 'success');
+        }
+
+        function clearResults() {
+            endpoints.forEach(endpoint => {
+                const statusEl = document.getElementById(`status-${endpoint.path.replace(/\//g, '-')}`);
+                const responseEl = document.getElementById(`response-${endpoint.path.replace(/\//g, '-')}`);
+                if (statusEl) statusEl.textContent = 'Not tested';
+                if (responseEl) responseEl.textContent = '';
+            });
+            
+            stats = {
+                totalRequests: 0,
+                successfulRequests: 0,
+                failedRequests: 0,
+                responseTimes: []
+            };
+            updateStats();
+            
+            document.getElementById('debug-log').innerHTML = '<div class="log-entry info">[INFO] Results cleared</div>';
+            log('All results cleared', 'info');
+        }
+
+        function exportResults() {
+            const results = {
+                timestamp: new Date().toISOString(),
+                stats: stats,
+                endpoints: endpoints.map(endpoint => {
+                    const statusEl = document.getElementById(`status-${endpoint.path.replace(/\//g, '-')}`);
+                    const responseEl = document.getElementById(`response-${endpoint.path.replace(/\//g, '-')}`);
+                    return {
+                        ...endpoint,
+                        status: statusEl ? statusEl.textContent : 'Not tested',
+                        response: responseEl ? responseEl.textContent : ''
+                    };
+                })
+            };
+            
+            const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `api-test-results-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            log('Test results exported', 'success');
+        }
+
+        function startLiveMonitor() {
+            if (liveMonitorInterval) {
+                clearInterval(liveMonitorInterval);
+            }
+            
+            const display = document.getElementById('live-data-display');
+            display.textContent = 'Starting live monitor...';
+            
+            liveMonitorInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`${API_BASE}/api/prospects`);
+                    const data = await response.json();
+                    
+                    const displayData = {
+                        timestamp: new Date().toISOString(),
+                        status: response.status,
+                        prospects_count: data.prospects ? data.prospects.length : 0,
+                        data: data
+                    };
+                    
+                    display.textContent = JSON.stringify(displayData, null, 2);
+                    log(`Live data updated - ${displayData.prospects_count} prospects`, 'info');
+                } catch (error) {
+                    display.textContent = `Error: ${error.message}`;
+                    log(`Live monitor error: ${error.message}`, 'error');
+                }
+            }, 5000);
+            
+            log('Live monitor started (5 second intervals)', 'success');
+        }
+
+        function stopLiveMonitor() {
+            if (liveMonitorInterval) {
+                clearInterval(liveMonitorInterval);
+                liveMonitorInterval = null;
+                document.getElementById('live-data-display').textContent = 'Live monitor stopped.';
+                log('Live monitor stopped', 'info');
+            }
+        }
+
+        function runContinuousTest() {
+            if (continuousTestInterval) {
+                clearInterval(continuousTestInterval);
+                continuousTestInterval = null;
+                log('Continuous testing stopped', 'info');
+                return;
+            }
+            
+            log('Starting continuous testing (30 second intervals)...', 'info');
+            continuousTestInterval = setInterval(() => {
+                testEndpoint(endpoints[0]); // Test main prospects endpoint
+            }, 30000);
+        }
+
+        async function runHealthCheck() {
+            const healthResults = document.getElementById('health-results');
+            healthResults.textContent = 'Running health check...';
+            
+            const checks = [
+                { name: 'Main Domain', test: () => fetch(API_BASE) },
+                { name: 'API Endpoint', test: () => fetch(`${API_BASE}/api/prospects`) },
+                { name: 'CORS Headers', test: () => fetch(`${API_BASE}/api/prospects`, { method: 'OPTIONS' }) },
+                { name: 'Response Time', test: async () => {
+                    const start = performance.now();
+                    await fetch(`${API_BASE}/api/prospects`);
+                    const time = performance.now() - start;
+                    return { ok: time < 2000, time: `${Math.round(time)}ms` };
+                }}
+            ];
+            
+            const results = [];
+            
+            for (const check of checks) {
+                try {
+                    const result = await check.test();
+                    if (result && typeof result === 'object' && 'ok' in result) {
+                        results.push({
+                            name: check.name,
+                            status: result.ok ? 'PASS' : 'FAIL',
+                            details: result.time || 'Custom check'
+                        });
+                    } else {
+                        results.push({
+                            name: check.name,
+                            status: result.ok ? 'PASS' : 'FAIL',
+                            details: `Status: ${result.status}`
+                        });
+                    }
+                } catch (error) {
+                    results.push({
+                        name: check.name,
+                        status: 'FAIL',
+                        details: error.message
+                    });
+                }
+            }
+            
+            healthResults.textContent = JSON.stringify(results, null, 2);
+            log('Health check completed', 'success');
+        }
+
+        function initializeEndpoints() {
+            const container = document.getElementById('endpoints-container');
+            
+            endpoints.forEach(endpoint => {
+                const endpointDiv = document.createElement('div');
+                endpointDiv.className = 'endpoint';
+                endpointDiv.innerHTML = `
+                    <div>
+                        <span class="method ${endpoint.method.toLowerCase()}">${endpoint.method}</span>
+                        <span class="url">${endpoint.path}</span>
+                        <span id="status-${endpoint.path.replace(/\//g, '-')}" class="status">Not tested</span>
+                    </div>
+                    <p>${endpoint.description}</p>
+                    <button onclick="testEndpoint(${JSON.stringify(endpoint).replace(/"/g, '&quot;')})">Test This Endpoint</button>
+                    <div id="response-${endpoint.path.replace(/\//g, '-')}" class="response"></div>
+                `;
+                container.appendChild(endpointDiv);
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeEndpoints();
+            updateStats();
+            log('API Debug Console ready', 'success');
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (liveMonitorInterval) clearInterval(liveMonitorInterval);
+            if (continuousTestInterval) clearInterval(continuousTestInterval);
+        });
+    </script>
+</body>
+</html>
