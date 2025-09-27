@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Growth Manager Pro - Cash Flow</title>
+    <meta name="description" content="Financial tracking, revenue forecasting, and cash flow management.">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <style>
+        :root { --primary-color: #2563eb; --success-color: #10b981; --dark-bg: #1f2937; --card-bg: #ffffff; --text-primary: #111827; --text-secondary: #6b7280; --border-color: #e5e7eb; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f9fafb; color: var(--text-primary); line-height: 1.6; }
+        .container { display: flex; min-height: 100vh; }
+        .sidebar { width: 280px; background: var(--dark-bg); color: white; padding: 2rem 0; position: fixed; height: 100vh; overflow-y: auto; }
+        .logo { padding: 0 2rem 2rem; border-bottom: 1px solid #374151; margin-bottom: 2rem; }
+        .logo h1 { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); }
+        .nav-menu { list-style: none; } .nav-item { margin-bottom: 0.5rem; }
+        .nav-link { display: flex; align-items: center; padding: 1rem 2rem; color: #d1d5db; text-decoration: none; transition: all 0.2s; }
+        .nav-link:hover, .nav-link.active { background-color: #374151; color: white; border-right: 3px solid var(--primary-color); }
+        .nav-icon { margin-right: 0.75rem; font-size: 1.25rem; }
+        .main-content { flex: 1; margin-left: 280px; padding: 2rem; }
+        .mobile-menu-toggle { display: none; position: fixed; top: 1rem; left: 1rem; z-index: 1000; background: var(--primary-color); color: white; border: none; padding: 0.75rem; border-radius: 0.5rem; cursor: pointer; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+        .page-title { font-size: 2rem; font-weight: 700; color: var(--text-primary); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--card-bg); padding: 1.5rem; border-radius: 1rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); text-align: center; }
+        .stat-value { font-size: 2rem; font-weight: 700; color: var(--primary-color); margin-bottom: 0.5rem; }
+        .stat-label { font-size: 0.875rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+        .btn { padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: none; font-weight: 500; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary { background: var(--primary-color); color: white; }
+        .empty-state { text-align: center; padding: 3rem; color: var(--text-secondary); background: var(--card-bg); border-radius: 1rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); }
+        .empty-state h3 { margin-bottom: 0.5rem; color: var(--text-primary); }
+        @media (max-width: 768px) { .mobile-menu-toggle { display: block; } .sidebar { transform: translateX(-100%); z-index: 999; } .sidebar.mobile-visible { transform: translateX(0); } .main-content { margin-left: 0; padding: 1rem; padding-top: 4rem; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="mobile-menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('mobile-visible')">☰</button>
+        <nav class="sidebar" id="sidebar">
+            <div class="logo"><h1>Growth Manager Pro</h1></div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="index.html" class="nav-link"><span class="nav-icon">📊</span>Dashboard</a></li>
+                <li class="nav-item"><a href="contacts.html" class="nav-link"><span class="nav-icon">👥</span>Contacts</a></li>
+                <li class="nav-item"><a href="podcast-calls.html" class="nav-link"><span class="nav-icon">🎙️</span>Podcast Calls</a></li>
+                <li class="nav-item"><a href="discovery-calls.html" class="nav-link"><span class="nav-icon">🔍</span>Discovery Calls</a></li>
+                <li class="nav-item"><a href="sales-calls.html" class="nav-link"><span class="nav-icon">💰</span>Sales Calls</a></li>
+                <li class="nav-item"><a href="pipeline.html" class="nav-link"><span class="nav-icon">📈</span>Pipeline</a></li>
+                <li class="nav-item"><a href="deals.html" class="nav-link"><span class="nav-icon">🤝</span>Deals</a></li>
+                <li class="nav-item"><a href="cash-flow.html" class="nav-link active"><span class="nav-icon">💵</span>Cash Flow</a></li>
+                <li class="nav-item"><a href="campaigns.html" class="nav-link"><span class="nav-icon">📧</span>Campaigns</a></li>
+                <li class="nav-item"><a href="sprints.html" class="nav-link"><span class="nav-icon">⚡</span>Sprints</a></li>
+                <li class="nav-item"><a href="expense-tracker.html" class="nav-link"><span class="nav-icon">📋</span>Expense Tracker</a></li>
+                <li class="nav-item"><a href="availability.html" class="nav-link"><span class="nav-icon">📅</span>Availability</a></li>
+            </ul>
+        </nav>
+        <main class="main-content">
+            <header class="header">
+                <h1 class="page-title">Cash Flow</h1>
+                <button class="btn btn-primary">➕ Add Transaction</button>
+            </header>
+            <section class="stats-grid">
+                <div class="stat-card"><div class="stat-value">$0</div><div class="stat-label">Monthly Revenue</div></div>
+                <div class="stat-card"><div class="stat-value">$0</div><div class="stat-label">Monthly Expenses</div></div>
+                <div class="stat-card"><div class="stat-value">$0</div><div class="stat-label">Net Profit</div></div>
+                <div class="stat-card"><div class="stat-value">$0</div><div class="stat-label">Cash Balance</div></div>
+            </section>
+            <div class="empty-state">
+                <h3>No financial data yet</h3>
+                <p>Start tracking your revenue and expenses to monitor your cash flow.</p>
+                <button class="btn btn-primary" style="margin-top: 1rem;">Add First Transaction</button>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
