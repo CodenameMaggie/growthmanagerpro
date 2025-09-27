@@ -6,14 +6,21 @@
   "main": "index.html",
   "scripts": {
     "dev": "vercel dev",
-    "build": "echo 'Build completed'",
-    "start": "vercel dev"
+    "build": "echo 'Build completed successfully'",
+    "start": "vercel dev",
+    "deploy": "vercel --prod"
   },
-  "keywords": ["crm", "lead-management", "business-development", "client-acquisition"],
+  "keywords": ["crm", "lead-management", "business-development", "client-acquisition", "pipeline-tracking"],
   "author": "Maggie Forbes",
   "license": "MIT",
-  "dependencies": {},
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CodenameMaggie/growthmanagerpro-v2.git"
+  },
+  "homepage": "https://growthmanagerpro-v2.vercel.app"
 }
