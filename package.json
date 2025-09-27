@@ -1,0 +1,19 @@
+{
+  "name": "growthmanagerpro-v2",
+  "version": "2.0.0",
+  "description": "Growth Manager Pro - Client Acquisition & Business Development Platform",
+  "type": "module",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Build completed'",
+    "start": "vercel dev"
+  },
+  "keywords": ["crm", "lead-management", "business-development", "client-acquisition"],
+  "author": "Maggie Forbes",
+  "license": "MIT",
+  "dependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
